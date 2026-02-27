@@ -1,0 +1,117 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+.site-header {
+    background-color: v.$primary-color;
+    min-height: 5vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+
+    .nav {
+        @include m.container;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .logo {
+        color: v.$nav-text-color;
+        text-decoration: none;
+        font-family: v.$font-title;
+        font-size: v.$font-nav-size;
+    }
+
+    .nav-list {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        a {
+            color: v.$nav-text-color;
+            text-decoration: none;
+            font-family: v.$font-title;
+            font-size: v.$font-nav-size;
+            transition: all 0.3s ease;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .burger {
+        display: none;
+        width: 32px;
+        height: 32px;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+
+        span {
+            background-color: v.$secondary-bg-color;
+            width: 32px;
+            height: 4px;
+            border-radius: 5000vw;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+            transform-origin: center;
+        }
+    }
+
+    @include m.tablet {
+        position: fixed;
+        width: 100%;
+
+        .burger {
+            display: flex;
+        }
+
+        .nav-list {
+            transform: translateX(120%);
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background-color: v.$primary-color;
+            transition: transform 1s ease;
+            z-index: -10;
+        }
+
+        &.open {
+            .nav-list {
+                transform: translateX(0%);
+            }
+
+            .burger {
+
+                span:nth-child(1) {
+                    transform: translateY(10px) rotate(45deg);
+                }
+
+                span:nth-child(2) {
+                    opacity: 0;
+                }
+
+                span:nth-child(3) {
+                    transform: translateY(-10px) rotate(-45deg);
+                }
+            }
+        }
+    }
+}

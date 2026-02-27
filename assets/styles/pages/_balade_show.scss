@@ -1,0 +1,55 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+#article {
+    .container {
+        @include m.container;
+
+        .balade-article {
+            margin-block: 3rem;
+            border-radius: 16px;
+            box-shadow: 0px 0px 15px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 100%;
+
+            .balade-top {
+                .balade-title {
+                    text-align: center;
+                    font-family: v.$font-title;
+                    font-size: v.$font-title-size-h2;
+                    margin-bottom: 1rem;
+                    
+                    a {
+                        color: v.$text-title-color;
+                        text-decoration: none;
+                    }
+                }
+
+                img {
+                    width: 100%;
+                    height: auto;
+                    object-fit: cover;
+                    border-radius: 18px;
+                    border: 1px solid v.$primary-color;
+                    margin-bottom: 1rem;
+                }
+
+                p {
+                    font-family: v.$font-text;
+                    font-size: v.$font-text-size;
+                    color: v.$text-p-color;
+                    margin-bottom: 0.5rem;
+
+                    .text-meta {
+                        font-weight: 700;
+                    }
+                }
+            }
+
+            .balade-option {
+                display: flex;
+                gap: 1rem;
+            }
+        }
+    }
+}

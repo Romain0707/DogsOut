@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Accueil{% endblock %}</title>
+        {{ encore_entry_link_tags('app') }}
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="nav">
+                <a class="logo" href="{{ path('home') }}">LOGO</a>
+
+                <button class="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <ul class="nav-list">
+                    <li><a href="{{ path('home')}}">Accueil</a></li>
+                    <li><a href="{{ path('app_balade_index')}}">Balade</a></li>
+
+                    {% if is_granted('ROLE_USER') %}
+                        <li><a href="{{ path('profil') }}">Profil</a></li>
+                        <li><a href="{{ path('logout') }}">Déconnexion</a></li>
+                    {% else %}
+                        <li><a href="{{ path('login') }}">Connexion</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+
+        {% block body %}{% endblock %}
+
+        {% block javascripts %}{% endblock %}
+
+        {{ encore_entry_script_tags('app') }}
+
+        <script>
+            const header = document.querySelector('.site-header');
+            const burger = document.querySelector('.burger');
+
+            burger.addEventListener('click', () => {
+            const isOpen = header.classList.toggle('open');
+                burger.setAttribute('aria-expanded', String(isOpen));
+            });
+        
+        </script>
+    </body>
+</html>

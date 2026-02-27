@@ -1,0 +1,15 @@
+{
+  "entrypoints": {
+    "app": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.js",
+        "/build/app.js"
+      ],
+      "css": [
+        "/build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.css",
+        "/build/app.css"
+      ]
+    }
+  }
+}

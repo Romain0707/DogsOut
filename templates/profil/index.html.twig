@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil · {{ user.username }}{% endblock %}
+
+{% block body %}
+<section id="profile">
+    <div class="container">
+        <div class="profile-header">
+            <img class="profile-avatar" src="{{ asset(user.imageName ?? 'profil/default-avatar.png') }}" alt="Avatar de {{ user.username }}">
+            <div class="profile-header-info">
+                <h1 class="profile-username">{{ user.username }}</h1>
+                <p class="profile-email">{{ user.email }}</p>
+            </div>
+            <a href="" class="profile-edit-btn">Modifier</a>
+        </div>
+
+        <div class="profile-body">
+            <div class="profile-info-grid">
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Prénom</div>
+                    <div class="profile-info-value {% if not user.firstname %}empty{% endif %}">
+                        {{ user.firstname ?? 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Nom</div>
+                    <div class="profile-info-value {% if not user.lastname %}empty{% endif %}">
+                        {{ user.lastname ?? 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Membre depuis</div>
+                    <div class="profile-info-value">
+                        {{ user.createdAt ? user.createdAt|date('d/m/Y') : '—' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Balades créées</div>
+                    <div class="profile-info-value">{{ user.balades|length }}</div>
+                </div>
+                <div class="profile-info-item full">
+                    <div class="profile-info-label">À propos</div>
+                    <div class="profile-info-value {% if not user.description %}empty{% endif %}">
+                        {{ user.description ?? 'Aucune description.' }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-divider">
+                <p>Mes balades</p>
+            </div>
+
+            <div class="card-container">
+                {% for balade in user.balades %}
+                <a href="{{ path('app_balade_show', {'id': balade.id}) }}" class="card-link">
+                    <div class="balade-card">
+                        <div class="balade-top">
+                            <div>
+                                <h3 class="balade-title">{{ balade.title }}</h3>
+
+                                {% if balade.snapshotPath %}
+                                    <img src="{{ balade.snapshotPath }}" alt="Snapshot">
+                                {% else %}
+                                    <div>Pas d’image</div>
+                                {% endif %}
+
+                                {% if balade.distanceMeters %}
+                                <p><span class="text-meta">Distance :</span> {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km</p>
+                                {% endif %}
+
+                                {% if balade.durationSeconds %}
+                                {% set h = (balade.durationSeconds // 3600) %}
+                                {% set m = ((balade.durationSeconds % 3600) // 60) %}
+                                <p><span class="text-meta">Durée :</span>
+                                    {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
+                                </p>
+                                {% endif %}
+
+                                {% if balade.description %}
+                                <p class="balade-desc">
+                                    {{ balade.description|length > 160 ? (balade.description|slice(0, 160) ~ '…') : balade.description }}
+                                </p>
+                                {% else %}
+                                <p class="balade-desc"><em>Aucune description.</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <a class="btn" href="{{ path('app_balade_show', {'id': balade.id}) }}">Voir</a>
+
+                            {% if app.user and balade.user and app.user == balade.user %}
+                                <a class="btn" href="{{ path('app_balade_form', {'id': balade.id}) }}">Modifier</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% else %}
+                <div class="balades-empty">
+                    <p>Aucune balade pour l'instant.</p>
+                    <a href="{{ path('app_balade_form') }}">Créer ma première balade →</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

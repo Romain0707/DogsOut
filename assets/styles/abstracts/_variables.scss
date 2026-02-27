@@ -1,0 +1,38 @@
+// @use '../abstracts/mixins' as m;
+// @use '../abstracts/variables' as v;
+
+
+$phone: 480;
+$tablet: 768;
+$large: 1024;
+$desktop: 1366;
+
+
+$btn-bg-color : rgba(46, 94, 62, 1);
+$btn-border-color: rgba(46, 94, 62, 1);
+$btn-text-color: rgba(255, 255, 255, 1);
+$btn-hover-color : rgba(36, 74, 49, 1);
+
+$btn-scd-bg-color: rgba(255, 255, 255, 0);
+$btn-scd-border-color : rgba(46, 94, 62, 1);
+$btn-scd-text-color : rgba(46, 94, 62, 1);
+$btn-scd-hover-color : rgba(46, 94, 62, 0.08);
+
+
+$primary-color : rgba(46, 94, 62, 1);
+$hover-color : rgba(92, 140, 102, 1);
+$bg-color : rgba(245, 242, 235, 1);
+$secondary-bg-color : rgba(232, 224, 209, 1);
+
+$nav-text-color: rgba(232, 224, 209, 1);
+$text-title-color : rgba(38, 49, 43, 1);
+$text-p-color : rgba(84, 94, 89, 1);
+$text-meta-color : rgba(120, 130, 125, 1);
+
+$font-title : "cormorant", sans-serif;
+$font-text : "lato regular", sans-serif;
+
+$font-title-size-h1 : 2.5rem;
+$font-title-size-h2 : 2rem;
+$font-nav-size : 1.3rem;
+$font-text-size : 1rem;

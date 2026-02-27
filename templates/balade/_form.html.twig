@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}
+{% endblock %}
+
+{% block body %}
+<section id="balade-form">
+  <div class="container">
+    <h1>{{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}</h1>
+    <div class="map-container">
+      <div class="map-toolbar">
+        <button type="button" id="btn-add" class="active">Ajouter des points</button>
+        <button type="button" id="btn-undo">Annuler dernier</button>
+        <button type="button" id="btn-close">Fermer la boucle</button>
+        <button type="button" id="btn-calc" disabled>Calculer</button>
+        <button type="button" id="btn-clear">Effacer</button>
+        <span id="map-hint">Clique sur la carte pour ajouter des points.</span>
+      </div>
+
+      <div class="route-stats" id="route-stats" style="display:none;">
+        <strong>Distance :</strong> <span id="route-distance">—</span>
+        <span style="margin:0 10px;">•</span>
+        <strong>Durée :</strong> <span id="route-duration">—</span>
+      </div>
+
+      <div id="map" style="height: 500px; border-radius: 12px; margin: 12px 0;"></div>
+    </div>
+    {{ form_start(form) }}
+      {{ form_widget(form) }}
+      <button class="btn btn-primary">
+        {{ balade.id ? 'Mettre à jour' : 'Créer' }}
+      </button>
+    {{ form_end(form) }}
+
+    {% if balade.id %}
+      <div style="margin-top:14px;">
+        <a href="{{ path('app_balade_index') }}">⬅ Retour</a>
+        {{ include('balade/_delete_form.html.twig') }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+  {% if balade.id %}
+  <script>
+    window.BALADE_MAP_CONFIG = {
+      initialWaypoints:    {{ balade.waypointsJson   is not empty ? balade.waypointsJson   | json_encode | raw : 'null' }},
+      initialRouteGeoJson: {{ balade.routeGeoJson    is not empty ? balade.routeGeoJson    | json_encode | raw : 'null' }},
+      initialDistance:     {{ balade.distanceMeters  is not null  ? balade.distanceMeters  : 'null' }},
+      initialDuration:     {{ balade.durationSeconds is not null  ? balade.durationSeconds : 'null' }}
+    };
+  </script>
+  {% endif %}
+{% endblock %}

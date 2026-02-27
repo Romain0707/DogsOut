@@ -1,0 +1,169 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+#profile{
+    .container {
+        @include m.container;
+
+        @include m.phone {
+            padding: 30px;
+        }
+
+        .profile-header {
+                background: v.$primary-color;
+                padding: 48px 40px 40px;
+                display: flex;
+                align-items: center;
+                gap: 28px;
+                position: relative;
+                margin-top: 3rem;
+
+                @include m.phone {
+                    flex-wrap: wrap;
+                    padding: 32px 24px 28px;
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                    pointer-events: none;
+                }
+
+            .profile-avatar {
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid rgba(255,255,255,0.15);
+                flex-shrink: 0;
+                position: relative;
+                z-index: 1;
+            }
+
+            .profile-header-info {
+                position: relative;
+                z-index: 1;
+                flex: 1;
+
+                .profile-username {
+                    font-family: v.$font-title;
+                    font-size: 1.75rem;
+                    font-weight: 600;
+                    color: v.$nav-text-color;
+                    margin: 0 0 4px;
+                    letter-spacing: -0.02em;
+                }
+
+                .profile-email {
+                    font-size: 0.85rem;
+                    color: v.$nav-text-color;
+                    margin: 0;
+                    font-weight: 300;
+                }
+            }
+
+            .profile-edit-btn {
+                position: relative;
+                z-index: 1;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 9px 18px;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 100px;
+                color: #fff;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 0.82rem;
+                font-weight: 500;
+                text-decoration: none;
+                transition: background 0.2s, border-color 0.2s;
+                white-space: nowrap;
+
+                &:hover {
+                    background: rgba(255,255,255,0.18);
+                    border-color: rgba(255,255,255,0.35);
+                }
+            }
+        }
+
+        .profile-body {
+            padding: 36px 40px;
+            border: 1px solid v.$primary-color;
+            margin-bottom: 3rem;
+
+            @include m.phone {
+                padding: 24px;
+            }
+
+            .profile-info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 36px;
+
+                @include m.phone {
+                    grid-template-columns: 1fr;
+                }
+
+                .profile-info-item {
+                    background: #f9f7f4;
+                    border-radius: 14px;
+                    padding: 16px 20px;
+
+                    &.full {
+                        grid-column: 1 / -1;
+                    }
+
+                    .profile-info-label {
+                        font-size: 0.72rem;
+                        font-weight: 500;
+                        color: v.$text-p-color;
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                        margin-bottom: 4px;
+                    }
+
+                    .profile-info-value {
+                        font-size: 0.95rem;
+                        color: v.$text-p-color;
+                        font-weight: 400;
+                    }
+
+                    .profile-info-value.empty {
+                        color: v.$text-meta-color;
+                        font-style: italic;
+                    }
+                }
+            }
+
+            .profile-divider {
+                @include m.flex-center-vert;
+                gap: 0.875rem;
+                margin-bottom: 2rem;
+
+                &::after, &::before {
+                    content: '';
+                    flex: 1;
+                    height: 1px;
+                    background: #ebe8e3;
+                }
+
+                p {
+                    font-family: v.$font-text;
+                    font-size: v.$font-text-size;
+                    color: v.$text-p-color;
+                    font-weight: 700;
+                }
+            }
+
+            .card-container {
+                @include m.flex-center-horiz;
+                flex-wrap: wrap;
+                gap: 3rem;
+            }
+        }
+    }
+}

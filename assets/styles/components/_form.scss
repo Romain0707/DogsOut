@@ -1,0 +1,88 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+.form-login {
+    margin-top: 3rem;
+    @include m.flex-column;
+    @include m.container(350);
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid lightgray;
+    padding: 20px; 
+
+    label {
+        margin-bottom: 10px;
+    }
+
+    input {
+        margin-bottom: 12px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        appearance: none;
+        outline: none;
+        border: none;
+        min-height: 40px;
+        padding: 5px 10px 5px 10px;
+        border-radius: 4px;
+        border: 1px solid lightgray;
+        background-color: white;
+    }
+
+    input[type="submit"] {
+        align-self: center;
+    }
+
+    a {
+        align-self: center;
+    }
+}
+
+#register {
+    margin-top: 3rem;
+    @include m.flex-column;
+    @include m.container(350);
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid lightgray;
+    padding: 20px; 
+
+    div {
+        @include m.flex-column;
+    }
+
+    label {
+        margin-bottom: 10px;
+    }
+
+    input {
+        margin-bottom: 12px;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        appearance: none;
+        outline: none;
+        border: none;
+        min-height: 40px;
+        padding: 5px 10px 5px 10px;
+        border-radius: 4px;
+        border: 1px solid lightgray;
+        background-color: white;
+    }
+
+    button[type="submit"] {
+        align-self: center;
+    }
+
+    ul {
+        li {
+            color: red;
+        }
+    }
+}

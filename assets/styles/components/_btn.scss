@@ -1,0 +1,18 @@
+@use '../abstracts/variables' as v;
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: v.$btn-bg-color;
+    border: 1px solid v.$btn-border-color;
+    color: v.$btn-text-color;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        background: v.$btn-hover-color;
+    }
+}

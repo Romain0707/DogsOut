@@ -1,0 +1,58 @@
+@use '../abstracts/variables' as v;
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-center-column {
+  @include flex-center;
+  flex-direction: column;
+}
+
+@mixin flex-center-vert {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-center-horiz {
+  display: flex;
+  justify-content: center;
+}
+
+@mixin container($max-width: 1050) {
+    max-width: $max-width * 1px;
+    width: 100%;
+    margin: 0 auto;
+    padding-inline: 20px;
+}
+
+@mixin phone {
+  @media only screen and (max-width: v.$phone * 1px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media only screen and (max-width: v.$tablet * 1px) {
+    @content;
+  }
+}
+
+@mixin large {
+  @media only screen and (max-width: v.$large * 1px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media only screen and (max-width: v.$desktop * 1px) {
+    @content;
+  }
+}

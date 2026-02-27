@@ -1,0 +1,17 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+#balade {
+    .container {
+        h1 {
+            font-family: v.$font-title;
+            font-size: v.$font-title-size-h1;
+            color: v.$text-title-color;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            margin-bottom: 3rem;
+        }
+    }
+}

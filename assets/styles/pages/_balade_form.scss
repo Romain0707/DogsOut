@@ -1,0 +1,374 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as m;
+
+#balade-form {
+    background-color: v.$bg-color;
+    padding-block: 48px 80px;
+    min-height: 100vh;
+
+    .container {
+        @include m.container;
+
+        h1 {
+            font-family: v.$font-title;
+            font-size: v.$font-title-size-h1;
+            color: v.$text-title-color;
+            margin-bottom: 32px;
+            padding-left: 18px;
+            position: relative;
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 8%;
+                bottom: 8%;
+                width: 4px;
+                border-radius: 2px;
+                background: linear-gradient(180deg, v.$primary-color 0%, v.$hover-color 100%);
+            }
+        }
+
+        // ---- Map container -----------------------------------------------
+        .map-container {
+            background: #fff;
+            border: 1px solid rgba(v.$text-meta-color, .3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+
+            // ---- Toolbar -------------------------------------------------
+            .map-toolbar {
+                @include m.flex-center-vert;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 14px;
+
+                button {
+                    font-family: v.$font-text;
+                    font-size: .78rem;
+                    font-weight: 700;
+                    letter-spacing: .05em;
+                    text-transform: uppercase;
+                    padding: 8px 14px;
+                    border-radius: 8px;
+                    border: 1.5px solid v.$secondary-bg-color;
+                    background: v.$bg-color;
+                    color: v.$text-p-color;
+                    cursor: pointer;
+                    transition: all .18s ease;
+                    white-space: nowrap;
+
+                    &:hover:not(:disabled) {
+                        background: v.$secondary-bg-color;
+                        border-color: v.$text-meta-color;
+                        color: v.$text-title-color;
+                        transform: translateY(-1px);
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+                    }
+
+                    &:disabled {
+                        opacity: .38;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+
+                    &#btn-calc {
+                        background: v.$btn-bg-color;
+                        border-color: v.$btn-border-color;
+                        color: v.$btn-text-color;
+
+                        &:hover:not(:disabled) {
+                            background: v.$btn-hover-color;
+                            border-color: v.$btn-hover-color;
+                            color: v.$btn-text-color;
+                        }
+                    }
+
+                    &#btn-add {
+                        &.active {
+                            background: v.$btn-bg-color;
+                            border-color: v.$btn-border-color;
+                            color: v.$btn-text-color;
+                            box-shadow: 0 0 0 3px rgba(v.$primary-color, .2);
+                        }
+                    }
+
+                    &#btn-clear {
+                        border-color: rgba(184, 74, 58, .3);
+                        color: rgba(184, 74, 58, 1);
+
+                        &:hover {
+                            background: rgba(184, 74, 58, .06);
+                            border-color: rgba(184, 74, 58, 1);
+                        }
+                    }
+                }
+
+                #map-hint {
+                    font-family: v.$font-text;
+                    font-size: .78rem;
+                    color: v.$text-meta-color;
+                    font-style: italic;
+                    margin-left: auto;
+                    padding-left: 8px;
+                    max-width: 260px;
+                    text-align: right;
+                    line-height: 1.4;
+                }
+            }
+
+            // ---- Stats bar -----------------------------------------------
+            #route-stats {
+                @include m.flex-center-vert;
+                gap: 6px;
+                background: v.$secondary-bg-color;
+                border: 1px solid rgba(v.$primary-color, .2);
+                border-radius: 100px;
+                padding: 8px 18px;
+                margin-bottom: 10px;
+                font-family: v.$font-text;
+                font-size: .85rem;
+                color: v.$text-title-color;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+                animation: fadeSlideIn .3s ease forwards;
+
+                strong {
+                    font-weight: 700;
+                    color: v.$primary-color;
+                }
+
+                #route-distance,
+                #route-duration {
+                    font-size: .82rem;
+                    font-weight: 700;
+                    color: v.$text-title-color;
+                }
+            }
+
+            // ---- Map -----------------------------------------------------
+            #map {
+                height: 500px;
+                border-radius: 10px;
+                margin-top: 12px;
+                overflow: hidden;
+                border: 1px solid rgba(v.$text-meta-color, .2);
+            }
+        }
+
+        // ---- Symfony form ------------------------------------------------
+        form {
+            background: #fff;
+            border: 1px solid rgba(v.$text-meta-color, .2);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+
+            .mb-3,
+            .form-group {
+                margin-bottom: 22px;
+            }
+
+            label {
+                display: block;
+                font-family: v.$font-text;
+                font-size: .78rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .07em;
+                color: v.$text-meta-color;
+                margin-bottom: 6px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            input[type="email"],
+            input[type="url"],
+            textarea,
+            select {
+                font-family: v.$font-text;
+                font-size: v.$font-text-size;
+                color: v.$text-title-color;
+                width: 100%;
+                padding: 11px 14px;
+                background: v.$bg-color;
+                border: 1.5px solid v.$secondary-bg-color;
+                border-radius: 8px;
+                transition: border-color .15s, box-shadow .15s;
+                appearance: none;
+                outline: none;
+
+                &:focus {
+                    border-color: v.$primary-color;
+                    box-shadow: 0 0 0 3px rgba(v.$primary-color, .14);
+                    background: #fff;
+                }
+
+                &.is-invalid {
+                    border-color: rgba(184, 74, 58, 1);
+                }
+            }
+
+            textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+
+            input[type="hidden"] {
+                display: none !important;
+            }
+
+            input[type="checkbox"] {
+                width: 17px;
+                height: 17px;
+                accent-color: v.$primary-color;
+                cursor: pointer;
+                margin-right: 8px;
+            }
+
+            .invalid-feedback,
+            .form-error-message {
+                font-size: .78rem;
+                color: rgba(184, 74, 58, 1);
+                margin-top: 4px;
+            }
+
+            // Submit
+            .btn.btn-primary {
+                font-family: v.$font-text;
+                font-size: .88rem;
+                font-weight: 700;
+                letter-spacing: .05em;
+                text-transform: uppercase;
+                @include m.flex-center-vert;
+                gap: 8px;
+                padding: 13px 32px;
+                background: v.$btn-bg-color;
+                color: v.$btn-text-color;
+                border: 1.5px solid v.$btn-border-color;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background .18s, transform .14s, box-shadow .18s;
+                box-shadow: 0 4px 16px rgba(v.$primary-color, .28);
+                margin-top: 8px;
+
+                &:hover {
+                    background: v.$btn-hover-color;
+                    border-color: v.$btn-hover-color;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(v.$primary-color, .34);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 2px 8px rgba(v.$primary-color, .22);
+                }
+            }
+        }
+
+        // ---- Footer actions (retour / supprimer) -------------------------
+        .balade-actions {
+            @include m.flex-center-vert;
+            gap: 20px;
+            margin-top: 20px;
+
+            a {
+                font-family: v.$font-text;
+                font-size: .88rem;
+                font-weight: 700;
+                color: v.$text-meta-color;
+                text-decoration: none;
+                transition: color .15s;
+
+                &:hover {
+                    color: v.$primary-color;
+                    text-decoration: underline;
+                }
+            }
+
+            // Bouton de suppression (dans _delete_form.html.twig)
+            form button {
+                font-family: v.$font-text;
+                font-size: .82rem;
+                font-weight: 700;
+                color: rgba(184, 74, 58, 1);
+                background: none;
+                border: 1.5px solid rgba(184, 74, 58, .3);
+                border-radius: 8px;
+                padding: 7px 16px;
+                cursor: pointer;
+                transition: background .15s, border-color .15s;
+
+                &:hover {
+                    background: rgba(184, 74, 58, .07);
+                    border-color: rgba(184, 74, 58, 1);
+                }
+            }
+        }
+    }
+}
+
+// ---- Animation -----------------------------------------------------------
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ---- Responsive ----------------------------------------------------------
+@include m.tablet {
+    #balade-form {
+        .container {
+            #map-hint {
+                max-width: 100%;
+                text-align: left;
+                margin-left: 0;
+                width: 100%;
+                order: 10;
+            }
+
+            .map-container {
+                #map {
+                    height: 380px;
+                }
+            }
+
+            form {
+                padding: 20px;
+            }
+        }
+    }
+}
+
+@include m.phone {
+    #balade-form {
+        .container {
+            h1 {
+                font-size: v.$font-title-size-h2;
+            }
+
+            .map-container {
+                padding: 14px;
+
+                .map-toolbar {
+                    gap: 6px;
+
+                    button {
+                        font-size: .7rem;
+                        padding: 6px 10px;
+                    }
+                }
+
+                #map {
+                    height: 300px;
+                }
+            }
+        }
+    }
+}
