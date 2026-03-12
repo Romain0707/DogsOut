@@ -10,51 +10,58 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RouteController extends AbstractController
 {
+    private const ALLOWED_PROFILES = [
+        'foot-walking',
+        'foot-hiking',
+        'cycling-regular',
+        'wheelchair',
+    ];
+
     #[Route('/api/hiking-route', name: 'api_hiking_route', methods: ['POST'])]
     public function hikingRoute(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true) ?? [];
-        $points = $data['points'] ?? [];
+        $data    = json_decode($request->getContent(), true) ?? [];
+        $points  = $data['points']  ?? [];
+        $profile = $data['profile'] ?? 'foot-walking';
+
+        if (!in_array($profile, self::ALLOWED_PROFILES, true)) {
+            $profile = 'foot-walking';
+        }
 
         if (!is_array($points) || count($points) < 2) {
             return $this->json(['error' => 'Need at least 2 points'], 400);
         }
 
-        // ORS attend [lng, lat]
         $coords = [];
         foreach ($points as $p) {
             if (!is_array($p) || count($p) !== 2) {
                 return $this->json(['error' => 'Invalid point'], 400);
             }
-            $lat = (float)$p[0];
-            $lng = (float)$p[1];
-            $coords[] = [$lng, $lat];
+            $coords[] = [(float) $p[1], (float) $p[0]]; // [lng, lat]
         }
 
         $apiKey = $_ENV['ORS_API_KEY'] ?? null;
-        if (!$apiKey) return $this->json(['error' => 'Missing ORS_API_KEY'], 500);
+        if (!$apiKey) {
+            return $this->json(['error' => 'Missing ORS_API_KEY'], 500);
+        }
 
-        $client = \Symfony\Component\HttpClient\HttpClient::create();
-
-        $body = [
-            'coordinates' => $coords,
-        ];
+        $client = HttpClient::create();
 
         $response = $client->request(
             'POST',
-            'https://api.openrouteservice.org/v2/directions/foot-hiking/geojson',
+            sprintf('https://api.openrouteservice.org/v2/directions/%s/geojson', $profile),
             [
                 'headers' => [
                     'Authorization' => $apiKey,
                     'Content-Type'  => 'application/json',
                     'Accept'        => 'application/geo+json',
                 ],
-                'json' => $body,
+                'json' => ['coordinates' => $coords],
             ]
         );
 
         $status = $response->getStatusCode();
-        $json = $response->toArray(false);
+        $json   = $response->toArray(false);
 
         if ($status >= 400) {
             return $this->json(['error' => 'ORS error', 'details' => $json], $status);
@@ -63,10 +70,12 @@ class RouteController extends AbstractController
         $feature = $json['features'][0] ?? null;
         $segment = $feature['properties']['segments'][0] ?? null;
 
+        // ORS /geojson retourne distance en MÈTRES et duration en SECONDES
+        // → on ne convertit rien, on passe tel quel
         return $this->json([
             'geojson'  => $feature,
-            'distance' => $segment['distance'] ?? null,
-            'duration' => $segment['duration'] ?? null,
+            'distance' => $segment['distance'] ?? null, // mètres
+            'duration' => $segment['duration'] ?? null, // secondes
         ]);
     }
 }

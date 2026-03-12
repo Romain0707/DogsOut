@@ -8,50 +8,137 @@
 <section id="balade-form">
   <div class="container">
     <h1>{{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}</h1>
-    <div class="map-container">
-      <div class="map-toolbar">
-        <button type="button" id="btn-add" class="active">Ajouter des points</button>
-        <button type="button" id="btn-undo">Annuler dernier</button>
-        <button type="button" id="btn-close">Fermer la boucle</button>
-        <button type="button" id="btn-calc" disabled>Calculer</button>
-        <button type="button" id="btn-clear">Effacer</button>
-        <span id="map-hint">Clique sur la carte pour ajouter des points.</span>
+
+    {# ── Carte ─────────────────────────────────────────────────────────── #}
+    <div class="bm-wrapper">
+
+      <aside class="bm-sidebar">
+
+        <div class="bm-section">
+          <h3 class="bm-section__title">🗺️ Type de promenade</h3>
+          <div class="bm-profile-grid">
+            <button type="button" class="bm-profile-card active" data-ors-profile="foot-walking">
+              <span class="bm-profile-card__icon">🚶</span>
+              <span class="bm-profile-card__name">Promenade</span>
+              <span class="bm-profile-card__desc">Chemins piétons</span>
+            </button>
+            <button type="button" class="bm-profile-card" data-ors-profile="foot-hiking">
+              <span class="bm-profile-card__icon">⛰️</span>
+              <span class="bm-profile-card__name">Randonnée</span>
+              <span class="bm-profile-card__desc">Sentiers balisés</span>
+            </button>
+            <button type="button" class="bm-profile-card" data-ors-profile="cycling-regular">
+              <span class="bm-profile-card__icon">🚲</span>
+              <span class="bm-profile-card__name">Vélo + chien</span>
+              <span class="bm-profile-card__desc">Pistes cyclables</span>
+            </button>
+            <button type="button" class="bm-profile-card" data-ors-profile="wheelchair">
+              <span class="bm-profile-card__icon">♿</span>
+              <span class="bm-profile-card__name">Accessible</span>
+              <span class="bm-profile-card__desc">Sans obstacles</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bm-section">
+          <h3 class="bm-section__title">✏️ Mode de tracé</h3>
+          <div class="bm-free-toggle" id="btn-free-toggle">
+            <span class="bm-free-toggle__icon">✏️</span>
+            <div class="bm-free-toggle__label">
+              <strong>Mode Libre</strong>
+              <small id="free-toggle-desc">Tracé libre pour les chemins hors carte</small>
+            </div>
+            <div class="bm-free-toggle__pill" id="free-toggle-pill"></div>
+          </div>
+        </div>
+
+        <div class="bm-section">
+          <h3 class="bm-section__title">📍 Segments du tracé</h3>
+          <ul class="bm-seg-list" id="seg-list"></ul>
+          <p class="bm-hint" id="map-hint">Clique sur la carte pour poser le premier point.</p>
+        </div>
+
+        <div class="bm-section">
+          <div class="bm-stats" id="route-stats" style="display:none">
+            <div class="bm-stat">
+              <span class="bm-stat__value" id="route-distance">—</span>
+              <span class="bm-stat__label">Distance</span>
+            </div>
+            <div class="bm-stat">
+              <span class="bm-stat__value" id="route-duration">—</span>
+              <span class="bm-stat__label">Durée</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bm-section bm-actions">
+          <button type="button" class="bm-btn bm-btn--close" id="btn-close">🔄 Fermer la boucle</button>
+          <button type="button" class="bm-btn bm-btn--undo"  id="btn-undo">↩️ Annuler le dernier point</button>
+          <button type="button" class="bm-btn bm-btn--clear" id="btn-clear">🗑️ Tout effacer</button>
+        </div>
+
+      </aside>
+
+      <div class="bm-map-container">
+        <div class="map-status" id="map-status" hidden></div>
+        <div id="map"></div>
       </div>
 
-      <div class="route-stats" id="route-stats" style="display:none;">
-        <strong>Distance :</strong> <span id="route-distance">—</span>
-        <span style="margin:0 10px;">•</span>
-        <strong>Durée :</strong> <span id="route-duration">—</span>
-      </div>
-
-      <div id="map" style="height: 500px; border-radius: 12px; margin: 12px 0;"></div>
     </div>
+
+    {# ── Formulaire Symfony ────────────────────────────────────────────── #}
     {{ form_start(form) }}
       {{ form_widget(form) }}
-      <button class="btn btn-primary">
+      <button type="submit" class="btn btn-primary mt-3">
         {{ balade.id ? 'Mettre à jour' : 'Créer' }}
       </button>
     {{ form_end(form) }}
 
     {% if balade.id %}
-      <div style="margin-top:14px;">
+      <div class="balade-actions">
         <a href="{{ path('app_balade_index') }}">⬅ Retour</a>
         {{ include('balade/_delete_form.html.twig') }}
       </div>
     {% endif %}
+
   </div>
 </section>
 {% endblock %}
 
 {% block javascripts %}
-  {% if balade.id %}
+  {{ parent() }}
+
   <script>
     window.BALADE_MAP_CONFIG = {
-      initialWaypoints:    {{ balade.waypointsJson   is not empty ? balade.waypointsJson   | json_encode | raw : 'null' }},
-      initialRouteGeoJson: {{ balade.routeGeoJson    is not empty ? balade.routeGeoJson    | json_encode | raw : 'null' }},
-      initialDistance:     {{ balade.distanceMeters  is not null  ? balade.distanceMeters  : 'null' }},
-      initialDuration:     {{ balade.durationSeconds is not null  ? balade.durationSeconds : 'null' }}
+      {% if balade.id %}
+      {#
+        routeGeoJson et waypointsJson sont des arrays PHP (Doctrine type:json).
+        json_encode les sérialise en string JSON valide pour le JS.
+      #}
+      initialRouteGeoJson: {{ balade.routeGeoJson  is not empty ? balade.routeGeoJson  | json_encode | raw : 'null' }},
+      initialWaypoints:    {{ balade.waypointsJson is not empty ? balade.waypointsJson | json_encode | raw : 'null' }},
+      initialDistance:     {{ balade.distanceMeters  is not null ? balade.distanceMeters  : 'null' }},
+      initialDuration:     {{ balade.durationSeconds is not null ? balade.durationSeconds : 'null' }},
+      {% endif %}
+      orsProfile:  'foot-walking',
+      defaultView: [44.8378, -0.5792, 13]
     };
   </script>
-  {% endif %}
+
+  {#
+    Charge balade-map.js selon ton setup :
+
+    Webpack Encore :
+      {{ encore_entry_script_tags('balade-map') }}
+
+    AssetMapper :
+      <script type="module">
+        import { initBaladeMap } from '{{ asset('js/balade-map.js') }}';
+        document.addEventListener('DOMContentLoaded', initBaladeMap);
+      </script>
+
+    Script tag direct :
+      <script src="{{ asset('js/balade-map.js') }}" defer></script>
+      <script>document.addEventListener('DOMContentLoaded', () => initBaladeMap());</script>
+  #}
 {% endblock %}

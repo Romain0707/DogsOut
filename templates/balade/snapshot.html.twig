@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Snapshot</title>
   <style>
-    html, body { margin:0; padding:0; }
+    html, body { margin: 0; padding: 0; background: #f0ede8; }
     #map { width: 800px; height: 450px; }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -14,30 +14,78 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const route = {{ balade.routeGeoJson|json_encode|raw }};
+    /**
+     * routeGeoJson est un array PHP (Doctrine type:json).
+     * json_encode le convertit en objet JS valide.
+     * Peut être une FeatureCollection, un Feature, ou vide [].
+     */
+    const raw = {{ balade.routeGeoJson is not empty ? balade.routeGeoJson | json_encode | raw : 'null' }};
 
-    const map = L.map('map', { zoomControl:false, attributionControl:false });
-    L.tileLayer( 'https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', { attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>', bounds: [[-75, -180], [81, 180]], maxZoom: 18, format: 'image/png', style: 'normal' } ).addTo(map)
+    const map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Normalise en FeatureCollection quelle que soit la forme du GeoJSON sauvegardé
+    function toFeatureCollection(data) {
+      if (!data) return null;
+      if (data.type === 'FeatureCollection') return data;
+      if (data.type === 'Feature')           return { type: 'FeatureCollection', features: [data] };
+      if (data.type === 'LineString' || data.type === 'MultiLineString') {
+        return { type: 'FeatureCollection', features: [{ type: 'Feature', geometry: data, properties: {} }] };
+      }
+      // Array vide [] → null
+      if (Array.isArray(data) && data.length === 0) return null;
+      return null;
+    }
+
+    let ready = false;
+
+    function markReady() {
+      if (!ready) { ready = true; window.__SNAPSHOT_READY__ = true; }
+    }
 
     try {
-      if (route && route.geometry) {
-        const layer = L.geoJSON(route, {
-            style: () => ({
-                weight: 6,
-                opacity: 0.95,
-                color: '#2E7D32'
-            })
+      const geojson = toFeatureCollection(raw);
+
+      if (geojson) {
+        const layer = L.geoJSON(geojson, {
+          style: () => ({
+            color:    '#4a7c59',
+            weight:   6,
+            opacity:  0.95,
+            lineCap:  'round',
+            lineJoin: 'round',
+          }),
         }).addTo(map);
-        map.fitBounds(layer.getBounds(), { padding: [8,8], maxZoom: 16 });
+
+        const bounds = layer.getBounds();
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [24, 24], maxZoom: 16 });
+        } else {
+          map.setView([46.2276, 2.2137], 6);
+        }
       } else {
-        map.setView([48.8566, 2.3522], 13);
+        map.setView([46.2276, 2.2137], 6);
       }
     } catch (e) {
-      console.error(e);
-      map.setView([48.8566, 2.3522], 13);
-    } finally {
-      window.__SNAPSHOT_READY__ = true;
+      console.error('[snapshot] GeoJSON error:', e);
+      map.setView([46.2276, 2.2137], 6);
     }
+
+    // Signal prêt dès que suffisamment de tuiles sont chargées
+    let tilesLoaded = 0;
+    map.on('tileloadend tileerror', () => {
+      tilesLoaded++;
+      if (tilesLoaded >= 4) markReady();
+    });
+
+    // Fallback 8s si les tuiles sont lentes ou échouent
+    setTimeout(markReady, 8000);
   </script>
 </body>
 </html>

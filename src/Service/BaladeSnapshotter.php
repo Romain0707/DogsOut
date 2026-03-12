@@ -19,14 +19,14 @@ class BaladeSnapshotter
     {
         $fs = new Filesystem();
 
-        // 1) dossier images
         $outDir = $projectDir . '/public/uploads/balades';
         $fs->mkdir($outDir);
 
-        $filename = 'balade_' . $balade->getId() . '.png';
+        // Nom avec timestamp pour forcer le cache-busting à chaque modification
+        $filename   = 'balade_' . $balade->getId() . '_' . time() . '.png';
         $outputPath = $outDir . '/' . $filename;
 
-        // Supprimer ancienne images
+        // Supprimer l'ancienne image si elle existe
         if ($balade->getSnapshotPath()) {
             $oldPath = $projectDir . '/public' . $balade->getSnapshotPath();
             if (file_exists($oldPath)) {
@@ -34,33 +34,40 @@ class BaladeSnapshotter
             }
         }
 
-        // 2) rendre le HTML snapshot dans un fichier temporaire
-        $tmpDir = $projectDir . '/var/snapshots';
+        // Générer le HTML temporaire pour Playwright
+        $tmpDir      = $projectDir . '/var/snapshots';
         $fs->mkdir($tmpDir);
-
         $tmpHtmlPath = $tmpDir . '/balade_' . $balade->getId() . '.html';
+
         $html = $this->twig->render('balade/snapshot.html.twig', [
             'balade' => $balade,
         ]);
         $fs->dumpFile($tmpHtmlPath, $html);
 
-        // 3) lancer Playwright sur le fichier local
+        // Lancer Playwright
         $process = new Process([
             'node',
             $projectDir . '/tools/snapshot.js',
             $tmpHtmlPath,
-            $outputPath
+            $outputPath,
         ]);
 
         $process->setTimeout(120);
         $process->setIdleTimeout(120);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException('Snapshot failed: ' . $process->getErrorOutput() . $process->getOutput());
+        // Nettoyer le fichier HTML temporaire
+        if (file_exists($tmpHtmlPath)) {
+            unlink($tmpHtmlPath);
         }
 
-        // 4) sauver le chemin public
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException(
+                'Snapshot failed: ' . $process->getErrorOutput() . $process->getOutput()
+            );
+        }
+
+        // Sauvegarder le nouveau chemin public
         $balade->setSnapshotPath('/uploads/balades/' . $filename);
         $this->em->flush();
     }

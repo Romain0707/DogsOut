@@ -29,135 +29,345 @@
             }
         }
 
-        // ---- Map container -----------------------------------------------
-        .map-container {
-            background: #fff;
-            border: 1px solid rgba(v.$text-meta-color, .3);
+        // ── Wrapper carte + sidebar ──────────────────────────────────────
+        .bm-wrapper {
+            display: flex;
+            height: 580px;
+            border: 1px solid rgba(v.$text-meta-color, .25);
             border-radius: 16px;
-            padding: 20px;
+            overflow: hidden;
             margin-bottom: 32px;
             box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+            background: #fff;
+        }
 
-            // ---- Toolbar -------------------------------------------------
-            .map-toolbar {
-                @include m.flex-center-vert;
-                flex-wrap: wrap;
-                gap: 8px;
-                margin-bottom: 14px;
+        // ── Sidebar ──────────────────────────────────────────────────────
+        .bm-sidebar {
+            width: 272px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-right: 1px solid rgba(v.$text-meta-color, .18);
+            background: v.$bg-color;
+        }
 
-                button {
-                    font-family: v.$font-text;
-                    font-size: .78rem;
-                    font-weight: 700;
-                    letter-spacing: .05em;
-                    text-transform: uppercase;
-                    padding: 8px 14px;
-                    border-radius: 8px;
-                    border: 1.5px solid v.$secondary-bg-color;
-                    background: v.$bg-color;
-                    color: v.$text-p-color;
-                    cursor: pointer;
-                    transition: all .18s ease;
-                    white-space: nowrap;
+        .bm-section {
+            padding: 13px 14px;
+            border-bottom: 1px solid rgba(v.$text-meta-color, .15);
 
-                    &:hover:not(:disabled) {
-                        background: v.$secondary-bg-color;
-                        border-color: v.$text-meta-color;
-                        color: v.$text-title-color;
-                        transform: translateY(-1px);
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-                    }
-
-                    &:disabled {
-                        opacity: .38;
-                        cursor: not-allowed;
-                        transform: none;
-                    }
-
-                    &#btn-calc {
-                        background: v.$btn-bg-color;
-                        border-color: v.$btn-border-color;
-                        color: v.$btn-text-color;
-
-                        &:hover:not(:disabled) {
-                            background: v.$btn-hover-color;
-                            border-color: v.$btn-hover-color;
-                            color: v.$btn-text-color;
-                        }
-                    }
-
-                    &#btn-add {
-                        &.active {
-                            background: v.$btn-bg-color;
-                            border-color: v.$btn-border-color;
-                            color: v.$btn-text-color;
-                            box-shadow: 0 0 0 3px rgba(v.$primary-color, .2);
-                        }
-                    }
-
-                    &#btn-clear {
-                        border-color: rgba(184, 74, 58, .3);
-                        color: rgba(184, 74, 58, 1);
-
-                        &:hover {
-                            background: rgba(184, 74, 58, .06);
-                            border-color: rgba(184, 74, 58, 1);
-                        }
-                    }
-                }
-
-                #map-hint {
-                    font-family: v.$font-text;
-                    font-size: .78rem;
-                    color: v.$text-meta-color;
-                    font-style: italic;
-                    margin-left: auto;
-                    padding-left: 8px;
-                    max-width: 260px;
-                    text-align: right;
-                    line-height: 1.4;
-                }
-            }
-
-            // ---- Stats bar -----------------------------------------------
-            #route-stats {
-                @include m.flex-center-vert;
-                gap: 6px;
-                background: v.$secondary-bg-color;
-                border: 1px solid rgba(v.$primary-color, .2);
-                border-radius: 100px;
-                padding: 8px 18px;
-                margin-bottom: 10px;
+            &__title {
                 font-family: v.$font-text;
-                font-size: .85rem;
-                color: v.$text-title-color;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
-                animation: fadeSlideIn .3s ease forwards;
-
-                strong {
-                    font-weight: 700;
-                    color: v.$primary-color;
-                }
-
-                #route-distance,
-                #route-duration {
-                    font-size: .82rem;
-                    font-weight: 700;
-                    color: v.$text-title-color;
-                }
-            }
-
-            // ---- Map -----------------------------------------------------
-            #map {
-                height: 500px;
-                border-radius: 10px;
-                margin-top: 12px;
-                overflow: hidden;
-                border: 1px solid rgba(v.$text-meta-color, .2);
+                font-size: .75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .07em;
+                color: v.$text-meta-color;
+                margin: 0 0 9px;
             }
         }
 
-        // ---- Symfony form ------------------------------------------------
+        // ── Profils ORS ──────────────────────────────────────────────────
+        .bm-profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .bm-profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 5px;
+            border: 1.5px solid v.$secondary-bg-color;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+            font-family: v.$font-text;
+            transition: all .18s ease;
+
+            &:hover {
+                border-color: v.$primary-color;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .07);
+            }
+
+            &.active {
+                border-color: v.$primary-color;
+                background: v.$primary-color;
+                color: #fff;
+
+                .bm-profile-card__desc { opacity: .85; }
+            }
+
+            &__icon { font-size: 1.2rem; }
+            &__name { font-size: .67rem; font-weight: 700; }
+            &__desc { font-size: .58rem; opacity: .65; }
+        }
+
+        // ── Toggle mode libre ─────────────────────────────────────────────
+        .bm-free-toggle {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 11px;
+            background: #fff;
+            border: 1.5px solid v.$secondary-bg-color;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            transition: border-color .18s, background .18s;
+
+            &:hover { border-color: v.$primary-color; }
+
+            &.on {
+                border-color: v.$primary-color;
+                background: rgba(v.$primary-color, .05);
+
+                .bm-free-toggle__label small { color: v.$primary-color; }
+                .bm-free-toggle__pill        { background: v.$primary-color; }
+                .bm-free-toggle__pill::before { transform: translateX(17px); }
+            }
+
+            &__icon { font-size: 1.15rem; }
+
+            &__label {
+                flex: 1;
+                font-family: v.$font-text;
+                font-size: .78rem;
+                line-height: 1.3;
+
+                strong { display: block; color: v.$text-title-color; }
+                small  { font-size: .66rem; color: v.$text-meta-color; font-style: italic; }
+            }
+
+            &__pill {
+                width: 38px;
+                height: 21px;
+                background: v.$secondary-bg-color;
+                border-radius: 21px;
+                position: relative;
+                flex-shrink: 0;
+                transition: background .22s;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    width: 15px;
+                    height: 15px;
+                    left: 3px;
+                    top: 3px;
+                    background: #fff;
+                    border-radius: 50%;
+                    transition: transform .22s;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+                }
+            }
+        }
+
+        // ── Liste des segments ────────────────────────────────────────────
+        .bm-seg-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px;
+
+            .seg-empty {
+                font-family: v.$font-text;
+                font-size: .72rem;
+                color: v.$text-meta-color;
+                font-style: italic;
+                padding: 2px;
+            }
+
+            .seg-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 8px;
+                border-radius: 7px;
+                margin-bottom: 4px;
+                font-family: v.$font-text;
+                font-size: .72rem;
+                border: 1px solid;
+
+                &.seg-ors  { background: rgba(v.$primary-color, .06); border-color: rgba(v.$primary-color, .2); }
+                &.seg-free { background: rgba(102, 74, 160, .06);     border-color: rgba(102, 74, 160, .22); }
+            }
+
+            .seg-dot {
+                width: 9px;
+                height: 9px;
+                border-radius: 50%;
+                flex-shrink: 0;
+
+                &-ors  { background: v.$primary-color; }
+                &-free { background: #7b5ea7; }
+            }
+
+            .seg-label { flex: 1; color: v.$text-title-color; }
+
+            .seg-badge {
+                font-size: .58rem;
+                padding: 1px 5px;
+                border-radius: 20px;
+                font-weight: 700;
+                letter-spacing: .02em;
+
+                &-ors  { background: v.$primary-color; color: #fff; }
+                &-free { background: #7b5ea7;           color: #fff; }
+            }
+        }
+
+        // ── Hint ─────────────────────────────────────────────────────────
+        .bm-hint {
+            font-family: v.$font-text;
+            font-size: .72rem;
+            font-style: italic;
+            padding: 7px 10px;
+            background: v.$secondary-bg-color;
+            border-radius: 7px;
+            color: v.$text-meta-color;
+            line-height: 1.5;
+            margin: 0;
+            border: 1px solid rgba(v.$text-meta-color, .15);
+        }
+
+        // ── Stats ─────────────────────────────────────────────────────────
+        .bm-stats {
+            display: flex;
+            gap: 7px;
+            animation: fadeSlideIn .3s ease forwards;
+        }
+
+        .bm-stat {
+            flex: 1;
+            background: #fff;
+            border: 1px solid rgba(v.$primary-color, .2);
+            border-radius: 8px;
+            padding: 8px 6px;
+            text-align: center;
+
+            &__value {
+                display: block;
+                font-family: v.$font-title;
+                font-size: 1rem;
+                font-weight: 700;
+                color: v.$primary-color;
+            }
+
+            &__label {
+                display: block;
+                font-family: v.$font-text;
+                font-size: .6rem;
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                color: v.$text-meta-color;
+                margin-top: 2px;
+            }
+        }
+
+        // ── Boutons actions sidebar ───────────────────────────────────────
+        .bm-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .bm-btn {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 7px;
+            border: 1.5px solid v.$secondary-bg-color;
+            background: #fff;
+            color: v.$text-p-color;
+            font-family: v.$font-text;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            cursor: pointer;
+            transition: all .18s ease;
+            text-align: center;
+
+            &:hover { background: v.$secondary-bg-color; }
+
+            &--close {
+                border-color: rgba(v.$primary-color, .4);
+                color: v.$primary-color;
+
+                &:hover {
+                    background: v.$primary-color;
+                    border-color: v.$primary-color;
+                    color: #fff;
+                }
+            }
+
+            &--clear {
+                border-color: rgba(184, 74, 58, .3);
+                color: rgba(184, 74, 58, 1);
+
+                &:hover {
+                    background: rgba(184, 74, 58, .07);
+                    border-color: rgba(184, 74, 58, 1);
+                }
+            }
+        }
+
+        // ── Conteneur carte ───────────────────────────────────────────────
+        .bm-map-container {
+            flex: 1;
+            position: relative;
+
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        // ── Barre de statut sur la carte ──────────────────────────────────
+        .map-status {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-family: v.$font-text;
+            font-size: .73rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            z-index: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+            white-space: nowrap;
+            pointer-events: none;
+
+            &--ors  { background: v.$primary-color; color: #fff; }
+            &--free { background: #7b5ea7;           color: #fff; }
+            &--load { background: v.$text-title-color; color: v.$bg-color; }
+
+            &__dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #fff;
+                animation: bm-blink 1s ease-in-out infinite;
+            }
+
+            &__spin {
+                display: inline-block;
+                width: 11px;
+                height: 11px;
+                border: 2px solid rgba(255, 255, 255, .3);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: bm-spin .75s linear infinite;
+            }
+        }
+
+        // ── Formulaire Symfony ────────────────────────────────────────────
         form {
             background: #fff;
             border: 1px solid rgba(v.$text-meta-color, .2);
@@ -205,9 +415,7 @@
                     background: #fff;
                 }
 
-                &.is-invalid {
-                    border-color: rgba(184, 74, 58, 1);
-                }
+                &.is-invalid { border-color: rgba(184, 74, 58, 1); }
             }
 
             textarea {
@@ -215,9 +423,7 @@
                 resize: vertical;
             }
 
-            input[type="hidden"] {
-                display: none !important;
-            }
+            input[type="hidden"] { display: none !important; }
 
             input[type="checkbox"] {
                 width: 17px;
@@ -234,7 +440,6 @@
                 margin-top: 4px;
             }
 
-            // Submit
             .btn.btn-primary {
                 font-family: v.$font-text;
                 font-size: .88rem;
@@ -267,7 +472,7 @@
             }
         }
 
-        // ---- Footer actions (retour / supprimer) -------------------------
+        // ── Actions bas de page ───────────────────────────────────────────
         .balade-actions {
             @include m.flex-center-vert;
             gap: 20px;
@@ -287,7 +492,6 @@
                 }
             }
 
-            // Bouton de suppression (dans _delete_form.html.twig)
             form button {
                 font-family: v.$font-text;
                 font-size: .82rem;
@@ -309,66 +513,61 @@
     }
 }
 
-// ---- Animation -----------------------------------------------------------
+// ── Animations ────────────────────────────────────────────────────────────
 @keyframes fadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-// ---- Responsive ----------------------------------------------------------
+@keyframes bm-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .3; }
+}
+
+@keyframes bm-spin {
+    to { transform: rotate(360deg); }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
 @include m.tablet {
-    #balade-form {
-        .container {
-            #map-hint {
-                max-width: 100%;
-                text-align: left;
-                margin-left: 0;
-                width: 100%;
-                order: 10;
-            }
+    #balade-form .container {
 
-            .map-container {
-                #map {
-                    height: 380px;
-                }
-            }
-
-            form {
-                padding: 20px;
-            }
+        .bm-wrapper {
+            flex-direction: column;
+            height: auto;
         }
+
+        .bm-sidebar {
+            width: 100%;
+            border-right: none;
+            border-bottom: 1px solid rgba(v.$text-meta-color, .18);
+        }
+
+        .bm-profile-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .bm-map-container {
+            height: 380px;
+        }
+
+        form { padding: 20px; }
     }
 }
 
 @include m.phone {
-    #balade-form {
-        .container {
-            h1 {
-                font-size: v.$font-title-size-h2;
-            }
+    #balade-form .container {
 
-            .map-container {
-                padding: 14px;
+        h1 { font-size: v.$font-title-size-h2; }
 
-                .map-toolbar {
-                    gap: 6px;
+        .bm-wrapper { border-radius: 10px; }
 
-                    button {
-                        font-size: .7rem;
-                        padding: 6px 10px;
-                    }
-                }
+        .bm-profile-grid { grid-template-columns: 1fr 1fr; }
 
-                #map {
-                    height: 300px;
-                }
-            }
-        }
+        .bm-map-container { height: 300px; }
+
+        .bm-section { padding: 10px 11px; }
+
+        form { padding: 14px; }
     }
 }

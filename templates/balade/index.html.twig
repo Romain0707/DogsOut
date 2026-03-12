@@ -25,7 +25,11 @@
                                 {% endif %}
 
                                 {% if balade.distanceMeters %}
-                                <p><span class="text-meta">Distance :</span> {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km</p>
+                                    {% if balade.distanceMeters < 1000 %}
+                                        {{ balade.distanceMeters }} m
+                                    {% else %}
+                                        {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
+                                    {% endif %}
                                 {% endif %}
 
                                 {% if balade.durationSeconds %}
