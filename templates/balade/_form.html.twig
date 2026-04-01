@@ -124,21 +124,4 @@
       defaultView: [44.8378, -0.5792, 13]
     };
   </script>
-
-  {#
-    Charge balade-map.js selon ton setup :
-
-    Webpack Encore :
-      {{ encore_entry_script_tags('balade-map') }}
-
-    AssetMapper :
-      <script type="module">
-        import { initBaladeMap } from '{{ asset('js/balade-map.js') }}';
-        document.addEventListener('DOMContentLoaded', initBaladeMap);
-      </script>
-
-    Script tag direct :
-      <script src="{{ asset('js/balade-map.js') }}" defer></script>
-      <script>document.addEventListener('DOMContentLoaded', () => initBaladeMap());</script>
-  #}
 {% endblock %}

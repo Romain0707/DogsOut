@@ -76,6 +76,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $active = null;
 
+    #[ORM\Column]
+    private ?bool $firstConnexion = null;
+
     #[Vich\UploadableField(mapping:'images', fileNameProperty:'imageName')]
     private ?File $imageFile = null;
 
@@ -103,10 +106,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTime $resetTokenExpiresAt = null;
 
+    /**
+     * @var Collection<int, Chien>
+     */
+    #[ORM\OneToMany(targetEntity: Chien::class, mappedBy: 'user')]
+    private Collection $chiens;
+
     public function __construct()
     {
         $this->balades = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->chiens = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -262,6 +272,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isFirstConnexion(): ?bool
+    {
+        return $this->firstConnexion;
+    }
+
+    public function setFirstConnexion(bool $firstConnexion): static
+    {
+        $this->firstConnexion = $firstConnexion;
+
+        return $this;
+    }
+
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
@@ -371,6 +393,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetTokenExpiresAt(?\DateTime $resetTokenExpiresAt): static
     {
         $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Chien>
+     */
+    public function getChiens(): Collection
+    {
+        return $this->chiens;
+    }
+
+    public function addChien(Chien $chien): static
+    {
+        if (!$this->chiens->contains($chien)) {
+            $this->chiens->add($chien);
+            $chien->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChien(Chien $chien): static
+    {
+        if ($this->chiens->removeElement($chien)) {
+            // set the owning side to null (unless already changed)
+            if ($chien->getUser() === $this) {
+                $chien->setUser(null);
+            }
+        }
 
         return $this;
     }

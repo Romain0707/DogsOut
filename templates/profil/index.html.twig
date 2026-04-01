@@ -46,6 +46,50 @@
                 </div>
             </div>
 
+            {# ── Section Chiens ── #}
+            <div class="profile-divider">
+                <p>Mes chiens</p>
+            </div>
+
+            <div class="chiens-grid">
+                {% for chien in user.chiens %}
+                <div class="chien-card">
+                    <div class="chien-card__sexe chien-card__sexe--{{ chien.sexe ? 'male' : 'female' }}">
+                        {{ chien.sexe ? '♂' : '♀' }}
+                    </div>
+                    <div class="chien-card__body">
+                        <h3 class="chien-card__name">{{ chien.name }}</h3>
+                        <span class="chien-card__race">{{ chien.race.name }}</span>
+                        {% if chien.birthDate %}
+                        <p class="chien-card__meta">
+                            Né{{ chien.sexe ? '' : 'e' }} le {{ chien.birthDate|date('d/m/Y') }}
+                        </p>
+                        {% endif %}
+                        {% if chien.description %}
+                        <p class="chien-card__desc">
+                            {{ chien.description|length > 100 ? (chien.description|slice(0, 100) ~ '…') : chien.description }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="chien-card__actions">
+                        <a href="{{ path('app_chien_edit', {'id': chien.id}) }}" class="chien-card__btn chien-card__btn--primary">Modifier</a>
+                        {{ include('chien/_delete_form.html.twig') }}
+                    </div>
+                </div>
+                {% else %}
+                <div class="chiens-empty">
+                    <p>Aucun chien enregistré pour l'instant.</p>
+                </div>
+                {% endfor %}
+
+                {# Bouton ajout d'un nouveau chien #}
+                <a href="{{ path('app_chien_new') }}" class="chien-card chien-card--add">
+                    <span class="chien-card__add-icon">+</span>
+                    <span class="chien-card__add-label">Ajouter un chien</span>
+                </a>
+            </div>
+
+            {# ── Section Balades ── #}
             <div class="profile-divider">
                 <p>Mes balades</p>
             </div>
@@ -61,7 +105,7 @@
                                 {% if balade.snapshotPath %}
                                     <img src="{{ balade.snapshotPath }}" alt="Snapshot">
                                 {% else %}
-                                    <div>Pas d’image</div>
+                                    <div>Pas d'image</div>
                                 {% endif %}
 
                                 {% if balade.distanceMeters %}
@@ -88,8 +132,7 @@
 
                         <div class="actions">
                             <a class="btn" href="{{ path('app_balade_show', {'id': balade.id}) }}">Voir</a>
-
-                            {% if app.user and balade.user and app.user == balade.user %}
+                            {% if balade.user and app.user == balade.user %}
                                 <a class="btn" href="{{ path('app_balade_form', {'id': balade.id}) }}">Modifier</a>
                             {% endif %}
                         </div>

@@ -1,0 +1,55 @@
+{{ form_start(form, { attr: { class: 'chien-form' } }) }}
+
+    {# Nom #}
+    <div class="chien-form__group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    {# Description #}
+    <div class="chien-form__group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    {# Sexe — radio stylisés #}
+    <div class="chien-form__group">
+        <span class="chien-form__group-label">{{ form_label(form.sexe) }}</span>
+        <div class="chien-form__sexe">
+            {% for child in form.sexe %}
+                <div class="sexe-option">
+                    {{ form_widget(child) }}
+                    <label for="{{ child.vars.id }}">
+                        <span class="sexe-option__symbol">
+                            {{ child.vars.label starts with '♂' ? '♂' : '♀' }}
+                        </span>
+                        {{ child.vars.label starts with '♂' ? 'Mâle' : 'Femelle' }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        {{ form_errors(form.sexe) }}
+    </div>
+
+    {# Date de naissance #}
+    <div class="chien-form__group">
+        {{ form_label(form.birthDate) }}
+        {{ form_widget(form.birthDate) }}
+        {{ form_errors(form.birthDate) }}
+    </div>
+
+    {# Race #}
+    <div class="chien-form__group">
+        {{ form_label(form.race) }}
+        {{ form_widget(form.race) }}
+        {{ form_errors(form.race) }}
+    </div>
+
+    {# Actions #}
+    <div class="chien-form__actions">
+        <button type="submit" class="chien-form__submit">Enregistrer</button>
+    </div>
+
+{{ form_end(form) }}

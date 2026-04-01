@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier · {{ chien.name }}{% endblock %}
+
+{% block body %}
+<div class="chien-form-page">
+    <h1 class="chien-form-page__title">{{ chien.name }}</h1>
+    <p class="chien-form-page__subtitle">Modifiez le profil de votre compagnon.</p>
+
+    <div class="chien-form-page__card">
+        {{ include('chien/_form.html.twig', {'button_label': 'Enregistrer les modifications'}) }}
+    </div>
+
+    <a href="{{ path('profil') }}" class="chien-form-page__back-link">← Retour au profil</a>
+</div>
+{% endblock %}

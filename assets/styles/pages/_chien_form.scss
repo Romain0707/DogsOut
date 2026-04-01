@@ -1,0 +1,274 @@
+@use '../abstracts/variables' as v;
+@use '../abstracts/mixins' as m;
+
+// ─────────────────────────────────────────────
+// Page wrapper — création / édition du chien
+// ─────────────────────────────────────────────
+.chien-form-page {
+  min-height: 100vh;
+  background-color: v.$bg-color;
+  @include m.flex-center-column;
+  padding-block: 3rem;
+
+  // ── Titre de page ──
+  &__title {
+    font-family: v.$font-title;
+    font-size: v.$font-title-size-h1;
+    color: v.$text-title-color;
+    margin-bottom: 0.25rem;
+    text-align: center;
+  }
+
+  &__subtitle {
+    font-family: v.$font-text;
+    font-size: v.$font-text-size;
+    color: v.$text-meta-color;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  // ── Carte formulaire ──
+  &__card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(46, 94, 62, 0.08);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 560px;
+
+    @include m.tablet {
+      padding: 1.5rem 1rem;
+    }
+  }
+  // ─── À ajouter dans .chien-form-page { ... } ───
+
+    &__back-link {
+    margin-top: 1.25rem;
+    font-family: v.$font-text;
+    font-size: 0.9rem;
+    color: v.$text-meta-color;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+        color: v.$primary-color;
+    }
+    }
+
+    &__danger {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(192, 57, 43, 0.25);
+    }
+
+    &__danger-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(192, 57, 43, 0.6);
+    margin-bottom: 0.75rem;
+    }
+
+    &__delete {
+    font-family: v.$font-text;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: transparent;
+    color: rgba(192, 57, 43, 0.8);
+    border: 1.5px solid rgba(192, 57, 43, 0.35);
+    border-radius: 8px;
+    padding: 0.55rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+    &:hover {
+        background: rgba(192, 57, 43, 0.06);
+        border-color: rgba(192, 57, 43, 0.6);
+        color: rgba(192, 57, 43, 1);
+    }
+    }
+}
+
+// ─────────────────────────────────────────────
+// Formulaire générique
+// ─────────────────────────────────────────────
+.chien-form {
+  @include m.flex-column;
+  gap: 1.5rem;
+
+  // ── Groupe champ ──
+  &__group {
+    @include m.flex-column;
+    gap: 0.4rem;
+
+    label {
+      font-family: v.$font-text;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: v.$text-title-color;
+    }
+
+    // Inputs & textarea & select
+    input[type='text'],
+    input[type='date'],
+    input[type='number'],
+    textarea,
+    select {
+      font-family: v.$font-text;
+      font-size: v.$font-text-size;
+      color: v.$text-p-color;
+      background: v.$bg-color;
+      border: 1.5px solid v.$secondary-bg-color;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+
+      &::placeholder {
+        color: v.$text-meta-color;
+      }
+
+      &:focus {
+        border-color: v.$primary-color;
+        box-shadow: 0 0 0 3px rgba(46, 94, 62, 0.12);
+        background: #fff;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    // Select — flèche custom
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232E5E3E' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    // Messages d'erreur Symfony
+    .form-error {
+      font-size: 0.82rem;
+      color: #c0392b;
+      margin-top: 0.2rem;
+    }
+  }
+
+  // ── Champ Sexe — radio stylisés ──
+  &__sexe {
+    @include m.flex-center-vert;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .sexe-option {
+      position: relative;
+
+      input[type='radio'] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        // État coché
+        &:checked + label {
+          background: v.$primary-color;
+          color: #fff;
+          border-color: v.$primary-color;
+
+          .sexe-option__symbol {
+            color: #fff;
+          }
+        }
+
+        &:focus-visible + label {
+          outline: 2px solid v.$primary-color;
+          outline-offset: 3px;
+        }
+      }
+
+      label {
+        @include m.flex-center-column;
+        gap: 0.3rem;
+        padding: 0.75rem 1.5rem;
+        border: 1.5px solid v.$secondary-bg-color;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: v.$font-text;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: v.$text-p-color;
+        background: v.$bg-color;
+        transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+        min-width: 110px;
+        text-align: center;
+
+        &:hover {
+          border-color: v.$primary-color;
+          box-shadow: 0 0 0 3px rgba(46, 94, 62, 0.1);
+        }
+      }
+
+      &__symbol {
+        font-size: 1.5rem;
+        line-height: 1;
+        color: v.$primary-color;
+        transition: color 0.2s;
+      }
+    }
+  }
+
+  // ── Actions ──
+  &__actions {
+    @include m.flex-center-vert;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.5rem;
+
+    @include m.phone {
+      flex-direction: column;
+    }
+  }
+
+  // ── Bouton principal ──
+  &__submit {
+    font-family: v.$font-text;
+    font-size: v.$font-text-size;
+    font-weight: 700;
+    background: v.$btn-bg-color;
+    color: v.$btn-text-color;
+    border: 1.5px solid v.$btn-border-color;
+    border-radius: 8px;
+    padding: 0.7rem 1.8rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      background: v.$btn-hover-color;
+      box-shadow: 0 4px 16px rgba(46, 94, 62, 0.18);
+    }
+  }
+
+  // ── Lien retour ──
+  &__back {
+    font-family: v.$font-text;
+    font-size: 0.9rem;
+    color: v.$btn-scd-text-color;
+    text-decoration: none;
+    border: 1.5px solid v.$btn-scd-border-color;
+    border-radius: 8px;
+    padding: 0.65rem 1.4rem;
+    transition: background 0.2s;
+
+    &:hover {
+      background: v.$btn-scd-hover-color;
+    }
+  }
+}

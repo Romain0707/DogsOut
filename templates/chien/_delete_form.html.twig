@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_chien_delete', {'id': chien.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer {{ chien.name }} ? Cette action est irréversible.')">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ chien.id) }}">
+    <button type="submit" class="chien-card__btn chien-card__btn--secondary">Supprimer</button>
+</form>
