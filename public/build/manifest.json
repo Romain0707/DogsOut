@@ -14,5 +14,7 @@
   "build/images/layers-2x.png": "/build/images/layers-2x.8f2c4d11.png",
   "build/images/layers.png": "/build/images/layers.416d9136.png",
   "build/images/marker-shadow.png": "/build/images/marker-shadow.a0c6cc14.png",
-  "build/images/routing-icon.png": "/build/images/routing-icon.19680205.png"
+  "build/images/routing-icon.png": "/build/images/routing-icon.19680205.png",
+  "build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.css": "/build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.css",
+  "build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.js": "/build/vendors-node_modules_leaflet-draw_dist_leaflet_draw_js-node_modules_leaflet-routing-machine_d-8de0fe.js"
 }
