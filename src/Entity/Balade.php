@@ -53,9 +53,16 @@ class Balade
     #[ORM\Column(nullable: true)]
     private ?int $durationSeconds = null;
 
+    /**
+     * @var Collection<int, GroupEvent>
+     */
+    #[ORM\OneToMany(targetEntity: GroupEvent::class, mappedBy: 'balade')]
+    private Collection $groupEvents;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->groupEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -208,6 +215,36 @@ class Balade
     public function setDurationSeconds(?int $durationSeconds): static
     {
         $this->durationSeconds = $durationSeconds;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupEvent>
+     */
+    public function getGroupEvents(): Collection
+    {
+        return $this->groupEvents;
+    }
+
+    public function addGroupEvent(GroupEvent $groupEvent): static
+    {
+        if (!$this->groupEvents->contains($groupEvent)) {
+            $this->groupEvents->add($groupEvent);
+            $groupEvent->setBalade($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupEvent(GroupEvent $groupEvent): static
+    {
+        if ($this->groupEvents->removeElement($groupEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($groupEvent->getBalade() === $this) {
+                $groupEvent->setBalade(null);
+            }
+        }
 
         return $this;
     }

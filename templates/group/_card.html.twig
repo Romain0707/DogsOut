@@ -1,0 +1,26 @@
+<a href="{{ path('app_group_show', {'id': group.id}) }}" class="group-card">
+    <div class="group-card__header">
+        <div class="group-card__avatar">
+            {{ group.name|slice(0, 1)|upper }}
+        </div>
+        <span class="group-card__visibility">
+            {{ group.isPublic ? '🌐 Public' : '🔒 Privé' }}
+        </span>
+    </div>
+    <div class="group-card__body">
+        <h3 class="group-card__name">{{ group.name }}</h3>
+        {% if group.description %}
+        <p class="group-card__desc">
+            {{ group.description|length > 80 ? group.description|slice(0, 80) ~ '…' : group.description }}
+        </p>
+        {% endif %}
+    </div>
+    <div class="group-card__footer">
+        <span class="group-card__members">
+            {{ group.groupMembers|length }} membre{{ group.groupMembers|length > 1 ? 's' : '' }}
+        </span>
+        <span class="group-card__events">
+            {{ group.groupEvents|length }} événement{{ group.groupEvents|length > 1 ? 's' : '' }}
+        </span>
+    </div>
+</a>

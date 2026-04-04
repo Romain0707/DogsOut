@@ -1,0 +1,64 @@
+<div class="group-event-card {% if not isActiveMember %}group-event-card--past{% endif %}">
+    <div class="group-event-card__date">
+        <span class="group-event-card__day">{{ event.eventDate|date('d') }}</span>
+        <span class="group-event-card__month">{{ event.eventDate|date('M') }}</span>
+    </div>
+    <div class="group-event-card__body">
+        <a href="{{ path('app_balade_show', {'id': event.balade.id}) }}" class="group-event-card__title">
+            {{ event.balade.title }}
+        </a>
+        <p class="group-event-card__meta">
+            🕐 {{ event.eventDate|date('H:i') }}
+            · Proposé par
+            <a href="{{ path('profil_public', {'id': event.proposedBy.id}) }}">{{ event.proposedBy.username }}</a>
+        </p>
+        {% if event.description %}
+        <p class="group-event-card__desc">{{ event.description }}</p>
+        {% endif %}
+
+        {# Réponses #}
+        {% set available = 0 %}
+        {% set unavailable = 0 %}
+        {% set maybe = 0 %}
+        {% set myResponse = null %}
+        {% for response in event.groupEventResponses %}
+            {% if response.availability == 'available' %}{% set available = available + 1 %}{% endif %}
+            {% if response.availability == 'unavailable' %}{% set unavailable = unavailable + 1 %}{% endif %}
+            {% if response.availability == 'maybe' %}{% set maybe = maybe + 1 %}{% endif %}
+            {% if currentUser and response.user == currentUser %}{% set myResponse = response %}{% endif %}
+        {% endfor %}
+
+        <div class="group-event-card__responses">
+            <span class="response-badge response-badge--available">✓ {{ available }}</span>
+            <span class="response-badge response-badge--maybe">? {{ maybe }}</span>
+            <span class="response-badge response-badge--unavailable">✕ {{ unavailable }}</span>
+        </div>
+
+        {# Boutons de réponse si membre actif #}
+        {% if isActiveMember %}
+        <form action="{{ path('app_group_event_respond', {'groupId': group.id, 'eventId': event.id}) }}" method="POST" class="group-event-card__form">
+            <button type="submit" name="availability" value="available"
+                    class="response-btn response-btn--available {% if myResponse and myResponse.availability == 'available' %}active{% endif %}">
+                ✓ Disponible
+            </button>
+            <button type="submit" name="availability" value="maybe"
+                    class="response-btn response-btn--maybe {% if myResponse and myResponse.availability == 'maybe' %}active{% endif %}">
+                ? Peut-être
+            </button>
+            <button type="submit" name="availability" value="unavailable"
+                    class="response-btn response-btn--unavailable {% if myResponse and myResponse.availability == 'unavailable' %}active{% endif %}">
+                ✕ Indisponible
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    {# Supprimer (admin/modo ou créateur de l'événement) #}
+    {% if isAdminOrModo or (currentUser and event.proposedBy == currentUser) %}
+    <form action="{{ path('app_group_event_delete', {'groupId': group.id, 'eventId': event.id}) }}" method="POST" class="group-event-card__delete">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">
+        <button type="submit" class="group-member__btn group-member__btn--danger"
+                onclick="return confirm('Supprimer cet événement ?')" title="Supprimer">✕</button>
+    </form>
+    {% endif %}
+</div>

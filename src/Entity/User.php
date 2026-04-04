@@ -124,6 +124,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'author')]
     private Collection $messages;
 
+    /**
+     * @var Collection<int, UserGroup>
+     */
+    #[ORM\OneToMany(targetEntity: UserGroup::class, mappedBy: 'createdBy')]
+    private Collection $userGroups;
+
+    /**
+     * @var Collection<int, GroupMember>
+     */
+    #[ORM\OneToMany(targetEntity: GroupMember::class, mappedBy: 'user')]
+    private Collection $groupMembers;
+
+    /**
+     * @var Collection<int, GroupEvent>
+     */
+    #[ORM\OneToMany(targetEntity: GroupEvent::class, mappedBy: 'proposedBy')]
+    private Collection $groupEvents;
+
+    /**
+     * @var Collection<int, GroupEventResponse>
+     */
+    #[ORM\OneToMany(targetEntity: GroupEventResponse::class, mappedBy: 'user')]
+    private Collection $groupEventResponses;
+
     public function __construct()
     {
         $this->balades = new ArrayCollection();
@@ -131,6 +155,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->chiens = new ArrayCollection();
         $this->participants = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->userGroups = new ArrayCollection();
+        $this->groupMembers = new ArrayCollection();
+        $this->groupEvents = new ArrayCollection();
+        $this->groupEventResponses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -507,6 +535,126 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($message->getAuthor() === $this) {
                 $message->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserGroup>
+     */
+    public function getUserGroups(): Collection
+    {
+        return $this->userGroups;
+    }
+
+    public function addUserGroup(UserGroup $userGroup): static
+    {
+        if (!$this->userGroups->contains($userGroup)) {
+            $this->userGroups->add($userGroup);
+            $userGroup->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserGroup(UserGroup $userGroup): static
+    {
+        if ($this->userGroups->removeElement($userGroup)) {
+            // set the owning side to null (unless already changed)
+            if ($userGroup->getCreatedBy() === $this) {
+                $userGroup->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupMember>
+     */
+    public function getGroupMembers(): Collection
+    {
+        return $this->groupMembers;
+    }
+
+    public function addGroupMember(GroupMember $groupMember): static
+    {
+        if (!$this->groupMembers->contains($groupMember)) {
+            $this->groupMembers->add($groupMember);
+            $groupMember->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupMember(GroupMember $groupMember): static
+    {
+        if ($this->groupMembers->removeElement($groupMember)) {
+            // set the owning side to null (unless already changed)
+            if ($groupMember->getUser() === $this) {
+                $groupMember->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupEvent>
+     */
+    public function getGroupEvents(): Collection
+    {
+        return $this->groupEvents;
+    }
+
+    public function addGroupEvent(GroupEvent $groupEvent): static
+    {
+        if (!$this->groupEvents->contains($groupEvent)) {
+            $this->groupEvents->add($groupEvent);
+            $groupEvent->setProposedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupEvent(GroupEvent $groupEvent): static
+    {
+        if ($this->groupEvents->removeElement($groupEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($groupEvent->getProposedBy() === $this) {
+                $groupEvent->setProposedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupEventResponse>
+     */
+    public function getGroupEventResponses(): Collection
+    {
+        return $this->groupEventResponses;
+    }
+
+    public function addGroupEventResponse(GroupEventResponse $groupEventResponse): static
+    {
+        if (!$this->groupEventResponses->contains($groupEventResponse)) {
+            $this->groupEventResponses->add($groupEventResponse);
+            $groupEventResponse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupEventResponse(GroupEventResponse $groupEventResponse): static
+    {
+        if ($this->groupEventResponses->removeElement($groupEventResponse)) {
+            // set the owning side to null (unless already changed)
+            if ($groupEventResponse->getUser() === $this) {
+                $groupEventResponse->setUser(null);
             }
         }
 

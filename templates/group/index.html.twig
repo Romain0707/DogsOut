@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groupes{% endblock %}
+
+{% block body %}
+<section class="groups-page">
+    <div class="groups-page__container">
+
+        <div class="groups-page__header">
+            <div>
+                <h1 class="groups-page__title">Groupes</h1>
+                <p class="groups-page__subtitle">Rejoignez une communauté ou créez la vôtre.</p>
+            </div>
+            {% if is_granted('ROLE_USER') %}
+            <a href="{{ path('app_group_new') }}" class="groups-page__create-btn">
+                + Créer un groupe
+            </a>
+            {% endif %}
+        </div>
+
+        {# ── Mes groupes ── #}
+        {% if myGroups|length > 0 %}
+        <div class="groups-section">
+            <h2 class="groups-section__title">Mes groupes</h2>
+            <div class="groups-grid">
+                {% for group in myGroups %}
+                    {{ include('group/_card.html.twig', { group: group }) }}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# ── Groupes publics ── #}
+        <div class="groups-section">
+            <h2 class="groups-section__title">Groupes publics</h2>
+            {% if publicGroups|length > 0 %}
+            <div class="groups-grid">
+                {% for group in publicGroups %}
+                    {{ include('group/_card.html.twig', { group: group }) }}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="groups-empty">
+                <p>Aucun groupe public pour l'instant.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

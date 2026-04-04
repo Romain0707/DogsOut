@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% block title %}Proposer un événement · {{ group.name }}{% endblock %}
+{% block body %}
+<div class="chien-form-page">
+    <h1 class="chien-form-page__title">Proposer un événement</h1>
+    <p class="chien-form-page__subtitle">dans le groupe <strong>{{ group.name }}</strong></p>
+    <div class="chien-form-page__card">
+        {{ form_start(form, { attr: { class: 'chien-form' } }) }}
+            <div class="chien-form__group">
+                {{ form_label(form.balade) }}
+                {{ form_widget(form.balade) }}
+                {{ form_errors(form.balade) }}
+            </div>
+            <div class="chien-form__group">
+                {{ form_label(form.eventDate) }}
+                {{ form_widget(form.eventDate) }}
+                {{ form_errors(form.eventDate) }}
+            </div>
+            <div class="chien-form__group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+            <div class="chien-form__actions">
+                <a href="{{ path('app_group_show', {'id': group.id}) }}" class="chien-form__back">← Retour</a>
+                <button type="submit" class="chien-form__submit">Proposer</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

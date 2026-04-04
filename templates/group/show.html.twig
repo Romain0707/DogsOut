@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block body %}
+<section class="group-show">
+    <div class="group-show__container">
+
+        {# ── Header ── #}
+        <div class="group-show__header">
+            <div class="group-show__header-left">
+                <div class="group-show__avatar">{{ group.name|slice(0, 1)|upper }}</div>
+                <div>
+                    <h1 class="group-show__title">{{ group.name }}</h1>
+                    <span class="group-show__visibility">
+                        {{ group.isPublic ? '🌐 Public' : '🔒 Privé' }}
+                        · {{ activeMembers|length }} membre{{ activeMembers|length > 1 ? 's' : '' }}
+                        · Créé le {{ group.createdAt|date('d/m/Y') }}
+                    </span>
+                </div>
+            </div>
+            <div class="group-show__actions">
+                {% if isActiveMember %}
+                    {% if isAdminOrModo %}
+                        <a href="{{ path('app_group_edit', {'id': group.id}) }}" class="group-btn group-btn--secondary">
+                            Modifier
+                        </a>
+                    {% endif %}
+                    {% if group.conversation %}
+                        <a href="{{ path('app_message_show', {'id': group.conversation.id}) }}" class="group-btn group-btn--secondary">
+                            💬 Chat
+                        </a>
+                    {% endif %}
+                    <form action="{{ path('app_group_leave', {'id': group.id}) }}" method="POST" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('leave_group_' ~ group.id) }}">
+                        <button type="submit" class="group-btn group-btn--danger"
+                                onclick="return confirm('Quitter ce groupe ?')">
+                            Quitter
+                        </button>
+                    </form>
+                {% elseif membership and membership.status == 'pending' %}
+                    <span class="group-btn group-btn--pending">⏳ Demande en attente</span>
+                {% elseif is_granted('ROLE_USER') %}
+                    <form action="{{ path('app_group_join', {'id': group.id}) }}" method="POST" style="display:inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('join_group_' ~ group.id) }}">
+                        <button type="submit" class="group-btn group-btn--primary">
+                            {{ group.isPublic ? 'Rejoindre' : 'Demander à rejoindre' }}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ── Description ── #}
+        {% if group.description %}
+        <div class="group-show__desc">
+            <p>{{ group.description }}</p>
+        </div>
+        {% endif %}
+
+        <div class="group-show__body">
+
+            {# ── Colonne principale ── #}
+            <div class="group-show__main">
+
+                {# Demandes en attente (admin/modo) #}
+                {% if pendingRequests|length > 0 %}
+                <div class="group-panel group-panel--warning">
+                    <h2 class="group-panel__title">
+                        Demandes en attente
+                        <span class="group-panel__badge">{{ pendingRequests|length }}</span>
+                    </h2>
+                    <div class="group-requests">
+                        {% for request in pendingRequests %}
+                        <div class="group-request">
+                            <div class="group-request__avatar">
+                                <img src="{{ request.user.imageName ? vich_uploader_asset(request.user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                                     alt="{{ request.user.username }}">
+                            </div>
+                            <div class="group-request__info">
+                                <a href="{{ path('profil_public', {'id': request.user.id}) }}" class="group-request__name">
+                                    {{ request.user.username }}
+                                </a>
+                                <span class="group-request__date">
+                                    {{ request.joinedAt|date('d/m/Y') }}
+                                </span>
+                            </div>
+                            <div class="group-request__btns">
+                                <form action="{{ path('app_group_member_approve', {'groupId': group.id, 'memberId': request.id}) }}" method="POST">
+                                    <button type="submit" class="group-btn group-btn--primary group-btn--sm">✓ Accepter</button>
+                                </form>
+                                <form action="{{ path('app_group_member_reject', {'groupId': group.id, 'memberId': request.id}) }}" method="POST">
+                                    <button type="submit" class="group-btn group-btn--danger group-btn--sm">✕ Refuser</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Événements à venir #}
+                <div class="group-panel">
+                    <div class="group-panel__head">
+                        <h2 class="group-panel__title">Événements à venir</h2>
+                        {% if isActiveMember %}
+                        <a href="{{ path('app_group_event_new', {'groupId': group.id}) }}" class="group-btn group-btn--primary group-btn--sm">
+                            + Proposer
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if upcomingEvents|length > 0 %}
+                    <div class="group-events">
+                        {% for event in upcomingEvents %}
+                            {{ include('group/event/_card.html.twig', {
+                                event: event,
+                                group: group,
+                                isActiveMember: isActiveMember,
+                                isAdminOrModo: isAdminOrModo,
+                                currentUser: app.user
+                            }) }}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="group-panel__empty">Aucun événement à venir. Proposez-en un !</p>
+                    {% endif %}
+                </div>
+
+                {# Événements passés #}
+                {% if pastEvents|length > 0 %}
+                <div class="group-panel">
+                    <h2 class="group-panel__title group-panel__title--muted">Événements passés</h2>
+                    <div class="group-events group-events--past">
+                        {% for event in pastEvents %}
+                            {{ include('group/event/_card.html.twig', {
+                                event: event,
+                                group: group,
+                                isActiveMember: false,
+                                isAdminOrModo: isAdminOrModo,
+                                currentUser: app.user
+                            }) }}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            {# ── Sidebar membres ── #}
+            <div class="group-show__sidebar">
+                <div class="group-panel">
+                    <h2 class="group-panel__title">Membres ({{ activeMembers|length }})</h2>
+                    <div class="group-members">
+                        {% for member in activeMembers %}
+                        <div class="group-member">
+                            <a href="{{ path('profil_public', {'id': member.user.id}) }}" class="group-member__link">
+                                <div class="group-member__avatar">
+                                    <img src="{{ member.user.imageName ? vich_uploader_asset(member.user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                                         alt="{{ member.user.username }}">
+                                </div>
+                                <div class="group-member__info">
+                                    <span class="group-member__name">{{ member.user.username }}</span>
+                                    <span class="group-member__role group-member__role--{{ member.role }}">
+                                        {% if member.role == 'admin' %}👑 Admin
+                                        {% elseif member.role == 'moderator' %}🛡 Modo
+                                        {% else %}Membre{% endif %}
+                                    </span>
+                                </div>
+                            </a>
+                            {% if isAdminOrModo and member.user != app.user and member.user != group.createdBy %}
+                            <div class="group-member__actions">
+                                <form action="{{ path('app_group_member_promote', {'groupId': group.id, 'memberId': member.id}) }}" method="POST">
+                                    <button type="submit" class="group-member__btn" title="Promouvoir">↑</button>
+                                </form>
+                                <form action="{{ path('app_group_member_demote', {'groupId': group.id, 'memberId': member.id}) }}" method="POST">
+                                    <button type="submit" class="group-member__btn" title="Rétrograder">↓</button>
+                                </form>
+                                <form action="{{ path('app_group_member_kick', {'groupId': group.id, 'memberId': member.id}) }}" method="POST">
+                                    <button type="submit" class="group-member__btn group-member__btn--danger"
+                                            onclick="return confirm('Expulser {{ member.user.username }} ?')"
+                                            title="Expulser">✕</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Supprimer le groupe (créateur seulement) #}
+                {% if app.user and app.user == group.createdBy %}
+                <div class="group-panel group-panel--danger">
+                    <p class="group-panel__danger-label">Zone de danger</p>
+                    <form action="{{ path('app_group_delete', {'id': group.id}) }}" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_group_' ~ group.id) }}">
+                        <button type="submit" class="group-btn group-btn--danger"
+                                onclick="return confirm('Supprimer définitivement ce groupe ?')">
+                            Supprimer le groupe
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

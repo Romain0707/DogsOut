@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% block title %}Créer un groupe{% endblock %}
+{% block body %}
+<div class="chien-form-page">
+    <h1 class="chien-form-page__title">Créer un groupe</h1>
+    <p class="chien-form-page__subtitle">Rassemblez une communauté autour de vos balades.</p>
+    <div class="chien-form-page__card">
+        {{ form_start(form, { attr: { class: 'chien-form' } }) }}
+            <div class="chien-form__group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+            </div>
+            <div class="chien-form__group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description) }}
+                {{ form_errors(form.description) }}
+            </div>
+            <div class="chien-form__group chien-form__group--checkbox">
+                {{ form_widget(form.isPublic) }}
+                {{ form_label(form.isPublic) }}
+                {{ form_errors(form.isPublic) }}
+            </div>
+            <div class="chien-form__actions">
+                <a href="{{ path('app_group_index') }}" class="chien-form__back">← Retour</a>
+                <button type="submit" class="chien-form__submit">Créer le groupe</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
