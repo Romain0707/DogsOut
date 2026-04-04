@@ -47,7 +47,7 @@ class SecurityController extends AbstractController
             $user->setPassword($hasher->hashPassword($user,$form->get('password')->getData()));
             $user->setActive(true);
             $user->setFirstConnexion(true);
-            $user->setImageName('profil/default-avatar.png');
+            $user->setImageName('default-avatar.png');
             $user->setCreatedAt(new \DateTimeImmutable());
             $em->persist($user);
             $em->flush();

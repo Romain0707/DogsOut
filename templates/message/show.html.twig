@@ -1,0 +1,198 @@
+{% extends 'base.html.twig' %}
+
+{% set other = conversation.getOtherParticipant(user) %}
+
+{% block title %}
+    {{ conversation.title ?? (other ? other.username : 'Conversation') }}
+{% endblock %}
+
+{% block body %}
+<div id="js-current-conversation" data-id="{{ conversation.id }}"></div>
+<section class="messaging">
+
+    {# ── Sidebar ── #}
+    <div class="messaging__sidebar">
+        <div class="messaging__sidebar-header">
+            <h1 class="messaging__title">Messages</h1>
+        </div>
+        <div class="messaging__conversations">
+            {% for conv in conversations %}
+                {% set otherConv = conv.getOtherParticipant(user) %}
+                {% set lastMessage = conv.lastMessage %}
+
+                {% set unread = 0 %}
+                {% for participant in conv.participants %}
+                    {% if participant.user == user %}
+                        {% if lastMessage and (participant.lastReadAt is null or lastMessage.createdAt > participant.lastReadAt) %}
+                            {% set unread = 1 %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <a href="{{ path('app_message_show', {'id': conv.id}) }}"
+                   class="conv-item {% if unread %}conv-item--unread{% endif %} {% if conv.id == conversation.id %}conv-item--active{% endif %}">
+                    <div class="conv-item__avatar">
+                        <img src="{{ otherConv and otherConv.imageName ? vich_uploader_asset(otherConv, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ otherConv ? otherConv.username : 'avatar' }}">
+                    </div>
+                    <div class="conv-item__body">
+                        <div class="conv-item__top">
+                            <span class="conv-item__name">
+                                {{ conv.title ?? (otherConv ? otherConv.username : 'Conversation') }}
+                            </span>
+                            {% if lastMessage %}
+                            <span class="conv-item__time">{{ lastMessage.createdAt|date('H:i') }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="conv-item__preview">
+                            {% if lastMessage %}
+                                {% if lastMessage.author == user %}Vous : {% endif %}
+                                {{ lastMessage.content|length > 50 ? lastMessage.content|slice(0, 50) ~ '…' : lastMessage.content }}
+                            {% else %}
+                                <em>Aucun message</em>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if unread %}
+                    <span class="conv-item__badge"></span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <div class="messaging__empty">
+                    <p>Aucune conversation.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# ── Zone de chat ── #}
+    <div class="messaging__chat">
+
+        {# Header #}
+        <div class="chat__header">
+            <div class="chat__header-avatar">
+                <img src="{{ other and other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ other ? other.username : 'avatar' }}">
+            </div>
+            <div class="chat__header-info">
+                <span class="chat__header-name">
+                    {{ conversation.title ?? (other ? other.username : 'Conversation') }}
+                </span>
+            </div>
+        </div>
+
+        {# Messages #}
+        <div class="chat__messages" id="js-messages">
+            {% for message in messages %}
+                {% set isMine = message.author == user %}
+                <div class="chat__bubble-wrap {% if isMine %}chat__bubble-wrap--mine{% endif %}"
+                     data-message-id="{{ message.id }}">
+                    {% if not isMine %}
+                    <div class="chat__bubble-avatar">
+                        <img src="{{ message.author.imageName ? vich_uploader_asset(message.author, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ message.author.username }}">
+                    </div>
+                    {% endif %}
+                    <div class="chat__bubble">
+                        <p class="chat__bubble-content">{{ message.content }}</p>
+                        <span class="chat__bubble-time">
+                            {{ message.createdAt|date('H:i') }}
+                            {% if message.editedAt %}<em>(modifié)</em>{% endif %}
+                        </span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="chat__empty">
+                    <p>Commencez la conversation 👋</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Formulaire d'envoi #}
+        <form class="chat__form"
+              action="{{ path('app_message_send', {'id': conversation.id}) }}"
+              method="POST"
+              id="js-send-form">
+            <input type="hidden" name="_token" value="{{ csrf_token('send_message') }}">
+            <textarea
+                class="chat__input"
+                name="content"
+                id="js-input"
+                placeholder="Écrire un message…"
+                rows="1"
+                autocomplete="off"
+            ></textarea>
+            <button type="submit" class="chat__send-btn" aria-label="Envoyer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+</section>
+
+<script>
+    const messagesEl  = document.getElementById('js-messages');
+    const form        = document.getElementById('js-send-form');
+    const input       = document.getElementById('js-input');
+    const currentUser = {{ user.id }};
+    const mercureUrl  = '{{ mercure("conversation/" ~ conversation.id)|escape("js") }}';
+
+    function scrollToBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    scrollToBottom();
+
+    input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (input.value.trim()) form.submit();
+        }
+    });
+
+    const eventSource = new EventSource(mercureUrl);
+
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.authorId === currentUser) return;
+
+        // Marque comme lu immédiatement puisqu'on est sur la conversation
+        fetch('{{ path("app_message_mark_read", {"id": conversation.id}) }}', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+
+        const wrap = document.createElement('div');
+        wrap.className = 'chat__bubble-wrap';
+        wrap.innerHTML = `
+            <div class="chat__bubble-avatar" style="width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+                <img src="${data.authorAvatar}" alt="${data.author}" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div class="chat__bubble">
+                <p class="chat__bubble-content">${escapeHtml(data.content)}</p>
+                <span class="chat__bubble-time">${data.createdAt}</span>
+            </div>
+        `;
+
+        const empty = messagesEl.querySelector('.chat__empty');
+        if (empty) empty.remove();
+
+        messagesEl.appendChild(wrap);
+        scrollToBottom();
+    };
+</script>
+{% endblock %}
+

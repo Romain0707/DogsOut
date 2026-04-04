@@ -1,0 +1,20 @@
+{
+    auto_https off
+    admin off
+}
+
+:3000
+
+route {
+    header Access-Control-Allow-Origin "http://127.0.0.1:8000"
+    header Access-Control-Allow-Headers "Cache-Control"
+
+    mercure {
+        publisher_jwt 1cc923638bcc6011e06e7b9f6aa3491385fa9077c83b34850105b55a2d3667ff HS256
+        subscriber_jwt 1cc923638bcc6011e06e7b9f6aa3491385fa9077c83b34850105b55a2d3667ff HS256
+        anonymous
+        subscriptions
+        cors_origins http://127.0.0.1:8000
+    }
+    respond "Not Found" 404
+}

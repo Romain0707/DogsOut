@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil · {{ user.username }}{% endblock %}
+
+{% block body %}
+<section id="profile">
+    <div class="container">
+
+        <div class="profile-header">
+            <img class="profile-avatar"
+                src="{{ user.imageName ? vich_uploader_asset(user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                alt="Avatar de {{ user.username }}">
+
+            <div class="profile-header-info">
+                <h1 class="profile-username">{{ user.username }}</h1>
+                <p class="profile-email">{{ user.email }}</p>
+            </div>
+
+            {# Bouton message uniquement si connecté #}
+            {% if currentUser %}
+                <a href="{{ path('app_message_with', {'id': user.id}) }}"
+                   class="profile-edit-btn">
+                    Envoyer un message
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="profile-body">
+
+            {# ── Infos ── #}
+            <div class="profile-info-grid">
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Prénom</div>
+                    <div class="profile-info-value {% if not user.firstname %}empty{% endif %}">
+                        {{ user.firstname ?? 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Nom</div>
+                    <div class="profile-info-value {% if not user.lastname %}empty{% endif %}">
+                        {{ user.lastname ?? 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Membre depuis</div>
+                    <div class="profile-info-value">
+                        {{ user.createdAt ? user.createdAt|date('d/m/Y') : '—' }}
+                    </div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Balades créées</div>
+                    <div class="profile-info-value">{{ user.balades|length }}</div>
+                </div>
+                <div class="profile-info-item full">
+                    <div class="profile-info-label">À propos</div>
+                    <div class="profile-info-value {% if not user.description %}empty{% endif %}">
+                        {{ user.description ?? 'Aucune description.' }}
+                    </div>
+                </div>
+            </div>
+
+            {# ── Chiens ── #}
+            <div class="profile-divider">
+                <p>Ses chiens</p>
+            </div>
+
+            <div class="chiens-grid">
+                {% for chien in user.chiens %}
+                <div class="chien-card">
+                    <div class="chien-card__sexe chien-card__sexe--{{ chien.sexe ? 'male' : 'female' }}">
+                        {{ chien.sexe ? '♂' : '♀' }}
+                    </div>
+                    <div class="chien-card__body">
+                        <h3 class="chien-card__name">{{ chien.name }}</h3>
+                        <span class="chien-card__race">{{ chien.race.name }}</span>
+                        {% if chien.birthDate %}
+                        <p class="chien-card__meta">
+                            Né{{ chien.sexe ? '' : 'e' }} le {{ chien.birthDate|date('d/m/Y') }}
+                        </p>
+                        {% endif %}
+                        {% if chien.description %}
+                        <p class="chien-card__desc">
+                            {{ chien.description|length > 100
+                                ? chien.description|slice(0, 100) ~ '…'
+                                : chien.description }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="chiens-empty">
+                    <p>Aucun chien enregistré.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {# ── Balades ── #}
+            <div class="profile-divider">
+                <p>Ses balades</p>
+            </div>
+
+            <div class="card-container">
+                {% for balade in user.balades %}
+                    <div class="balade-card">
+                        <div class="balade-top">
+                            <div>
+                                <h3 class="balade-title">{{ balade.title }}</h3>
+
+                                {% if balade.snapshotPath %}
+                                    <img src="{{ balade.snapshotPath }}" alt="Snapshot">
+                                {% else %}
+                                    <div>Pas d'image</div>
+                                {% endif %}
+
+                                {% if balade.distanceMeters %}
+                                <p>
+                                    <span class="text-meta">Distance :</span>
+                                    {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
+                                </p>
+                                {% endif %}
+
+                                {% if balade.durationSeconds %}
+                                {% set h = (balade.durationSeconds // 3600) %}
+                                {% set m = ((balade.durationSeconds % 3600) // 60) %}
+                                <p>
+                                    <span class="text-meta">Durée :</span>
+                                    {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
+                                </p>
+                                {% endif %}
+
+                                {% if balade.description %}
+                                <p class="balade-desc">
+                                    {{ balade.description|length > 160
+                                        ? balade.description|slice(0, 160) ~ '…'
+                                        : balade.description }}
+                                </p>
+                                {% else %}
+                                <p class="balade-desc"><em>Aucune description.</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <a class="btn" href="{{ path('app_balade_show', {'id': balade.id}) }}">Voir</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="balades-empty">
+                        <p>Aucune balade pour l'instant.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>{# /profile-body #}
+    </div>{# /container #}
+</section>
+{% endblock %}

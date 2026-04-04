@@ -1,0 +1,427 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+// ─────────────────────────────────────────────
+// Layout principal — 2 colonnes
+// ─────────────────────────────────────────────
+.messaging {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 70px); // ajuste selon la hauteur de ta navbar
+    overflow: hidden;
+    background: v.$bg-color;
+
+    @include m.tablet {
+        grid-template-columns: 1fr;
+    }
+
+    // ── Sidebar ──────────────────────────────────
+    &__sidebar {
+        border-right: 1px solid v.$secondary-bg-color;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        overflow: hidden;
+
+        @include m.tablet {
+            display: none;
+
+            .messaging--index & {
+                display: flex;
+            }
+        }
+    }
+
+    &__sidebar-header {
+        padding: 1.5rem 1.25rem 1rem;
+        border-bottom: 1px solid v.$secondary-bg-color;
+        flex-shrink: 0;
+    }
+
+    &__title {
+        font-family: v.$font-title;
+        font-size: v.$font-title-size-h2;
+        color: v.$text-title-color;
+        margin: 0;
+    }
+
+    &__conversations {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem 0;
+    }
+
+    &__empty {
+        padding: 2rem 1.25rem;
+        text-align: center;
+        color: v.$text-meta-color;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    // ── Placeholder (page index, aucune conv sélectionnée) ──
+    &__placeholder {
+        @include m.flex-center-column;
+        background: v.$bg-color;
+
+        @include m.tablet {
+            display: none;
+        }
+    }
+
+    &__placeholder-inner {
+        @include m.flex-center-column;
+        gap: 0.75rem;
+        color: v.$text-meta-color;
+        font-size: 0.95rem;
+    }
+
+    &__placeholder-icon {
+        font-size: 3rem;
+        opacity: 0.4;
+    }
+
+    // ── Zone de chat ─────────────────────────────
+    &__chat {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: v.$bg-color;
+    }
+}
+
+// ─────────────────────────────────────────────
+// Items de conversation (sidebar)
+// ─────────────────────────────────────────────
+.conv-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.25rem;
+    text-decoration: none;
+    transition: background 0.15s;
+    position: relative;
+    cursor: pointer;
+
+    &:hover {
+        background: v.$bg-color;
+    }
+
+    &--unread {
+        background: rgba(46, 94, 62, 0.04);
+
+        .conv-item__name {
+            font-weight: 700;
+            color: v.$text-title-color;
+        }
+
+        .conv-item__preview {
+            color: v.$text-p-color;
+            font-weight: 500;
+        }
+    }
+
+    &--back {
+        font-family: v.$font-text;
+        font-size: 0.88rem;
+        color: v.$text-meta-color;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+
+        &:hover {
+            color: v.$primary-color;
+        }
+    }
+
+    &__avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        overflow: hidden;
+        background: v.$secondary-bg-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__body {
+        flex: 1;
+        min-width: 0; // pour le text-overflow
+    }
+
+    &__top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-bottom: 0.2rem;
+    }
+
+    &__name {
+        font-family: v.$font-text;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: v.$text-p-color;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__time {
+        font-size: 0.75rem;
+        color: v.$text-meta-color;
+        flex-shrink: 0;
+    }
+
+    &__preview {
+        font-size: 0.82rem;
+        color: v.$text-meta-color;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+    }
+
+    &__badge {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: v.$primary-color;
+        flex-shrink: 0;
+        align-self: center;
+    }
+}
+
+// ─────────────────────────────────────────────
+// Header du chat
+// ─────────────────────────────────────────────
+.chat__header {
+    @include m.flex-center-vert;
+    gap: 0.875rem;
+    padding: 1rem 1.5rem;
+    background: #fff;
+    border-bottom: 1px solid v.$secondary-bg-color;
+    flex-shrink: 0;
+
+    &-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: v.$secondary-bg-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &-info {
+        @include m.flex-column;
+        gap: 2px;
+    }
+
+    &-name {
+        font-family: v.$font-text;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: v.$text-title-color;
+    }
+
+    &-status {
+        font-size: 0.75rem;
+        color: v.$primary-color;
+
+        &::before {
+            content: '●';
+            margin-right: 4px;
+            font-size: 0.6rem;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+// Zone de messages
+// ─────────────────────────────────────────────
+.chat__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chat__empty {
+    @include m.flex-center;
+    flex: 1;
+    color: v.$text-meta-color;
+    font-size: 0.9rem;
+    font-style: italic;
+    padding: 2rem;
+}
+
+// ─────────────────────────────────────────────
+// Bulles de messages
+// ─────────────────────────────────────────────
+.chat__bubble-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    max-width: 70%;
+    animation: bubble-in 0.2s ease;
+
+    @include m.phone {
+        max-width: 90%;
+    }
+
+    // Message de l'utilisateur connecté — à droite
+    &--mine {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+
+        .chat__bubble {
+            background: v.$primary-color;
+            border-radius: 18px 18px 4px 18px;
+
+            p {
+                color: #fff;
+            }
+        }
+
+        .chat__bubble-time {
+            color: rgba(255, 255, 255, 0.65);
+        }
+    }
+
+    &-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: v.$secondary-bg-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}
+
+.chat__bubble {
+    background: #fff;
+    border: 1px solid v.$secondary-bg-color;
+    border-radius: 18px 18px 18px 4px;
+    padding: 0.65rem 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+    &-content {
+        margin: 0;
+        font-size: 0.92rem;
+        color: v.$text-p-color;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    &-time {
+        display: block;
+        font-size: 0.7rem;
+        color: v.$text-meta-color;
+        margin-top: 0.3rem;
+        text-align: right;
+    }
+    
+    &-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: v.$secondary-bg-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;  // ← c'est ça qui manque probablement
+        }
+    }
+}
+
+@keyframes bubble-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ─────────────────────────────────────────────
+// Formulaire d'envoi
+// ─────────────────────────────────────────────
+.chat__form {
+    @include m.flex-center-vert;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: #fff;
+    border-top: 1px solid v.$secondary-bg-color;
+    flex-shrink: 0;
+}
+
+.chat__input {
+    flex: 1;
+    font-family: v.$font-text;
+    font-size: 0.92rem;
+    color: v.$text-p-color;
+    background: v.$bg-color;
+    border: 1.5px solid v.$secondary-bg-color;
+    border-radius: 24px;
+    padding: 0.6rem 1.1rem;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    max-height: 120px;
+    overflow-y: auto;
+    transition: border-color 0.2s;
+
+    &::placeholder {
+        color: v.$text-meta-color;
+    }
+
+    &:focus {
+        border-color: v.$primary-color;
+    }
+}
+
+.chat__send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: v.$primary-color;
+    border: none;
+    color: #fff;
+    @include m.flex-center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+
+    &:hover {
+        background: v.$btn-hover-color;
+        transform: scale(1.05);
+    }
+
+    &:active {
+        transform: scale(0.96);
+    }
+}

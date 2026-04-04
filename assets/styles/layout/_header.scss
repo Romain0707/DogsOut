@@ -43,6 +43,30 @@
             &:hover {
                 text-decoration: underline;
             }
+
+            .nav-messages {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+            
+                &__badge {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 18px;
+                    height: 18px;
+                    padding: 0 5px;
+                    border-radius: 100px;
+                    background: rgba(255, 255, 255, 0.95);
+                    color: v.$primary-color;
+                    font-family: v.$font-text;
+                    font-size: 0.7rem;
+                    font-weight: 800;
+                    line-height: 1;
+                    animation: badge-pop 0.3s ease;
+                }
+            }
         }
     }
 
@@ -114,4 +138,10 @@
             }
         }
     }
+}
+
+@keyframes badge-pop {
+    0%   { transform: scale(0); }
+    70%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
 }

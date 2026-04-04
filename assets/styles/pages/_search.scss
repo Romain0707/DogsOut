@@ -1,0 +1,179 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+.search-page {
+    min-height: 100vh;
+    background: v.$bg-color;
+    padding-block: 3rem;
+
+    &__container {
+        @include m.container(700);
+    }
+
+    &__title {
+        font-family: v.$font-title;
+        font-size: v.$font-title-size-h1;
+        color: v.$text-title-color;
+        margin-bottom: 1.75rem;
+        text-align: center;
+    }
+
+    // ── Formulaire ──
+    &__form {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+
+        @include m.phone {
+            flex-direction: column;
+        }
+    }
+
+    &__input-wrap {
+        flex: 1;
+        position: relative;
+    }
+
+    &__icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: v.$text-meta-color;
+        pointer-events: none;
+    }
+
+    &__input {
+        width: 100%;
+        font-family: v.$font-text;
+        font-size: v.$font-text-size;
+        color: v.$text-p-color;
+        background: #fff;
+        border: 1.5px solid v.$secondary-bg-color;
+        border-radius: 10px;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &::placeholder {
+            color: v.$text-meta-color;
+        }
+
+        &:focus {
+            border-color: v.$primary-color;
+            box-shadow: 0 0 0 3px rgba(46, 94, 62, 0.1);
+        }
+
+        // Supprime la croix native du type="search" sur certains navigateurs
+        &::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+        }
+    }
+
+    &__btn {
+        font-family: v.$font-text;
+        font-size: v.$font-text-size;
+        font-weight: 700;
+        background: v.$btn-bg-color;
+        color: v.$btn-text-color;
+        border: 1.5px solid v.$btn-border-color;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s, box-shadow 0.2s;
+
+        &:hover {
+            background: v.$btn-hover-color;
+            box-shadow: 0 4px 14px rgba(46, 94, 62, 0.18);
+        }
+    }
+
+    // ── Meta résultats ──
+    &__meta {
+        font-size: 0.88rem;
+        color: v.$text-meta-color;
+        margin-bottom: 1rem;
+
+        strong {
+            color: v.$text-p-color;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+// Résultats
+// ─────────────────────────────────────────────
+.search-results {
+    @include m.flex-column;
+    gap: 0.5rem;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border: 1.5px solid v.$secondary-bg-color;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+
+    &:hover {
+        border-color: v.$primary-color;
+        box-shadow: 0 4px 20px rgba(46, 94, 62, 0.1);
+        transform: translateY(-1px);
+
+        .search-result__arrow {
+            transform: translateX(4px);
+            color: v.$primary-color;
+        }
+    }
+
+    &__avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: v.$secondary-bg-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__info {
+        @include m.flex-column;
+        gap: 0.2rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__username {
+        font-family: v.$font-text;
+        font-size: 1rem;
+        font-weight: 700;
+        color: v.$text-title-color;
+    }
+
+    &__name {
+        font-size: 0.88rem;
+        color: v.$text-p-color;
+    }
+
+    &__meta {
+        font-size: 0.78rem;
+        color: v.$text-meta-color;
+    }
+
+    &__arrow {
+        font-size: 1.1rem;
+        color: v.$text-meta-color;
+        transition: transform 0.2s, color 0.2s;
+        flex-shrink: 0;
+    }
+}

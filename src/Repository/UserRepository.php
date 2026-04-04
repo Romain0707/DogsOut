@@ -33,6 +33,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function search(string $query, ?User $exclude = null, int $limit = 20): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u.username LIKE :query')
+            ->orWhere('u.firstname LIKE :query')
+            ->orWhere('u.lastname LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->setMaxResults($limit)
+            ->orderBy('u.username', 'ASC');
+
+        if ($exclude !== null) {
+            $qb->andWhere('u != :exclude')
+            ->setParameter('exclude', $exclude);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Balade;
+use App\Entity\Comment;
 use App\Form\BaladeType;
+use App\Form\CommentType;
 use App\Repository\BaladeRepository;
 use App\Service\BaladeSnapshotter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,10 +60,13 @@ final class BaladeController extends AbstractController
     }
 
     #[Route('/article/{id}', name: 'app_balade_show', methods: ['GET'])]
-    public function show(Balade $balade): Response
+    public function show(Balade $balade, Request $request): Response
     {
+        $commentForm = $this->createForm(CommentType::class, new Comment());
+
         return $this->render('balade/show.html.twig', [
-            'balade' => $balade,
+            'balade'      => $balade,
+            'commentForm' => $commentForm,
         ]);
     }
 

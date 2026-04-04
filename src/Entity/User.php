@@ -112,11 +112,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Chien::class, mappedBy: 'user')]
     private Collection $chiens;
 
+    /**
+     * @var Collection<int, Participant>
+     */
+    #[ORM\OneToMany(targetEntity: Participant::class, mappedBy: 'user')]
+    private Collection $participants;
+
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'author')]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->balades = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->chiens = new ArrayCollection();
+        $this->participants = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -188,10 +202,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function __serialize(): array
     {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        return [
+            'id'       => $this->id,
+            'username' => $this->username,
+            'password' => hash('crc32c', $this->password),
+            'email'    => $this->email,
+            'roles'    => $this->roles,
+        ];
+    }
 
-        return $data;
+    public function __unserialize(array $data): void
+    {
+        $this->id       = $data['id'];
+        $this->username = $data['username'];
+        $this->password = $data['password'];
+        $this->email    = $data['email'];
+        $this->roles    = $data['roles'];
     }
 
     #[\Deprecated]
@@ -421,6 +447,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($chien->getUser() === $this) {
                 $chien->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Participant>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(Participant $participant): static
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+            $participant->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(Participant $participant): static
+    {
+        if ($this->participants->removeElement($participant)) {
+            // set the owning side to null (unless already changed)
+            if ($participant->getUser() === $this) {
+                $participant->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getAuthor() === $this) {
+                $message->setAuthor(null);
             }
         }
 

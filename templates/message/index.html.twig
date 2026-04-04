@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block body %}
+<section class="messaging">
+    <div class="messaging__sidebar">
+        <div class="messaging__sidebar-header">
+            <h1 class="messaging__title">Messages</h1>
+        </div>
+
+        <div class="messaging__conversations">
+            {% for conversation in conversations %}
+                {% set other = conversation.getOtherParticipant(user) %}
+                {% set lastMessage = conversation.lastMessage %}
+
+                {# Calcul des messages non lus #}
+                {% set unread = 0 %}
+                {% for participant in conversation.participants %}
+                    {% if participant.user == user %}
+                        {% if lastMessage and (participant.lastReadAt is null or lastMessage.createdAt > participant.lastReadAt) %}
+                            {% set unread = 1 %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <a href="{{ path('app_message_show', {'id': conversation.id}) }}"
+                   class="conv-item {% if unread %}conv-item--unread{% endif %}">
+                    <div class="conv-item__avatar">
+                        {% if other and other.imageName %}
+                            <img src="{{ other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ other.username }}">
+                        {% else %}
+                            <img src="{{ asset('profil/default-avatar.png') }}" alt="avatar">
+                        {% endif %}
+                    </div>
+                    <div class="conv-item__body">
+                        <div class="conv-item__top">
+                            <span class="conv-item__name">
+                                {{ conversation.title ?? (other ? other.username : 'Conversation') }}
+                            </span>
+                            {% if lastMessage %}
+                            <span class="conv-item__time">{{ lastMessage.createdAt|date('H:i') }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="conv-item__preview">
+                            {% if lastMessage %}
+                                {% if lastMessage.author == user %}Vous : {% endif %}
+                                {{ lastMessage.content|length > 50 ? lastMessage.content|slice(0, 50) ~ '…' : lastMessage.content }}
+                            {% else %}
+                                <em>Aucun message</em>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if unread %}
+                    <span class="conv-item__badge"></span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <div class="messaging__empty">
+                    <p>Aucune conversation pour l'instant.</p>
+                    <p>Rendez-vous sur le profil d'un utilisateur pour démarrer.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="messaging__placeholder">
+        <div class="messaging__placeholder-inner">
+            <span class="messaging__placeholder-icon">💬</span>
+            <p>Sélectionnez une conversation</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

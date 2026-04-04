@@ -115,6 +115,7 @@
     input[type='text'],
     input[type='date'],
     input[type='number'],
+    input[type='email'],
     textarea,
     select {
       font-family: v.$font-text;
@@ -271,4 +272,42 @@
       background: v.$btn-scd-hover-color;
     }
   }
+}
+
+.profile-edit-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+ 
+    &__img {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid v.$secondary-bg-color;
+        transition: border-color 0.2s;
+ 
+        &:hover {
+            border-color: v.$primary-color;
+        }
+    }
+ 
+    &__label {
+        font-size: 0.78rem;
+        color: v.$text-meta-color;
+        font-style: italic;
+    }
+}
+ 
+// Ligne prénom / nom côte à côte
+.chien-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+ 
+    @include m.phone {
+        grid-template-columns: 1fr;
+    }
 }

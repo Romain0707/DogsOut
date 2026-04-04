@@ -6,48 +6,133 @@
 <section id="article">
     <div class="container">
         <div class="balade-article">
-            <div class="balade-top">
-                <div>
-                    <h3 class="balade-title">{{ balade.title }}</h3>
 
-                    {% if balade.snapshotPath %}
-                        <img src="{{ balade.snapshotPath }}" alt="Snapshot">
-                    {% else %}
-                        <div>Pas d’image</div>
-                    {% endif %}
-
-                    {% if balade.distanceMeters %}
-                        {% if balade.distanceMeters < 1000 %}
-                            {{ balade.distanceMeters }} m
-                        {% else %}
-                            {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
-                        {% endif %}
-                    {% endif %}
-
-                    {% if balade.durationSeconds %}
-                    {% set h = (balade.durationSeconds // 3600) %}
-                    {% set m = ((balade.durationSeconds % 3600) // 60) %}
-                    <p><span class="text-meta">Durée :</span>
-                        {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
-                    </p>
-                    {% endif %}
-
-                    {% if balade.description %}
-                    <p class="balade-desc">
-                        {{ balade.description|length > 160 ? (balade.description|slice(0, 160) ~ '…') : balade.description }}
-                    </p>
-                    {% else %}
-                    <p class="balade-desc"><em>Aucune description.</em></p>
+            {# ── Header : titre + boutons en haut à droite ── #}
+            <div class="balade-header">
+                <h3 class="balade-title">{{ balade.title }}</h3>
+                <div class="balade-option">
+                    <a href="{{ path('app_balade_index') }}" class="btn">Retour</a>
+                    {% if app.user and app.user == balade.user %}
+                        <a href="{{ path('app_balade_form', {'id': balade.id}) }}" class="btn">Modifier</a>
+                        {{ include('balade/_delete_form.html.twig') }}
                     {% endif %}
                 </div>
             </div>
 
-            <div class="balade-option">
-                <a href="{{ path('app_balade_index') }}" class="btn">Retour</a>
-                {% if app.user and app.user == balade.user %}
-                    <a href="{{ path('app_balade_form', {'id': balade.id}) }}" class="btn">Modifier</a>
-                    {{ include('balade/_delete_form.html.twig') }}
+            {# ── Contenu ── #}
+            <div class="balade-top">
+                {% if balade.snapshotPath %}
+                    <img src="{{ balade.snapshotPath }}" alt="Snapshot">
+                {% else %}
+                    <div class="balade-no-image">Pas d'image</div>
                 {% endif %}
+
+                <div class="balade-meta">
+                    {% if balade.distanceMeters %}
+                    <span class="balade-meta-item">
+                        <span class="text-meta">Distance</span>
+                        {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
+                    </span>
+                    {% endif %}
+                    {% if balade.durationSeconds %}
+                    {% set h = (balade.durationSeconds // 3600) %}
+                    {% set m = ((balade.durationSeconds % 3600) // 60) %}
+                    <span class="balade-meta-item">
+                        <span class="text-meta">Durée</span>
+                        {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if balade.description %}
+                <p class="balade-desc">{{ balade.description }}</p>
+                {% else %}
+                <p class="balade-desc"><em>Aucune description.</em></p>
+                {% endif %}
+            </div>
+
+            {# ── Bandeau "À propos" : créateur + date seulement ── #}
+            <div class="balade-about">
+                <a href="{{ path('profil_public', {'id': balade.user.id}) }}" class="balade-about__creator">
+                    <img src="{{ balade.user.imageName ? vich_uploader_asset(balade.user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                         alt="{{ balade.user.username }}"
+                         class="balade-about__avatar">
+                    <div class="balade-about__creator-info">
+                        <span class="balade-about__creator-label">Créée par</span>
+                        <span class="balade-about__creator-name">{{ balade.user.username }}</span>
+                    </div>
+                </a>
+
+                <div class="balade-about__stats">
+                    <div class="balade-about__stat">
+                        <span class="balade-about__stat-value">{{ balade.createdAt|date('d/m/Y') }}</span>
+                        <span class="balade-about__stat-label">Date</span>
+                    </div>
+                </div>
+            </div>
+
+            {# ── Section commentaires ── #}
+            <div class="comments">
+
+                <div class="comments__header">
+                    <h2 class="comments__title">
+                        Commentaires
+                        <span class="comments__count">{{ balade.comments|length }}</span>
+                    </h2>
+                </div>
+
+                {% if is_granted('ROLE_USER') %}
+                <div class="comments__form-wrap">
+                    <div class="comments__form-avatar">
+                        <img src="{{ app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                             alt="{{ app.user.username }}">
+                    </div>
+                    {{ form_start(commentForm, { attr: { class: 'comments__form', action: path('app_comment_add', {'id': balade.id}) } }) }}
+                        {{ form_widget(commentForm.content) }}
+                        {{ form_errors(commentForm.content) }}
+                        <div class="comments__form-actions">
+                            <button type="submit" class="comments__submit">Publier</button>
+                        </div>
+                    {{ form_end(commentForm) }}
+                </div>
+                {% else %}
+                <div class="comments__login-prompt">
+                    <a href="{{ path('login') }}">Connectez-vous</a> pour laisser un commentaire.
+                </div>
+                {% endif %}
+
+                <div class="comments__list">
+                    {% for comment in balade.comments %}
+                    <div class="comment">
+                        <div class="comment__avatar">
+                            <img src="{{ comment.user.imageName ? vich_uploader_asset(comment.user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                                 alt="{{ comment.user.username }}">
+                        </div>
+                        <div class="comment__body">
+                            <div class="comment__header">
+                                <a href="{{ path('profil_public', {'id': comment.user.id}) }}"
+                                   class="comment__author">{{ comment.user.username }}</a>
+                                <span class="comment__date">{{ comment.createdAt|date('d/m/Y à H:i') }}</span>
+                            </div>
+                            <p class="comment__content">{{ comment.content }}</p>
+                            {% if app.user and (app.user == comment.user) %}
+                            <form action="{{ path('app_comment_delete', {'id': comment.id}) }}" method="POST" class="comment__delete-form">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ comment.id) }}">
+                                <button type="submit" class="comment__delete"
+                                        onclick="return confirm('Supprimer ce commentaire ?')">
+                                    Supprimer
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="comments__empty">
+                        <p>Aucun commentaire pour l'instant. Soyez le premier !</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
             </div>
         </div>
     </div>
@@ -55,7 +140,4 @@
 {% endblock %}
 
 {% block javascripts %}
-
 {% endblock %}
-
-    
