@@ -9,7 +9,6 @@
   <div class="container">
     <h1>{{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}</h1>
 
-    {# ── Carte ─────────────────────────────────────────────────────────── #}
     <div class="bm-wrapper">
 
       <aside class="bm-sidebar">
@@ -86,7 +85,6 @@
 
     </div>
 
-    {# ── Formulaire Symfony ────────────────────────────────────────────── #}
     {{ form_start(form) }}
       {{ form_widget(form) }}
       <button type="submit" class="btn btn-primary mt-3">

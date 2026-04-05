@@ -14,7 +14,6 @@
                 {% set other = conversation.getOtherParticipant(user) %}
                 {% set lastMessage = conversation.lastMessage %}
 
-                {# Calcul des messages non lus #}
                 {% set unread = 0 %}
                 {% for participant in conversation.participants %}
                     {% if participant.user == user %}

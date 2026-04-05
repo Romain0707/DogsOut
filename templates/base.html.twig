@@ -85,11 +85,8 @@
                 notifSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
 
-                    // Vérifie si on est déjà sur la conversation concernée
                     const currentConvEl = document.getElementById('js-current-conversation');
                     if (currentConvEl) {
-                        // On est sur une page de chat, on ignore la notif
-                        // car les messages sont déjà marqués comme lus
                         return;
                     }
 

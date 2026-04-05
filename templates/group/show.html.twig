@@ -6,7 +6,6 @@
 <section class="group-show">
     <div class="group-show__container">
 
-        {# ── Header ── #}
         <div class="group-show__header">
             <div class="group-show__header-left">
                 <div class="group-show__avatar">{{ group.name|slice(0, 1)|upper }}</div>
@@ -51,7 +50,6 @@
             </div>
         </div>
 
-        {# ── Description ── #}
         {% if group.description %}
         <div class="group-show__desc">
             <p>{{ group.description }}</p>
@@ -60,10 +58,8 @@
 
         <div class="group-show__body">
 
-            {# ── Colonne principale ── #}
             <div class="group-show__main">
 
-                {# Demandes en attente (admin/modo) #}
                 {% if pendingRequests|length > 0 %}
                 <div class="group-panel group-panel--warning">
                     <h2 class="group-panel__title">
@@ -99,7 +95,6 @@
                 </div>
                 {% endif %}
 
-                {# Événements à venir #}
                 <div class="group-panel">
                     <div class="group-panel__head">
                         <h2 class="group-panel__title">Événements à venir</h2>
@@ -127,7 +122,6 @@
                     {% endif %}
                 </div>
 
-                {# Événements passés #}
                 {% if pastEvents|length > 0 %}
                 <div class="group-panel">
                     <h2 class="group-panel__title group-panel__title--muted">Événements passés</h2>
@@ -147,7 +141,6 @@
 
             </div>
 
-            {# ── Sidebar membres ── #}
             <div class="group-show__sidebar">
                 <div class="group-panel">
                     <h2 class="group-panel__title">Membres ({{ activeMembers|length }})</h2>
@@ -188,7 +181,6 @@
                     </div>
                 </div>
 
-                {# Supprimer le groupe (créateur seulement) #}
                 {% if app.user and app.user == group.createdBy %}
                 <div class="group-panel group-panel--danger">
                     <p class="group-panel__danger-label">Zone de danger</p>
@@ -201,7 +193,6 @@
                     </form>
                 </div>
                 {% endif %}
-
             </div>
         </div>
     </div>

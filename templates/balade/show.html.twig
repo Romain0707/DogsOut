@@ -7,7 +7,6 @@
     <div class="container">
         <div class="balade-article">
 
-            {# ── Header : titre + boutons en haut à droite ── #}
             <div class="balade-header">
                 <h3 class="balade-title">{{ balade.title }}</h3>
                 <div class="balade-option">
@@ -19,7 +18,6 @@
                 </div>
             </div>
 
-            {# ── Contenu ── #}
             <div class="balade-top">
                 {% if balade.snapshotPath %}
                     <img src="{{ balade.snapshotPath }}" alt="Snapshot">
@@ -51,7 +49,6 @@
                 {% endif %}
             </div>
 
-            {# ── Bandeau "À propos" : créateur + date seulement ── #}
             <div class="balade-about">
                 <a href="{{ path('profil_public', {'id': balade.user.id}) }}" class="balade-about__creator">
                     <img src="{{ balade.user.imageName ? vich_uploader_asset(balade.user, 'imageFile') : asset('profil/default-avatar.png') }}"
@@ -71,7 +68,6 @@
                 </div>
             </div>
 
-            {# ── Section commentaires ── #}
             <div class="comments">
 
                 <div class="comments__header">

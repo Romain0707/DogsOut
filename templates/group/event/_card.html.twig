@@ -16,7 +16,6 @@
         <p class="group-event-card__desc">{{ event.description }}</p>
         {% endif %}
 
-        {# Réponses #}
         {% set available = 0 %}
         {% set unavailable = 0 %}
         {% set maybe = 0 %}
@@ -34,7 +33,6 @@
             <span class="response-badge response-badge--unavailable">✕ {{ unavailable }}</span>
         </div>
 
-        {# Boutons de réponse si membre actif #}
         {% if isActiveMember %}
         <form action="{{ path('app_group_event_respond', {'groupId': group.id, 'eventId': event.id}) }}" method="POST" class="group-event-card__form">
             <button type="submit" name="availability" value="available"
@@ -53,7 +51,6 @@
         {% endif %}
     </div>
 
-    {# Supprimer (admin/modo ou créateur de l'événement) #}
     {% if isAdminOrModo or (currentUser and event.proposedBy == currentUser) %}
     <form action="{{ path('app_group_event_delete', {'groupId': group.id, 'eventId': event.id}) }}" method="POST" class="group-event-card__delete">
         <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ event.id) }}">

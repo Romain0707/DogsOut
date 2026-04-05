@@ -14,11 +14,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    /**
-     * routeGeoJson est un array PHP (Doctrine type:json).
-     * json_encode le convertit en objet JS valide.
-     * Peut être une FeatureCollection, un Feature, ou vide [].
-     */
+
     const raw = {{ balade.routeGeoJson is not empty ? balade.routeGeoJson | json_encode | raw : 'null' }};
 
     const map = L.map('map', {
@@ -30,7 +26,6 @@
       maxZoom: 19,
     }).addTo(map);
 
-    // Normalise en FeatureCollection quelle que soit la forme du GeoJSON sauvegardé
     function toFeatureCollection(data) {
       if (!data) return null;
       if (data.type === 'FeatureCollection') return data;
@@ -38,7 +33,6 @@
       if (data.type === 'LineString' || data.type === 'MultiLineString') {
         return { type: 'FeatureCollection', features: [{ type: 'Feature', geometry: data, properties: {} }] };
       }
-      // Array vide [] → null
       if (Array.isArray(data) && data.length === 0) return null;
       return null;
     }
@@ -77,14 +71,12 @@
       map.setView([46.2276, 2.2137], 6);
     }
 
-    // Signal prêt dès que suffisamment de tuiles sont chargées
     let tilesLoaded = 0;
     map.on('tileloadend tileerror', () => {
       tilesLoaded++;
       if (tilesLoaded >= 4) markReady();
     });
 
-    // Fallback 8s si les tuiles sont lentes ou échouent
     setTimeout(markReady, 8000);
   </script>
 </body>

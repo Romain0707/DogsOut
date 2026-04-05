@@ -16,7 +16,6 @@
                 <p class="profile-email">{{ user.email }}</p>
             </div>
 
-            {# Bouton message uniquement si connecté #}
             {% if currentUser %}
                 <a href="{{ path('app_message_with', {'id': user.id}) }}"
                    class="profile-edit-btn">
@@ -27,7 +26,6 @@
 
         <div class="profile-body">
 
-            {# ── Infos ── #}
             <div class="profile-info-grid">
                 <div class="profile-info-item">
                     <div class="profile-info-label">Prénom</div>
@@ -59,7 +57,6 @@
                 </div>
             </div>
 
-            {# ── Chiens ── #}
             <div class="profile-divider">
                 <p>Ses chiens</p>
             </div>
@@ -94,7 +91,6 @@
                 {% endfor %}
             </div>
 
-            {# ── Balades ── #}
             <div class="profile-divider">
                 <p>Ses balades</p>
             </div>
@@ -150,7 +146,7 @@
                 {% endfor %}
             </div>
 
-        </div>{# /profile-body #}
-    </div>{# /container #}
+        </div>
+    </div>
 </section>
 {% endblock %}
