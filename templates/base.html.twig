@@ -60,38 +60,26 @@
         {% if is_granted('ROLE_USER') %}
             <script>
                 async function refreshUnreadBadge() {
-                    const res  = await fetch('{{ path("app_message_unread_count") }}');
-                    const data = await res.json();
-                    const count = data.count;
-
-                    let badge = document.querySelector('.nav-messages__badge');
-                    const navLink = document.querySelector('.nav-messages');
-
-                    if (count > 0) {
-                        if (!badge) {
-                            badge = document.createElement('span');
-                            badge.className = 'nav-messages__badge';
-                            navLink.appendChild(badge);
+                    try {
+                        const res  = await fetch('{{ path("app_message_unread_count") }}');
+                        const data = await res.json();
+                        const count = data.count;
+                        let badge = document.querySelector('.nav-messages__badge');
+                        const navLink = document.querySelector('.nav-messages');
+                        if (count > 0) {
+                            if (!badge) {
+                                badge = document.createElement('span');
+                                badge.className = 'nav-messages__badge';
+                                navLink.appendChild(badge);
+                            }
+                            badge.textContent = count;
+                        } else {
+                            if (badge) badge.remove();
                         }
-                        badge.textContent = count;
-                    } else {
-                        if (badge) badge.remove();
-                    }
+                    } catch(e) {}
                 }
 
-                const notifUrl = new URL('{{ mercure("user/" ~ app.user.id ~ "/notifications")|escape("js") }}');
-                const notifSource = new EventSource(notifUrl);
-
-                notifSource.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-
-                    const currentConvEl = document.getElementById('js-current-conversation');
-                    if (currentConvEl) {
-                        return;
-                    }
-
-                    refreshUnreadBadge();
-                };
+                setInterval(refreshUnreadBadge, 10000);
             </script>
         {% endif %}
     </body>

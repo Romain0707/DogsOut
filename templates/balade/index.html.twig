@@ -17,12 +17,6 @@
                         <div>
                             <h3 class="balade-title">{{ balade.title }}</h3>
 
-                            {% if balade.snapshotPath %}
-                                <img src="{{ balade.snapshotPath }}" alt="Snapshot">
-                            {% else %}
-                                <div>Pas d’image</div>
-                            {% endif %}
-
                             {% if balade.distanceMeters %}
                                 {% if balade.distanceMeters < 1000 %}
                                     {{ balade.distanceMeters }} m

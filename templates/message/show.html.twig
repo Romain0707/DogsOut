@@ -129,7 +129,6 @@
     const form        = document.getElementById('js-send-form');
     const input       = document.getElementById('js-input');
     const currentUser = {{ user.id }};
-    const mercureUrl  = '{{ mercure("conversation/" ~ conversation.id)|escape("js") }}';
 
     function scrollToBottom() {
         messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -157,36 +156,44 @@
         }
     });
 
-    const eventSource = new EventSource(mercureUrl);
+    let lastId = {{ messages|length > 0 ? messages|last.id : 0 }};
+    const pollUrl = '{{ path("app_message_poll", {"id": conversation.id}) }}';
 
-    eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+    async function poll() {
+        try {
+            const res  = await fetch(`${pollUrl}?since=${lastId}`);
+            const data = await res.json();
 
-        if (data.authorId === currentUser) return;
+            data.forEach(msg => {
+                if (msg.authorId === currentUser) return;
 
-        fetch('{{ path("app_message_mark_read", {"id": conversation.id}) }}', {
-            method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        });
+                const wrap = document.createElement('div');
+                wrap.className = 'chat__bubble-wrap';
+                wrap.innerHTML = `
+                    <div class="chat__bubble-avatar" style="width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+                        <img src="${msg.authorAvatar}" alt="${msg.author}" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="chat__bubble">
+                        <p class="chat__bubble-content">${escapeHtml(msg.content)}</p>
+                        <span class="chat__bubble-time">${msg.createdAt}</span>
+                    </div>
+                `;
 
-        const wrap = document.createElement('div');
-        wrap.className = 'chat__bubble-wrap';
-        wrap.innerHTML = `
-            <div class="chat__bubble-avatar" style="width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;">
-                <img src="${data.authorAvatar}" alt="${data.author}" style="width:100%;height:100%;object-fit:cover;">
-            </div>
-            <div class="chat__bubble">
-                <p class="chat__bubble-content">${escapeHtml(data.content)}</p>
-                <span class="chat__bubble-time">${data.createdAt}</span>
-            </div>
-        `;
+                const empty = messagesEl.querySelector('.chat__empty');
+                if (empty) empty.remove();
 
-        const empty = messagesEl.querySelector('.chat__empty');
-        if (empty) empty.remove();
+                messagesEl.appendChild(wrap);
+                lastId = msg.id;
+                scrollToBottom();
+            });
+        } catch (e) {
+            console.error('Polling error:', e);
+        }
+    }
 
-        messagesEl.appendChild(wrap);
-        scrollToBottom();
-    };
+    setInterval(poll, 3000);
+
+    
 </script>
 {% endblock %}
 

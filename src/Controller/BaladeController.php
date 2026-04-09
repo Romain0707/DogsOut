@@ -7,7 +7,6 @@ use App\Entity\Comment;
 use App\Form\BaladeType;
 use App\Form\CommentType;
 use App\Repository\BaladeRepository;
-use App\Service\BaladeSnapshotter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +26,7 @@ final class BaladeController extends AbstractController
 
     #[Route('/admin/new', name: 'admin_balade_new')]
     #[Route('/form/{id}', name: 'app_balade_form', methods: ['GET', 'POST'], defaults: ['id' => null])]
-    public function form(Request $request, EntityManagerInterface $entityManager, BaladeSnapshotter $snapshotter, ?Balade $balade = null ): Response 
+    public function form(Request $request, EntityManagerInterface $entityManager, ?Balade $balade = null ): Response 
     {
         if (!$balade) {
             $balade = new Balade();
@@ -48,7 +47,6 @@ final class BaladeController extends AbstractController
             }
 
             $entityManager->flush();
-            $snapshotter->generate($balade, $this->getParameter('kernel.project_dir'));
 
             return $this->redirectToRoute('app_balade_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -82,13 +80,5 @@ final class BaladeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_balade_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    #[Route('/snapshot/{id}', name: 'app_balade_snapshot', methods: ['GET'])]
-    public function snapshot(Balade $balade): Response
-    {
-        return $this->render('balade/snapshot.html.twig', [
-            'balade' => $balade,
-        ]);
     }
 }

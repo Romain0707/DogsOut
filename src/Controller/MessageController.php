@@ -13,8 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/messages')]
@@ -23,7 +21,6 @@ final class MessageController extends AbstractController
     public function __construct(
         private Security $security,
         private EntityManagerInterface $em,
-        private HubInterface $hub,
     ) {}
 
     /**
@@ -148,20 +145,6 @@ final class MessageController extends AbstractController
             }
         }
 
-        $this->hub->publish(new Update(
-            topics: $topics,
-            data: json_encode([
-                'id'           => $message->getId(),
-                'content'      => $message->getContent(),
-                'author'       => $currentUser->getUsername(),
-                'authorId'     => $currentUser->getId(),
-                'authorAvatar' => $currentUser->getImageName()
-                    ? '/uploads/images/' . $currentUser->getImageName()
-                    : '/profil/default-avatar.png',
-                'createdAt'    => $message->getCreatedAt()->format('H:i'),
-            ]),
-        ));
-
         return $this->redirectToRoute('app_message_show', ['id' => $conversation->getId()]);
     }
 
@@ -217,5 +200,46 @@ final class MessageController extends AbstractController
         }
 
         return $this->json(['ok' => true]);
+    }
+
+    #[Route('/{id}/poll', name: 'app_message_poll', methods: ['GET'])]
+    public function poll(
+        Conversation $conversation,
+        Request $request,
+        MessageRepository $messageRepository,
+    ): Response {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->security->getUser();
+
+        if (!$conversation->hasParticipant($currentUser)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $since = (int) $request->query->get('since', 0);
+
+        // Récupère uniquement les messages après l'ID donné
+        $messages = $messageRepository->findAfter($conversation, $since);
+
+        // Marque comme lu
+        foreach ($conversation->getParticipants() as $participant) {
+            if ($participant->getUser() === $currentUser) {
+                $participant->setLastReadAt(new \DateTimeImmutable());
+                break;
+            }
+        }
+        $this->em->flush();
+
+        $data = array_map(fn(Message $m) => [
+            'id'           => $m->getId(),
+            'content'      => $m->getContent(),
+            'author'       => $m->getAuthor()->getUsername(),
+            'authorId'     => $m->getAuthor()->getId(),
+            'authorAvatar' => $m->getAuthor()->getImageName()
+                ? '/uploads/images/' . $m->getAuthor()->getImageName()
+                : '/profil/default-avatar.png',
+            'createdAt'    => $m->getCreatedAt()->format('H:i'),
+        ], $messages);
+
+        return $this->json($data);
     }
 }

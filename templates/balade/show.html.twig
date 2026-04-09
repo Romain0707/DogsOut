@@ -19,12 +19,6 @@
             </div>
 
             <div class="balade-top">
-                {% if balade.snapshotPath %}
-                    <img src="{{ balade.snapshotPath }}" alt="Snapshot">
-                {% else %}
-                    <div class="balade-no-image">Pas d'image</div>
-                {% endif %}
-
                 <div class="balade-meta">
                     {% if balade.distanceMeters %}
                     <span class="balade-meta-item">

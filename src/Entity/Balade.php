@@ -44,8 +44,6 @@ class Balade
     #[ORM\Column(type: 'json')]
     private array $waypointsJson = [];
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $snapshotPath = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $distanceMeters = null;
@@ -183,17 +181,6 @@ class Balade
         return $this;
     }
 
-    public function getSnapshotPath(): ?string
-    {
-        return $this->snapshotPath;
-    }
-
-    public function setSnapshotPath(?string $snapshotPath): static
-    {
-        $this->snapshotPath = $snapshotPath;
-
-        return $this;
-    }
 
     public function getDistanceMeters(): ?int
     {

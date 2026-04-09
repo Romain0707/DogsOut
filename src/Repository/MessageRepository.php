@@ -28,4 +28,18 @@ class MessageRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAfter(Conversation $conversation, int $afterId): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.conversation = :conversation')
+            ->andWhere('m.id > :afterId')
+            ->setParameter('conversation', $conversation)
+            ->setParameter('afterId', $afterId)
+            ->leftJoin('m.author', 'a')
+            ->addSelect('a')
+            ->orderBy('m.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
