@@ -3,9 +3,12 @@
 namespace App\Form;
 
 use App\Entity\Balade;
+use App\Form\BaladeImageType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -28,70 +31,59 @@ class BaladeType extends AbstractType
                 'label'    => 'Balade publique',
                 'required' => false,
             ])
+
+            // ── Difficulté ─────────────────────────────────────────────
+            ->add('difficulty', ChoiceType::class, [
+                'label'    => 'Difficulté',
+                'required' => false,
+                'placeholder' => 'Non renseignée',
+                'choices'  => [
+                    'Facile'   => 'easy',
+                    'Modérée'  => 'moderate',
+                    'Difficile'=> 'hard',
+                    'Expert'   => 'expert',
+                ],
+                'attr' => ['class' => 'form-select'],
+            ])
+
+            // ── Images ─────────────────────────────────────────────────
+            ->add('images', CollectionType::class, [
+                'label'        => 'Photos',
+                'entry_type'   => BaladeImageType::class,
+                'allow_add'    => true,
+                'allow_delete' => true,
+                'by_reference' => false, // important : force addImage/removeImage
+                'required'     => false,
+                'attr'         => ['class' => 'balade-images-collection'],
+            ])
+
             // ── Champs carte (hidden) ──────────────────────────────────
-            // Le JS envoie des strings JSON.
-            // Doctrine stocke des arrays (type: json).
-            // Le CallbackTransformer fait la conversion string ↔ array.
-            ->add('routeGeoJson', HiddenType::class, [
-                'required' => false,
-            ])
-            ->add('waypointsJson', HiddenType::class, [
-                'required' => false,
-            ])
-            ->add('distanceMeters', HiddenType::class, [
-                'required' => false,
-            ])
-            ->add('durationSeconds', HiddenType::class, [
-                'required' => false,
-            ])
+            ->add('routeGeoJson', HiddenType::class, ['required' => false])
+            ->add('waypointsJson', HiddenType::class, ['required' => false])
+            ->add('distanceMeters', HiddenType::class, ['required' => false])
+            ->add('durationSeconds', HiddenType::class, ['required' => false])
         ;
 
-        // ── Transformer routeGeoJson : string JSON ↔ array ────────────
+        // ── Transformers (inchangés) ───────────────────────────────────
+
         $builder->get('routeGeoJson')->addModelTransformer(new CallbackTransformer(
-            // array (entité) → string (formulaire HTML)
-            function (array $value): string {
-                if (empty($value)) return '';
-                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            },
-            // string (formulaire HTML) → array (entité)
-            function (string $value): array {
-                if ($value === '') return [];
-                $decoded = json_decode($value, true);
-                return is_array($decoded) ? $decoded : [];
-            }
+            fn(array $v): string  => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            fn(string $v): array  => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
         ));
 
-        // ── Transformer waypointsJson : string JSON ↔ array ──────────
         $builder->get('waypointsJson')->addModelTransformer(new CallbackTransformer(
-            function (array $value): string {
-                if (empty($value)) return '';
-                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            },
-            function (string $value): array {
-                if ($value === '') return [];
-                $decoded = json_decode($value, true);
-                return is_array($decoded) ? $decoded : [];
-            }
+            fn(array $v): string  => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            fn(string $v): array  => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
         ));
 
-        // ── Transformer distanceMeters : string ↔ int|null ───────────
         $builder->get('distanceMeters')->addModelTransformer(new CallbackTransformer(
-            function (?int $value): string {
-                return $value !== null ? (string) $value : '';
-            },
-            function (string $value): ?int {
-                return $value !== '' ? (int) $value : null;
-            }
+            fn(?int $v): string   => $v !== null ? (string) $v : '',
+            fn(string $v): ?int   => $v !== '' ? (int) $v : null
         ));
 
-        // ── Transformer durationSeconds : string ↔ int|null ──────────
         $builder->get('durationSeconds')->addModelTransformer(new CallbackTransformer(
-            function (?int $value): string {
-                return $value !== null ? (string) $value : '';
-            },
-            function (string $value): ?int {
-                return $value !== '' ? (int) $value : null;
-            }
+            fn(?int $v): string   => $v !== null ? (string) $v : '',
+            fn(string $v): ?int   => $v !== '' ? (int) $v : null
         ));
     }
 

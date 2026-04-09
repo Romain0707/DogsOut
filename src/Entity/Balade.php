@@ -2,6 +2,10 @@
 
 namespace App\Entity;
 
+use App\Entity\BaladeImage;
+use App\Entity\Comment;
+use App\Entity\GroupEvent;
+use App\Entity\User;
 use App\Repository\BaladeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -57,10 +61,24 @@ class Balade
     #[ORM\OneToMany(targetEntity: GroupEvent::class, mappedBy: 'balade')]
     private Collection $groupEvents;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $difficulty = null;
+
+    /** @var Collection<int, BaladeImage> */
+    #[ORM\OneToMany(
+        mappedBy: 'balade',
+        targetEntity: BaladeImage::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $images;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->groupEvents = new ArrayCollection();
+        $this->images      = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -233,6 +251,42 @@ class Balade
             }
         }
 
+        return $this;
+    }
+
+    public function getDifficulty(): ?string
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(?string $difficulty): static
+    {
+        $this->difficulty = $difficulty;
+        return $this;
+    }
+
+    /** @return Collection<int, BaladeImage> */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(BaladeImage $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setBalade($this);
+        }
+        return $this;
+    }
+
+    public function removeImage(BaladeImage $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            if ($image->getBalade() === $this) {
+                $image->setBalade(null);
+            }
+        }
         return $this;
     }
 }

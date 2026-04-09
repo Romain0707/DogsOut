@@ -382,8 +382,8 @@ export function initBaladeMap() {
     if (type === 'hide') { statusBarEl.hidden = true; return; }
     const cls = { load: 'map-status--load', ors: 'map-status--ors', free: 'map-status--free' };
     const txt = {
-      load: '<span class="map-status__spin"></span>Calcul ORS en cours…',
-      ors:  '<span class="map-status__dot"></span>Mode ORS actif',
+      load: '<span class="map-status__spin"></span>Calcul en cours…',
+      ors:  '<span class="map-status__dot"></span>Mode Calcul actif',
       free: '<span class="map-status__dot"></span>Mode Libre actif',
     };
     statusBarEl.classList.add(cls[type]);

@@ -19,6 +19,33 @@
             </div>
 
             <div class="balade-top">
+
+                {# ── Photos ── #}
+                {% set images = balade.images %}
+                {% if images|length > 0 %}
+                  <div class="balade-carousel" id="balade-carousel">
+                    <div class="balade-carousel__track">
+                      {% for image in images %}
+                        <div class="balade-carousel__slide {% if loop.first %}active{% endif %}">
+                          <img src="{{ vich_uploader_asset(image, 'imageFile') }}"
+                               alt="Photo {{ loop.index }} de {{ balade.title }}">
+                        </div>
+                      {% endfor %}
+                    </div>
+                    {% if images|length > 1 %}
+                      <button class="balade-carousel__btn balade-carousel__btn--prev" aria-label="Précédent">‹</button>
+                      <button class="balade-carousel__btn balade-carousel__btn--next" aria-label="Suivant">›</button>
+                      <div class="balade-carousel__dots">
+                        {% for image in images %}
+                          <span class="balade-carousel__dot {% if loop.first %}active{% endif %}"
+                                data-index="{{ loop.index0 }}"></span>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+                {# ── Meta ── #}
                 <div class="balade-meta">
                     {% if balade.distanceMeters %}
                     <span class="balade-meta-item">
@@ -26,22 +53,44 @@
                         {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
                     </span>
                     {% endif %}
+
                     {% if balade.durationSeconds %}
                     {% set h = (balade.durationSeconds // 3600) %}
-                    {% set m = ((balade.durationSeconds % 3600) // 60) %}
+                    {% set min = ((balade.durationSeconds % 3600) // 60) %}
                     <span class="balade-meta-item">
                         <span class="text-meta">Durée</span>
-                        {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
+                        {% if h > 0 %}{{ h }} h {% endif %}{{ min }} min
+                    </span>
+                    {% endif %}
+
+                    {% if balade.difficulty %}
+                    {% set difficultyLabels = { 'easy': 'Facile', 'moderate': 'Modérée', 'hard': 'Difficile', 'expert': 'Expert' } %}
+                    {% set difficultyColors = { 'easy': '#4a7c59', 'moderate': '#e8a020', 'hard': '#e05c20', 'expert': '#c0392b' } %}
+                    <span class="balade-meta-item">
+                        <span class="text-meta">Difficulté</span>
+                        <span class="balade-difficulty"
+                              style="color: {{ difficultyColors[balade.difficulty] ?? '#666' }}">
+                          {{ difficultyLabels[balade.difficulty] ?? balade.difficulty }}
+                        </span>
                     </span>
                     {% endif %}
                 </div>
 
+                {# ── Description ── #}
                 {% if balade.description %}
                 <p class="balade-desc">{{ balade.description }}</p>
                 {% else %}
                 <p class="balade-desc"><em>Aucune description.</em></p>
                 {% endif %}
-            </div>
+
+                {# ── Carte lecture seule ── #}
+                {% if balade.routeGeoJson is not empty %}
+                <div class="balade-map-readonly">
+                    <div id="map-show"></div>
+                </div>
+                {% endif %}
+
+            </div>{# /balade-top #}
 
             <div class="balade-about">
                 <a href="{{ path('profil_public', {'id': balade.user.id}) }}" class="balade-about__creator">
@@ -62,6 +111,7 @@
                 </div>
             </div>
 
+            {# ── Commentaires ── #}
             <div class="comments">
 
                 <div class="comments__header">
@@ -123,11 +173,104 @@
                     {% endfor %}
                 </div>
 
-            </div>
-        </div>
+            </div>{# /comments #}
+
+        </div>{# /balade-article #}
     </div>
 </section>
 {% endblock %}
 
 {% block javascripts %}
+  {{ parent() }}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const carousel = document.getElementById('balade-carousel');
+      if (!carousel) return;
+      const slides = carousel.querySelectorAll('.balade-carousel__slide');
+      const dots   = carousel.querySelectorAll('.balade-carousel__dot');
+      if (slides.length <= 1) return;
+      let current = 0;
+      function goTo(index) {
+        slides[current].classList.remove('active');
+        dots[current]?.classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current]?.classList.add('active');
+      }
+      carousel.querySelector('.balade-carousel__btn--prev')
+        ?.addEventListener('click', () => goTo(current - 1));
+      carousel.querySelector('.balade-carousel__btn--next')
+        ?.addEventListener('click', () => goTo(current + 1));
+      dots.forEach(dot =>
+        dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index, 10)))
+      );
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const mapEl = document.getElementById('map-show');
+      if (!mapEl) return;
+
+      const routeGeoJson = {{ balade.routeGeoJson | json_encode | raw }};
+      const waypoints    = {{ balade.waypointsJson | json_encode | raw }};
+
+      const map = L.map('map-show', {
+        zoomControl:     true,
+        scrollWheelZoom: false,
+        dragging:        true,
+        doubleClickZoom: false,
+        boxZoom:         false,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+
+      mapEl.addEventListener('click', () => map.scrollWheelZoom.enable(), { once: true });
+
+      const routeLayer = L.geoJSON(routeGeoJson, {
+        style: () => ({
+          color:   '#4a7c59',
+          weight:  5,
+          opacity: 0.9,
+          lineCap: 'round',
+        }),
+      }).addTo(map);
+
+      if (Array.isArray(waypoints) && waypoints.length >= 2) {
+        const first = waypoints[0];
+        const last  = waypoints[waypoints.length - 1];
+
+        const iconStart = L.divIcon({
+          className: '',
+          html: `<div class="bm-marker bm-marker--start">🐾</div>`,
+          iconAnchor: [16, 16],
+        });
+        const iconEnd = L.divIcon({
+          className: '',
+          html: `<div class="bm-marker bm-marker--end">🏁</div>`,
+          iconAnchor: [16, 16],
+        });
+
+        L.marker([first[0], first[1]], { icon: iconStart })
+          .bindTooltip('Départ', { permanent: false, direction: 'top' })
+          .addTo(map);
+
+        const isBoucle =
+          Math.abs(first[0] - last[0]) < 0.0001 &&
+          Math.abs(first[1] - last[1]) < 0.0001;
+
+        if (!isBoucle) {
+          L.marker([last[0], last[1]], { icon: iconEnd })
+            .bindTooltip('Arrivée', { permanent: false, direction: 'top' })
+            .addTo(map);
+        }
+      }
+
+      const bounds = routeLayer.getBounds();
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [30, 30] });
+      }
+    });
+  </script>
 {% endblock %}

@@ -3,80 +3,80 @@
 {% block title %}Modifier mon profil{% endblock %}
 
 {% block body %}
-<div class="chien-form-page">
-    <h1 class="chien-form-page__title">Mon profil</h1>
-    <p class="chien-form-page__subtitle">Mettez à jour vos informations personnelles.</p>
+    <div class="chien-form-page">
+        <h1 class="chien-form-page__title">Mon profil</h1>
+        <p class="chien-form-page__subtitle">Mettez à jour vos informations personnelles.</p>
 
-    <div class="chien-form-page__card">
+        <div class="chien-form-page__card">
 
-        <div class="profile-edit-avatar">
-            <img src="{{ user.imageName ? vich_uploader_asset(user, 'imageFile') : asset('profil/default-avatar.png') }}"
-                alt="Avatar actuel"
-                class="profile-edit-avatar__img"
-                id="js-avatar-preview">
-            <span class="profile-edit-avatar__label">Photo actuelle</span>
+            <div class="profile-edit-avatar">
+                <img src="{{ user.imageName ? vich_uploader_asset(user, 'imageFile') : asset('profil/default-avatar.png') }}"
+                    alt="Avatar actuel"
+                    class="profile-edit-avatar__img"
+                    id="js-avatar-preview">
+                <span class="profile-edit-avatar__label">Photo actuelle</span>
+            </div>
+
+            {{ form_start(form, { attr: { class: 'chien-form', enctype: 'multipart/form-data' } }) }}
+
+                <div class="chien-form__group">
+                    {{ form_label(form.imageFile) }}
+                    {{ form_widget(form.imageFile) }}
+                    {{ form_errors(form.imageFile) }}
+                </div>
+
+                <div class="chien-form__group">
+                    {{ form_label(form.username) }}
+                    {{ form_widget(form.username) }}
+                    {{ form_errors(form.username) }}
+                </div>
+
+                <div class="chien-form__group">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="chien-form__row">
+                    <div class="chien-form__group">
+                        {{ form_label(form.firstname) }}
+                        {{ form_widget(form.firstname) }}
+                        {{ form_errors(form.firstname) }}
+                    </div>
+                    <div class="chien-form__group">
+                        {{ form_label(form.lastname) }}
+                        {{ form_widget(form.lastname) }}
+                        {{ form_errors(form.lastname) }}
+                    </div>
+                </div>
+
+                <div class="chien-form__group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="chien-form__actions">
+                    <a href="{{ path('profil') }}" class="chien-form__back">← Retour</a>
+                    <button type="submit" class="chien-form__submit">Enregistrer</button>
+                </div>
+
+            {{ form_end(form) }}
         </div>
-
-        {{ form_start(form, { attr: { class: 'chien-form', enctype: 'multipart/form-data' } }) }}
-
-            <div class="chien-form__group">
-                {{ form_label(form.imageFile) }}
-                {{ form_widget(form.imageFile) }}
-                {{ form_errors(form.imageFile) }}
-            </div>
-
-            <div class="chien-form__group">
-                {{ form_label(form.username) }}
-                {{ form_widget(form.username) }}
-                {{ form_errors(form.username) }}
-            </div>
-
-            <div class="chien-form__group">
-                {{ form_label(form.email) }}
-                {{ form_widget(form.email) }}
-                {{ form_errors(form.email) }}
-            </div>
-
-            <div class="chien-form__row">
-                <div class="chien-form__group">
-                    {{ form_label(form.firstname) }}
-                    {{ form_widget(form.firstname) }}
-                    {{ form_errors(form.firstname) }}
-                </div>
-                <div class="chien-form__group">
-                    {{ form_label(form.lastname) }}
-                    {{ form_widget(form.lastname) }}
-                    {{ form_errors(form.lastname) }}
-                </div>
-            </div>
-
-            <div class="chien-form__group">
-                {{ form_label(form.description) }}
-                {{ form_widget(form.description) }}
-                {{ form_errors(form.description) }}
-            </div>
-
-            <div class="chien-form__actions">
-                <a href="{{ path('profil') }}" class="chien-form__back">← Retour</a>
-                <button type="submit" class="chien-form__submit">Enregistrer</button>
-            </div>
-
-        {{ form_end(form) }}
     </div>
-</div>
 
-<script>
-    const input = document.querySelector('input[type="file"]');
-    const preview = document.getElementById('js-avatar-preview');
+    <script>
+        const input = document.querySelector('input[type="file"]');
+        const preview = document.getElementById('js-avatar-preview');
 
-    if (input && preview) {
-        input.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => preview.src = ev.target.result;
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
+        if (input && preview) {
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => preview.src = ev.target.result;
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
 {% endblock %}
