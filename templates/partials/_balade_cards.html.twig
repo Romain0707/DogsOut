@@ -1,0 +1,156 @@
+{% for balade in balades %}
+<div class="balade-card">
+
+    {# ── Cover ─────────────────────────────────────────────────── #}
+    <div class="balade-card-img">
+        {% set firstImage = balade.images.first %}
+        {% if firstImage and firstImage.filename %}
+            <img
+                src="{{ vich_uploader_asset(firstImage, 'imageFile') }}"
+                alt="{{ balade.title }}"
+            >
+        {% else %}
+            <img
+                src="{{ asset('uploads/images/default-balade.jpg') }}"
+                alt="Image par défaut"
+            >
+        {% endif %}
+
+        {# Auteur sur la cover #}
+        {% if balade.user %}
+            <div class="balade-card-author">
+                {% if balade.user.imageName %}
+                    <img
+                        src="{{ vich_uploader_asset(balade.user, 'imageFile') }}"
+                        alt="{{ balade.user.username  }}"
+                        class="balade-card-author-avatar"
+                    >
+                {% else %}
+                    <img
+                        src="{{ asset('uploads/images/default-avatar.png') }}"
+                        alt="{{ balade.user.username }}"
+                        class="balade-card-author-avatar"
+                    >
+                {% endif %}
+                <span class="balade-card-author-name">
+                    <a href="{{ path('profil_public', {'id': balade.user.id}) }}">{{ balade.user.username }}</a>
+                </span>
+            </div>
+        {% endif %}
+
+        {# Dropdown owner #}
+        {% if app.user and balade.user and app.user == balade.user %}
+            <div class="card-dropdown">
+                <button class="card-dropdown-btn" type="button">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="3" d="M6 12h.01m6 0h.01m5.99 0h.01"/>
+                    </svg>
+                </button>
+                <ul class="card-dropdown-menu">
+                    <li><a href="{{ path('app_balade_form', {'id': balade.id}) }}">Modifier</a></li>
+                    <li>{{ include('balade/_delete_form.html.twig') }}</li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Body ──────────────────────────────────────────────────── #}
+    <div class="balade-body">
+
+        {# Titre #}
+        <div class="balade-title">
+            <h2>
+                <a href="{{ path('app_balade_show', {'id': balade.id}) }}">
+                    {{ balade.title }}
+                </a>
+            </h2>
+        </div>
+
+        {# Description #}
+        <div class="balade-desc">
+            {% if balade.description %}
+                <p>
+                    {{ balade.description|length > 160
+                        ? (balade.description|slice(0, 160) ~ '…')
+                        : balade.description
+                    }}
+                </p>
+            {% else %}
+                <p><em>Aucune description.</em></p>
+            {% endif %}
+        </div>
+
+        {# Tags #}
+        {% if balade.tags is defined and balade.tags|length > 0 %}
+            <div class="balade-tags">
+                <ul>
+                    {% for tag in balade.tags %}
+                        <li><a href="#">{{ tag.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+    </div>
+
+    {# ── Footer ────────────────────────────────────────────────── #}
+    <div class="balade-footer">
+        <ul>
+
+            {# Date #}
+            <li class="balade-date">
+                {% if balade.createdAt is defined and balade.createdAt %}
+                    {% set diff = date() | date('U') - balade.createdAt|date('U') %}
+                    {% set days = (diff / 86400)|round(0, 'floor') %}
+
+                    {% if days == 0 %}
+                        Aujourd'hui
+                    {% elseif days == 1 %}
+                        Il y a 1 jour
+                    {% else %}
+                        Il y a {{ days }} jours
+                    {% endif %}
+                {% endif %}
+            </li>
+
+            {# Distance #}
+            {% if balade.distanceMeters %}
+                <li class="balade-meta-item">
+                    🗺️
+                    {% if balade.distanceMeters < 1000 %}
+                        {{ balade.distanceMeters }} m
+                    {% else %}
+                        {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
+                    {% endif %}
+                </li>
+            {% endif %}
+
+            {# Durée #}
+            {% if balade.durationSeconds %}
+                {% set h = (balade.durationSeconds // 3600) %}
+                {% set mins = ((balade.durationSeconds % 3600) // 60) %}
+                <li class="balade-meta-item">
+                    ⏱️ {% if h > 0 %}{{ h }} h {% endif %}{{ mins }} min
+                </li>
+            {% endif %}
+
+            {# Badge difficulté #}
+            {% if balade.difficulty %}
+                <li class="balade-meta-item">
+                    <span class="badge badge--{{ balade.difficulty }}">
+                        {{ balade.difficulty }}
+                    </span>
+                </li>
+            {% endif %}
+
+        </ul>
+    </div>
+
+</div>
+{% else %}
+<div class="balade-card">
+    <div class="balade-body">
+        <p>Aucune balade pour l'instant.</p>
+    </div>
+</div>
+{% endfor %}

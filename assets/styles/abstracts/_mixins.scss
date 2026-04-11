@@ -26,7 +26,7 @@
   justify-content: center;
 }
 
-@mixin container($max-width: 1050) {
+@mixin container($max-width: 1200) {
     max-width: $max-width * 1px;
     width: 100%;
     margin: 0 auto;

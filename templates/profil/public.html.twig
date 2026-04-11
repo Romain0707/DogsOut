@@ -64,12 +64,18 @@
             <div class="chiens-grid">
                 {% for chien in user.chiens %}
                 <div class="chien-card">
-                    <div class="chien-card__sexe chien-card__sexe--{{ chien.sexe ? 'male' : 'female' }}">
-                        {{ chien.sexe ? '♂' : '♀' }}
-                    </div>
                     <div class="chien-card__body">
+                        <div class="chien-card__photo">
+                            <img src="{{ chien.imageName == null 
+                            ? asset('uploads/images/default-dog.png') 
+                            : vich_uploader_asset(chien, 'imageFile') }}"
+                            alt="Photo de {{ chien.name }}">
+                        </div>
                         <h3 class="chien-card__name">{{ chien.name }}</h3>
                         <span class="chien-card__race">{{ chien.race.name }}</span>
+                        <div class="chien-card__sexe chien-card__sexe--{{ chien.sexe ? 'male' : 'female' }}">
+                            {{ chien.sexe ? '♂' : '♀' }}
+                        </div>
                         {% if chien.birthDate %}
                         <p class="chien-card__meta">
                             Né{{ chien.sexe ? '' : 'e' }} le {{ chien.birthDate|date('d/m/Y') }}
@@ -95,51 +101,9 @@
                 <p>Ses balades</p>
             </div>
 
-            <div class="card-container">
-                {% for balade in user.balades %}
-                    <div class="balade-card">
-                        <div class="balade-top">
-                            <div>
-                                <h3 class="balade-title">{{ balade.title }}</h3>
-
-                                {% if balade.distanceMeters %}
-                                <p>
-                                    <span class="text-meta">Distance :</span>
-                                    {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km
-                                </p>
-                                {% endif %}
-
-                                {% if balade.durationSeconds %}
-                                {% set h = (balade.durationSeconds // 3600) %}
-                                {% set m = ((balade.durationSeconds % 3600) // 60) %}
-                                <p>
-                                    <span class="text-meta">Durée :</span>
-                                    {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
-                                </p>
-                                {% endif %}
-
-                                {% if balade.description %}
-                                <p class="balade-desc">
-                                    {{ balade.description|length > 160
-                                        ? balade.description|slice(0, 160) ~ '…'
-                                        : balade.description }}
-                                </p>
-                                {% else %}
-                                <p class="balade-desc"><em>Aucune description.</em></p>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="actions">
-                            <a class="btn" href="{{ path('app_balade_show', {'id': balade.id}) }}">Voir</a>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="balades-empty">
-                        <p>Aucune balade pour l'instant.</p>
-                    </div>
-                {% endfor %}
+            <div class="balade-container">
+                {{ include('partials/_balade_cards.html.twig', {'balades': user.balades}) }}
             </div>
-
         </div>
     </div>
 </section>

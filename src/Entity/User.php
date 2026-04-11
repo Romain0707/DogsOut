@@ -50,10 +50,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Assert\NotBlank(message:'Ce champ ne peut pas être vide.')]
-    #[Assert\PasswordStrength(
-        minScore: PasswordStrength::STRENGTH_WEAK,
-        message:'Mot de passe trop simple.'
-    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]

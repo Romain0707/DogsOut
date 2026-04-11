@@ -48,7 +48,6 @@ class Balade
     #[ORM\Column(type: 'json')]
     private array $waypointsJson = [];
 
-
     #[ORM\Column(nullable: true)]
     private ?int $distanceMeters = null;
 

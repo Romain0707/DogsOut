@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ChienType extends AbstractType
 {
@@ -43,6 +44,14 @@ class ChienType extends AbstractType
                 'class'        => Race::class,
                 'choice_label' => 'name',
                 'label'        => 'Race',
+            ])
+            ->add('imageFile', VichImageType::class, [
+                'label'    => 'Photo',
+                'required' => false,
+                'allow_delete' => false,
+                'download_uri' => false,
+                'image_uri'    => false,
+                'attr' => ['class' => 'chien-form__file-input'],
             ])
         ;
     }

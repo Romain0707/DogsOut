@@ -1,0 +1,304 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+.balade-container {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 20px;
+
+    @include m.phone {
+        grid-template-columns: 1fr;
+    }
+
+    .balade-card {
+        background: white;
+        border-radius: 5px;
+        box-shadow: hsla(0, 0%, 0%, 0.2) 0 4px 2px -2px;
+        font-family: v.$font-text;
+        font-weight: 100;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+        a {
+            text-decoration: none;
+            transition: 0.25s ease;
+    
+            &:hover {
+                color: darken(v.$primary-color, 10%);
+            }
+        }
+    
+        // ── Image / Cover ────────────────────────────────────────
+        &-img {
+            position: relative;
+            height: 15rem;
+            border-radius: 5px 5px 0 0;
+            overflow: hidden;
+            box-shadow: inset hsla(0, 0%, 0%, 0.2) 0 64px 64px 16px;
+    
+            > img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+    
+            &:hover > img {
+                transform: scale(1.05);
+            }
+
+            .card-dropdown {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                z-index: 10;
+
+                &-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255, 255, 255, 0.85);
+                    border: 1px solid transparent;
+                    border-radius: 8px;
+                    padding: 0.35rem;
+                    cursor: pointer;
+                    color: v.$text-p-color;
+                    transition: background 0.2s;
+                    backdrop-filter: blur(4px);
+
+                    &:hover {
+                        background: white;
+                    }
+                }
+
+                &-menu {
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 0.35rem);
+                    right: 0;
+                    background: white;
+                    border: 1px solid rgba(0, 0, 0, 0.08);
+                    border-radius: 10px;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+                    width: 150px;
+                    list-style: none;
+                    padding: 0.4rem;
+                    margin: 0;
+
+                    &.open {
+                        display: block;
+                    }
+
+                    li a, li button {
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        padding: 0.5rem 0.75rem;
+                        border-radius: 6px;
+                        font-size: 0.875rem;
+                        color: v.$text-p-color;
+                        text-decoration: none;
+                        transition: background 0.15s;
+                        outline: none;
+                        border: none;
+
+                        &:hover {
+                            background: v.$bg-color;
+                            color: v.$text-title-color;
+                        }
+
+                        &.danger {
+                            color: #c0392b;
+
+                            &:hover {
+                                background: rgba(192, 57, 43, 0.08);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+        // ── Auteur sur la cover ──────────────────────────────────
+        &-author {
+            position: absolute;
+            top: 0.75rem;
+            left: 0;
+            width: 80%;
+            margin: 0 auto;
+            padding-left: 10%;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+    
+            &-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid v.$primary-color; // adapte selon ta variable
+            }
+    
+            &-name {
+                color: white;
+                font-weight: 100;
+                font-size: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-transform: capitalize;
+    
+                a {
+                    color: white;
+    
+                    &:hover {
+                        color: lighten(v.$primary-color, 50%);
+                    }
+                }
+            }
+        }
+    
+        
+    
+        // ── Body ─────────────────────────────────────────────────
+        .balade-body {
+            margin: 0 auto;
+            width: 80%;
+            padding: 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            flex: 1;
+        }
+    
+        // ── Titre ────────────────────────────────────────────────
+        .balade-title {
+            h2 {
+                font-weight: 100;
+                margin: 0.5rem 0 0;
+                color: v.$text-title-color;
+                font-family: v.$font-title;
+                font-size: v.$font-title-size-h2;
+                text-transform: capitalize;
+    
+                a {
+                    color: v.$text-title-color;
+                }
+            }
+        }
+    
+        // ── Description ──────────────────────────────────────────
+        .balade-desc {
+            p {
+                color: v.$text-p-color;
+                font-size: v.$font-text-size;
+                line-height: 1.5;
+                margin: 0;
+            }
+        }
+    
+        // ── Tags ─────────────────────────────────────────────────
+        .balade-tags {
+            ul {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                list-style: none;
+                padding-left: 0;
+                margin: 0;
+                gap: 0.5rem;
+            }
+    
+            a {
+                border: 1px solid v.$text-meta-color;
+                border-radius: 3px;
+                color: v.$text-meta-color;
+                font-size: 0.75rem;
+                height: 1.5rem;
+                line-height: 1.5rem;
+                letter-spacing: 1px;
+                padding: 0 0.5rem;
+                text-align: center;
+                text-transform: uppercase;
+                white-space: nowrap;
+                display: inline-block;
+    
+                &:hover {
+                    border-color: v.$primary-color;
+                    color: v.$primary-color;
+                }
+            }
+        }
+    
+        // ── Footer ───────────────────────────────────────────────
+        .balade-footer {
+            border-top: 1px solid lighten(#333, 70%);
+            margin: 0 auto;
+            padding: 0.5rem 0 0.75rem;
+            width: 80%;
+    
+            ul {
+                list-style: none;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                align-items: center;
+                padding-left: 0;
+                margin: 0;
+                gap: 0.5rem;
+            }
+    
+            li:first-child {
+                margin-right: auto;
+            }
+        }
+    
+        .balade-date {
+            border: 1px solid v.$text-meta-color;
+            border-radius: 3px;
+            padding: 0 0.5rem;
+            color: v.$text-meta-color;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            line-height: 1.5rem;
+        }
+    
+        .balade-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: v.$text-meta-color;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    
+        // ── Badge difficulté ─────────────────────────────────────
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+    
+            &--facile {
+                background: rgba(46, 94, 62, 0.12);
+                color: v.$primary-color;
+            }
+    
+            &--moyen {
+                background: rgba(200, 150, 50, 0.12);
+                color: rgba(180, 130, 30, 1);
+            }
+    
+            &--difficile {
+                background: rgba(180, 60, 60, 0.12);
+                color: rgba(180, 60, 60, 1);
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+footer {
+    background-color: v.$primary-color;
+    min-height: 5vh;
+    @include m.flex-center;
+    color: v.$nav-text-color;
+    text-align: center;
+}

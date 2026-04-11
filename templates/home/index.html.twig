@@ -20,49 +20,36 @@
         <h2>Dernière balade créer</h2>
 
         <div class="balade-container">
-            {% for balade in balades %}
-                <div class="balade-card">
-                    <div class="balade-top">
-                        <div>
-                            <h3 class="balade-title">{{ balade.title }}</h3>
-
-                            {% if balade.distanceMeters %}
-                            <p><span class="text-meta">Distance :</span> {{ (balade.distanceMeters / 1000)|number_format(2, ',', ' ') }} km</p>
-                            {% endif %}
-
-                            {% if balade.durationSeconds %}
-                            {% set h = (balade.durationSeconds // 3600) %}
-                            {% set m = ((balade.durationSeconds % 3600) // 60) %}
-                            <p><span class="text-meta">Durée :</span>
-                                {% if h > 0 %}{{ h }} h {% endif %}{{ m }} min
-                            </p>
-                            {% endif %}
-
-                            {% if balade.description %}
-                            <p class="balade-desc">
-                                {{ balade.description|length > 160 ? (balade.description|slice(0, 160) ~ '…') : balade.description }}
-                            </p>
-                            {% else %}
-                            <p class="balade-desc"><em>Aucune description.</em></p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="actions">
-                        <a class="btn" href="{{ path('app_balade_show', {'id': balade.id}) }}">Voir</a>
-
-                        {% if app.user and balade.user and app.user == balade.user %}
-                            <a class="btn" href="{{ path('app_balade_form', {'id': balade.id}) }}">Modifier</a>
-                        {% endif %}
-                    </div>
-                </div>
-            {% else %}
-            <div class="balade-card">
-                    <p>Aucune balade pour l'instant.</p>
-            </div>
-            {% endfor %}
+            {{ include('partials/_balade_cards.html.twig') }}
         </div>
     </div>
 </section>
 
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.querySelectorAll('.card-dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                // Ferme tous les autres
+                document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
+                    if (menu !== btn.nextElementSibling) {
+                        menu.classList.remove('open');
+                    }
+                });
+
+                btn.nextElementSibling.classList.toggle('open');
+            });
+        });
+
+        // Ferme au clic ailleurs
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
+                menu.classList.remove('open');
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,4 +1,4 @@
-{{ form_start(form, { attr: { class: 'chien-form' } }) }}
+{{ form_start(form, { attr: { class: 'chien-form', enctype: 'multipart/form-data' } }) }}
 
     <div class="chien-form__group">
         {{ form_label(form.name) }}
@@ -40,6 +40,23 @@
         {{ form_label(form.race) }}
         {{ form_widget(form.race) }}
         {{ form_errors(form.race) }}
+    </div>
+
+    <div class="chien-form__group">
+        <div class="profile-edit-avatar">
+            {% if form.vars.data.imageName %}
+                <img class="profile-edit-avatar__img"
+                    src="{{ vich_uploader_asset(form.vars.data, 'imageFile') }}"
+                    alt="Photo de {{ form.vars.data.name }}">
+            {% else %}
+                <img class="profile-edit-avatar__img"
+                    src="{{ asset('uploads/images/default-dog.png') }}"
+                    alt="Photo par défaut">
+            {% endif %}
+            <span class="profile-edit-avatar__label">Cliquez pour changer la photo</span>
+        </div>
+        {{ form_widget(form.imageFile) }}
+        {{ form_errors(form.imageFile) }}
     </div>
 
     <div class="chien-form__actions">
