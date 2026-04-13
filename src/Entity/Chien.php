@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ChienRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -47,6 +49,17 @@ class Chien
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, ChienTag>
+     */
+    #[ORM\ManyToMany(targetEntity: ChienTag::class, inversedBy: 'chiens')]
+    private Collection $chienTags;
+
+    public function __construct()
+    {
+        $this->chienTags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -158,5 +171,29 @@ class Chien
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return Collection<int, ChienTag>
+     */
+    public function getChienTags(): Collection
+    {
+        return $this->chienTags;
+    }
+
+    public function addChienTag(ChienTag $chienTag): static
+    {
+        if (!$this->chienTags->contains($chienTag)) {
+            $this->chienTags->add($chienTag);
+        }
+
+        return $this;
+    }
+
+    public function removeChienTag(ChienTag $chienTag): static
+    {
+        $this->chienTags->removeElement($chienTag);
+
+        return $this;
     }
 }

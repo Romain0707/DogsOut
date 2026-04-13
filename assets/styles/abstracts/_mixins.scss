@@ -31,6 +31,13 @@
     width: 100%;
     margin: 0 auto;
     padding-inline: 20px;
+
+}
+
+@mixin xs-phone {
+  @media only screen and (max-width: v.$xs-phone * 1px) {
+    @content;
+  }
 }
 
 @mixin phone {

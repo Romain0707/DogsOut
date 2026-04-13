@@ -1,0 +1,128 @@
+@use '../abstracts/mixins' as m;
+@use '../abstracts/variables' as v;
+
+// ─────────────────────────────────────────────
+// Affichage des tags (balade & chien)
+// ─────────────────────────────────────────────
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: v.$font-text;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    background: v.$secondary-bg-color;
+    color: v.$text-p-color;
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+
+    &--preset {
+        background: rgba(46, 94, 62, 0.1);
+        color: v.$primary-color;
+        border-color: rgba(46, 94, 62, 0.2);
+    }
+
+    &--custom {
+        background: rgba(232, 224, 209, 0.8);
+        color: v.$text-p-color;
+        border-color: v.$secondary-bg-color;
+
+        &::before {
+            content: '#';
+            opacity: 0.5;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+// Formulaire de tags (checkboxes + custom)
+// ─────────────────────────────────────────────
+.tags-form {
+    &__presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    // Cache les vraies checkboxes et stylise les labels
+    &__preset-item {
+        input[type='checkbox'] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+
+            &:checked + label {
+                background: v.$primary-color;
+                color: #fff;
+                border-color: v.$primary-color;
+            }
+
+            &:focus-visible + label {
+                outline: 2px solid v.$primary-color;
+                outline-offset: 2px;
+            }
+        }
+
+        label {
+            display: inline-flex;
+            align-items: center;
+            font-family: v.$font-text;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.3rem 0.85rem;
+            border-radius: 100px;
+            border: 1.5px solid v.$secondary-bg-color;
+            background: v.$bg-color;
+            color: v.$text-p-color;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            user-select: none;
+
+            &:hover {
+                border-color: v.$primary-color;
+                color: v.$primary-color;
+            }
+        }
+    }
+
+    &__custom {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+
+        input[type='text'] {
+            flex: 1;
+            min-width: 200px;
+            font-family: v.$font-text;
+            font-size: 0.9rem;
+            color: v.$text-p-color;
+            background: #fff;
+            border: 1.5px solid v.$secondary-bg-color;
+            border-radius: 100px;
+            padding: 0.4rem 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+
+            &::placeholder {
+                color: v.$text-meta-color;
+            }
+
+            &:focus {
+                border-color: v.$primary-color;
+                box-shadow: 0 0 0 3px rgba(46, 94, 62, 0.1);
+            }
+        }
+    }
+}

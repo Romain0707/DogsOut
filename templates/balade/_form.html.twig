@@ -42,9 +42,9 @@
         </div>
 
         <div class="bm-float bm-float--actions">
-          <button type="button" class="bm-btn bm-btn--close" id="btn-close"  title="Fermer la boucle">🔄</button>
-          <button type="button" class="bm-btn bm-btn--undo"  id="btn-undo"   title="Annuler le dernier point">↩️</button>
-          <button type="button" class="bm-btn bm-btn--clear" id="btn-clear"  title="Tout effacer">🗑️</button>
+          <button type="button" class="bm-btn bm-btn--close" id="btn-close" title="Fermer la boucle">🔄</button>
+          <button type="button" class="bm-btn bm-btn--undo"  id="btn-undo"  title="Annuler le dernier point">↩️</button>
+          <button type="button" class="bm-btn bm-btn--clear" id="btn-clear" title="Tout effacer">🗑️</button>
         </div>
 
         <div class="bm-float bm-float--stats">
@@ -72,13 +72,53 @@
 
     {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
 
-      {# ── Infos générales ── #}
       <div class="bm-fields">
 
         {{ form_row(form.title) }}
         {{ form_row(form.description) }}
         {{ form_row(form.isPublic) }}
         {{ form_row(form.difficulty) }}
+
+        {# ── Tags ── #}
+        <div class="bm-tags-section">
+            <p class="bm-tags-section__title">Tags</p>
+
+            {# Tags prédéfinis en pilules #}
+            <div class="tags-form__presets">
+                {% for tag in form.baladeTags %}
+                <div class="tags-form__preset-item">
+                    {{ form_widget(tag) }}
+                    {{ form_label(tag) }}
+                </div>
+                {% endfor %}
+            </div>
+
+            {# Tags custom déjà sur CETTE balade #}
+            {% set customTags = balade.baladeTags|filter(t => not t.isPreset) %}
+            {% if customTags|length > 0 %}
+            <div class="bm-tags-current">
+                <p class="bm-tags-current__label">Tags personnalisés</p>
+                <div class="tags" id="js-custom-tags-display">
+                    {% for tag in customTags %}
+                    <span class="tag tag--custom tag--removable" data-tag-id="{{ tag.id }}">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# Champ + bouton pour ajouter un tag custom #}
+            <div class="tags-form__custom">
+                {{ form_widget(form.customTag, { attr: { id: 'js-custom-tag-input' } }) }}
+                <button type="button" class="tags-form__add-btn" id="js-add-custom-tag">
+                    + Ajouter
+                </button>
+            </div>
+
+            {# Aperçu des tags custom qu'on vient d'ajouter (avant soumission) #}
+            <div id="js-custom-tags-preview" class="tags" style="margin-top: 0.5rem;"></div>
+        </div>
 
         {# ── Hidden map fields ── #}
         {{ form_widget(form.routeGeoJson) }}
@@ -89,20 +129,16 @@
         {# ── Photos ── #}
         <div class="form-group balade-images-wrapper">
           <label class="form-label">📷 Photos</label>
-
           <div class="balade-images-collection"
                data-index="{{ form.images|length }}"
                data-prototype="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}">
-
             {% for imageForm in form.images %}
               <div class="balade-image-item">
                 {{ form_widget(imageForm.imageFile) }}
                 <button type="button" class="btn btn-sm btn-danger remove-image mt-1">🗑️ Supprimer</button>
               </div>
             {% endfor %}
-
           </div>
-
           <button type="button" id="add-image" class="btn btn-secondary mt-2">
             📷 Ajouter une photo
           </button>
@@ -142,31 +178,131 @@
       defaultView: [44.8378, -0.5792, 13]
     };
 
-    // ── Gestion des images ──────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
 
-      const wrapper = document.querySelector('.balade-images-collection');
-      if (!wrapper) return;
+        // ── Images ──────────────────────────────────────────────────────
+        const wrapper = document.querySelector('.balade-images-collection');
 
-      // Ajouter une image
-      document.getElementById('add-image')?.addEventListener('click', () => {
-        const index    = parseInt(wrapper.dataset.index, 10);
-        const template = wrapper.dataset.prototype.replace(/__name__/g, index);
-        const div      = document.createElement('div');
-        div.className  = 'balade-image-item mt-2';
-        div.innerHTML  = template
-          + '<button type="button" class="btn btn-sm btn-danger remove-image mt-1">🗑️ Supprimer</button>';
-        wrapper.appendChild(div);
-        wrapper.dataset.index = index + 1;
-      });
+        if (wrapper) {
+            document.getElementById('add-image')?.addEventListener('click', () => {
+                const index    = parseInt(wrapper.dataset.index, 10);
+                const template = wrapper.dataset.prototype.replace(/__name__/g, index);
+                const div      = document.createElement('div');
+                div.className  = 'balade-image-item mt-2';
+                div.innerHTML  = template
+                    + '<button type="button" class="btn btn-sm btn-danger remove-image mt-1">🗑️ Supprimer</button>';
+                wrapper.appendChild(div);
+                wrapper.dataset.index = index + 1;
+            });
 
-      // Supprimer une image
-      wrapper.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-image')) {
-          e.target.closest('.balade-image-item').remove();
+            wrapper.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-image')) {
+                    e.target.closest('.balade-image-item').remove();
+                }
+            });
         }
-      });
 
-    });
-  </script>
+        // ── Tags custom ──────────────────────────────────────────────────
+        const tagInput = document.querySelector('input[name="balade[customTag]"]');
+        const addBtn   = document.getElementById('js-add-custom-tag');
+        const preview  = document.getElementById('js-custom-tags-preview');
+        const baladeId = {{ balade.id ?? 'null' }};
+        const isNew    = {{ isNew ? 'true' : 'false' }};
+
+        const URL_ADD_EXISTING    = baladeId ? `/balade/${baladeId}/tag/add` : null;
+        const URL_REMOVE_EXISTING = (tagId)  => `/balade/${baladeId}/tag/${tagId}/remove`;
+        const URL_ADD_PENDING     = `/balade/tag/pending/add`;
+        const URL_REMOVE_PENDING  = `/balade/tag/pending/remove`;
+
+        if (addBtn && tagInput && preview) {
+
+            addBtn.addEventListener('click', () => addCustomTag());
+
+            tagInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustomTag();
+                }
+            });
+        }
+
+        async function addCustomTag() {
+            const val = tagInput.value.trim();
+            if (!val) return;
+
+            addBtn.disabled    = true;
+            addBtn.textContent = '…';
+
+            try {
+                const url = isNew ? URL_ADD_PENDING : URL_ADD_EXISTING;
+                const res = await fetch(url, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ name: val }),
+                });
+
+                const tagData = await res.json();
+
+                if (tagData.error) {
+                    alert(tagData.error);
+                    return;
+                }
+
+                showTagPill(tagData, val);
+                tagInput.value = '';
+
+            } catch (e) {
+                console.error('Erreur ajout tag:', e);
+            } finally {
+                addBtn.disabled    = false;
+                addBtn.textContent = '+ Ajouter';
+            }
+        }
+
+        async function removeCustomTag(pill, tagId, tagName) {
+            try {
+                if (isNew) {
+                    await fetch(URL_REMOVE_PENDING, {
+                        method:  'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body:    JSON.stringify({ name: tagName }),
+                    });
+                } else if (tagId) {
+                    await fetch(URL_REMOVE_EXISTING(tagId), { method: 'POST' });
+                }
+                pill.remove();
+            } catch (e) {
+                console.error('Erreur suppression tag:', e);
+            }
+        }
+
+        function showTagPill(tagData, originalName) {
+            const pill         = document.createElement('span');
+            pill.className     = 'tag tag--custom tag--removable';
+            pill.dataset.tagId = tagData.id ?? '';
+            pill.innerHTML     = `${tagData.name} <button type="button" class="tag__remove" title="Retirer">×</button>`;
+
+            pill.querySelector('.tag__remove').addEventListener('click', () => {
+                removeCustomTag(pill, tagData.id ?? null, originalName);
+            });
+
+            preview.appendChild(pill);
+        }
+
+        // Rendre les tags custom existants removable
+        document.querySelectorAll('.bm-tags-current .tag--custom').forEach(el => {
+            const tagId = el.dataset.tagId;
+            const name  = el.textContent.trim();
+            const btn   = document.createElement('button');
+            btn.type        = 'button';
+            btn.className   = 'tag__remove';
+            btn.title       = 'Retirer';
+            btn.textContent = '×';
+            btn.addEventListener('click', () => removeCustomTag(el, tagId, name));
+            el.appendChild(btn);
+        });
+
+    }); // fin DOMContentLoaded
+</script>
+
 {% endblock %}

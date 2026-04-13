@@ -4,7 +4,7 @@
 .balade-container {
     margin-top: 3rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
 
     @include m.phone {
@@ -12,6 +12,7 @@
     }
 
     .balade-card {
+        position: relative;
         background: white;
         border-radius: 5px;
         box-shadow: hsla(0, 0%, 0%, 0.2) 0 4px 2px -2px;
@@ -26,7 +27,7 @@
             transition: 0.25s ease;
     
             &:hover {
-                color: darken(v.$primary-color, 10%);
+                color: darken(v.$primary-color, 50%);
             }
         }
     
@@ -43,10 +44,10 @@
                 height: 100%;
                 object-fit: cover;
                 transition: transform 0.3s ease;
-            }
-    
-            &:hover > img {
-                transform: scale(1.05);
+
+                &:hover {
+                    transform: scale(1.05);
+                }
             }
 
             .card-dropdown {
@@ -121,24 +122,22 @@
             }
         }
     
-        // ── Auteur sur la cover ──────────────────────────────────
         &-author {
             position: absolute;
             top: 0.75rem;
-            left: 0;
-            width: 80%;
-            margin: 0 auto;
-            padding-left: 10%;
+            left: 2rem;
+            width: fit-content;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            z-index: 2;
     
             &-avatar {
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
                 object-fit: cover;
-                border: 2px solid v.$primary-color; // adapte selon ta variable
+                border: 2px solid v.$primary-color;
             }
     
             &-name {
@@ -154,15 +153,12 @@
                     color: white;
     
                     &:hover {
-                        color: lighten(v.$primary-color, 50%);
+                        color: lighten(v.$primary-color, 80%);
                     }
                 }
             }
         }
     
-        
-    
-        // ── Body ─────────────────────────────────────────────────
         .balade-body {
             margin: 0 auto;
             width: 80%;
@@ -171,9 +167,16 @@
             flex-direction: column;
             gap: 0.6rem;
             flex: 1;
+
+            ul {
+                list-style: none;
+                padding-left: 0;
+                margin: 0;
+                display: flex;
+                gap: 0.5rem;
+            }
         }
     
-        // ── Titre ────────────────────────────────────────────────
         .balade-title {
             h2 {
                 font-weight: 100;
@@ -189,7 +192,6 @@
             }
         }
     
-        // ── Description ──────────────────────────────────────────
         .balade-desc {
             p {
                 color: v.$text-p-color;
@@ -199,7 +201,6 @@
             }
         }
     
-        // ── Tags ─────────────────────────────────────────────────
         .balade-tags {
             ul {
                 display: flex;
@@ -230,9 +231,18 @@
                     color: v.$primary-color;
                 }
             }
+
+            &-meta {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: v.$text-meta-color;
+                font-size: 0.75rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
         }
     
-        // ── Footer ───────────────────────────────────────────────
         .balade-footer {
             border-top: 1px solid lighten(#333, 70%);
             margin: 0 auto;
@@ -265,6 +275,32 @@
             text-transform: uppercase;
             line-height: 1.5rem;
         }
+
+        .balade-comments, .balade-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: v.$text-meta-color;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+
+            svg {
+                width: 24px;
+                height: 24px;
+                fill: v.$text-meta-color;
+                margin-right: .2rem;
+            }
+
+            span {
+                color: v.$text-meta-color;
+                text-transform: uppercase;
+
+                &:nth-child(2) {
+                    position: relative;
+                    top: -0.1rem;
+                }
+            }
+        }
     
         .balade-meta-item {
             display: flex;
@@ -276,7 +312,6 @@
             text-transform: uppercase;
         }
     
-        // ── Badge difficulté ─────────────────────────────────────
         .badge {
             display: inline-block;
             padding: 0.2rem 0.6rem;
@@ -285,19 +320,24 @@
             font-weight: 600;
             text-transform: capitalize;
     
-            &--facile {
+            &--Facile {
                 background: rgba(46, 94, 62, 0.12);
                 color: v.$primary-color;
             }
     
-            &--moyen {
+            &--Moyen {
                 background: rgba(200, 150, 50, 0.12);
                 color: rgba(180, 130, 30, 1);
             }
     
-            &--difficile {
+            &--Difficile {
                 background: rgba(180, 60, 60, 0.12);
                 color: rgba(180, 60, 60, 1);
+            }
+
+            &--Expert {
+                background: rgba(204, 0, 0, 0.12);
+                color: rgb(204, 0, 0);
             }
         }
     }

@@ -9,5 +9,9 @@
             color: v.$text-title-color;
             margin-bottom: 1rem;
         }
+
+        @include m.xs-phone {
+            padding-inline: 0px;
+        }
     }
 }

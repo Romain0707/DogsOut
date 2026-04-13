@@ -3,7 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Balade;
+use App\Entity\BaladeTag;
 use App\Form\BaladeImageType;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -34,16 +37,41 @@ class BaladeType extends AbstractType
 
             // ── Difficulté ─────────────────────────────────────────────
             ->add('difficulty', ChoiceType::class, [
-                'label'    => 'Difficulté',
-                'required' => false,
+                'label'       => 'Difficulté',
+                'required'    => false,
                 'placeholder' => 'Non renseignée',
-                'choices'  => [
-                    'Facile'   => 'easy',
-                    'Modérée'  => 'moderate',
-                    'Difficile'=> 'hard',
-                    'Expert'   => 'expert',
+                'choices'     => [
+                    'Facile'    => 'Facile',
+                    'Modérée'   => 'Moyen',
+                    'Difficile' => 'Difficile',
+                    'Expert'    => 'Expert',
                 ],
                 'attr' => ['class' => 'form-select'],
+            ])
+
+            // ── Tags prédéfinis uniquement ─────────────────────────────
+            ->add('baladeTags', EntityType::class, [
+                'class'         => BaladeTag::class,
+                'choice_label'  => 'name',
+                'multiple'      => true,
+                'expanded'      => true,
+                'required'      => false,
+                'label'         => 'Tags',
+                'by_reference'  => false,
+                'query_builder' => fn(EntityRepository $er) => $er
+                    ->createQueryBuilder('t')
+                    ->where('t.isPreset = true')
+                    ->orderBy('t.name', 'ASC'),
+            ])
+
+            // ── Tag personnalisé (non mappé) ───────────────────────────
+            ->add('customTag', TextType::class, [
+                'label'    => 'Ajouter un tag personnalisé',
+                'required' => false,
+                'mapped'   => false,
+                'attr'     => [
+                    'placeholder' => 'Ex: bord-de-canal, dog-friendly…',
+                ],
             ])
 
             // ── Images ─────────────────────────────────────────────────
@@ -52,7 +80,7 @@ class BaladeType extends AbstractType
                 'entry_type'   => BaladeImageType::class,
                 'allow_add'    => true,
                 'allow_delete' => true,
-                'by_reference' => false, // important : force addImage/removeImage
+                'by_reference' => false,
                 'required'     => false,
                 'attr'         => ['class' => 'balade-images-collection'],
             ])
@@ -64,26 +92,26 @@ class BaladeType extends AbstractType
             ->add('durationSeconds', HiddenType::class, ['required' => false])
         ;
 
-        // ── Transformers (inchangés) ───────────────────────────────────
+        // ── Transformers ───────────────────────────────────────────────
 
         $builder->get('routeGeoJson')->addModelTransformer(new CallbackTransformer(
-            fn(array $v): string  => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            fn(string $v): array  => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
+            fn(array $v): string => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            fn(string $v): array => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
         ));
 
         $builder->get('waypointsJson')->addModelTransformer(new CallbackTransformer(
-            fn(array $v): string  => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            fn(string $v): array  => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
+            fn(array $v): string => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            fn(string $v): array => $v === '' ? [] : (is_array($d = json_decode($v, true)) ? $d : [])
         ));
 
         $builder->get('distanceMeters')->addModelTransformer(new CallbackTransformer(
-            fn(?int $v): string   => $v !== null ? (string) $v : '',
-            fn(string $v): ?int   => $v !== '' ? (int) $v : null
+            fn(?int $v): string  => $v !== null ? (string) $v : '',
+            fn(string $v): ?int  => $v !== '' ? (int) $v : null
         ));
 
         $builder->get('durationSeconds')->addModelTransformer(new CallbackTransformer(
-            fn(?int $v): string   => $v !== null ? (string) $v : '',
-            fn(string $v): ?int   => $v !== '' ? (int) $v : null
+            fn(?int $v): string  => $v !== null ? (string) $v : '',
+            fn(string $v): ?int  => $v !== '' ? (int) $v : null
         ));
     }
 

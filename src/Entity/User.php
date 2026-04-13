@@ -144,6 +144,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: GroupEventResponse::class, mappedBy: 'user')]
     private Collection $groupEventResponses;
 
+    /**
+     * @var Collection<int, BaladeRating>
+     */
+    #[ORM\OneToMany(targetEntity: BaladeRating::class, mappedBy: 'user')]
+    private Collection $baladeRatings;
+
     public function __construct()
     {
         $this->balades = new ArrayCollection();
@@ -155,6 +161,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->groupMembers = new ArrayCollection();
         $this->groupEvents = new ArrayCollection();
         $this->groupEventResponses = new ArrayCollection();
+        $this->baladeRatings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -651,6 +658,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($groupEventResponse->getUser() === $this) {
                 $groupEventResponse->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BaladeRating>
+     */
+    public function getBaladeRatings(): Collection
+    {
+        return $this->baladeRatings;
+    }
+
+    public function addBaladeRating(BaladeRating $baladeRating): static
+    {
+        if (!$this->baladeRatings->contains($baladeRating)) {
+            $this->baladeRatings->add($baladeRating);
+            $baladeRating->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBaladeRating(BaladeRating $baladeRating): static
+    {
+        if ($this->baladeRatings->removeElement($baladeRating)) {
+            // set the owning side to null (unless already changed)
+            if ($baladeRating->getUser() === $this) {
+                $baladeRating->setUser(null);
             }
         }
 

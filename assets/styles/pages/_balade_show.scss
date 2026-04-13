@@ -322,6 +322,126 @@
           height: 32px;
           background: v.$secondary-bg-color;
         }
+
+        .balade-rating {
+            @include m.flex-center-vert;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.25rem 2rem;
+            background: #fff;
+            border-top: 1px solid v.$secondary-bg-color;
+
+            @include m.phone {
+                padding: 1rem 1.25rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            // ── Étoiles d'affichage (moyenne) ──
+            &__stars {
+                display: flex;
+                gap: 2px;
+            }
+
+            &__info {
+                @include m.flex-center-vert;
+                gap: 0.35rem;
+            }
+
+            &__average {
+                font-family: v.$font-title;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: v.$text-title-color;
+            }
+
+            &__count {
+                font-size: 0.78rem;
+                color: v.$text-meta-color;
+            }
+
+            // ── Section note utilisateur ──
+            &__user {
+                @include m.flex-center-vert;
+                gap: 0.6rem;
+                margin-left: auto;
+
+                @include m.phone {
+                    margin-left: 0;
+                }
+            }
+
+            &__user-label {
+                font-size: 0.82rem;
+                color: v.$text-meta-color;
+                white-space: nowrap;
+                margin: 0;
+            }
+
+            &__interactive {
+                display: flex;
+                gap: 2px;
+            }
+        }
+
+        // ── Étoile générique ──
+        .star {
+            font-size: 1.3rem;
+            line-height: 1;
+            color: v.$secondary-bg-color;
+            transition: color 0.15s, transform 0.1s;
+
+            // Étoile d'affichage pleine
+            &--filled {
+                color: #f39c12;
+            }
+
+            // Demi-étoile (affichage moyenne)
+            &--half {
+                position: relative;
+                color: v.$secondary-bg-color;
+
+                &::before {
+                    content: '★';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 50%;
+                    overflow: hidden;
+                    color: #f39c12;
+                }
+            }
+
+            // Étoile interactive
+            &--interactive {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                font-size: 1.6rem;
+                color: v.$secondary-bg-color;
+                transition: color 0.15s, transform 0.12s;
+
+                &.star--active:not(:hover) {
+                    color: #f39c12;
+                }
+
+                &:hover,
+                &--hover {
+                    color: #f39c12;
+                    transform: scale(1.2);
+                }
+
+                &--active {
+                    color: #f39c12;
+                }
+            }
+
+            &--hover {
+                color: #f39c12;
+                transform: scale(1.2);
+            }
+        }
       }
     }
 

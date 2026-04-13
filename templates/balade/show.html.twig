@@ -103,6 +103,52 @@
                     </div>
                 </a>
 
+                <div class="balade-rating" id="js-rating" data-balade-id="{{ balade.id }}">
+
+                {# Étoiles affichage (moyenne) #}
+                <div class="balade-rating__stars" id="js-stars-display">
+                    {% for i in 1..5 %}
+                    <span class="star star--display {% if i <= ratingAverage %}star--filled{% elseif i - 0.5 <= ratingAverage %}star--half{% endif %}">
+                        ★
+                    </span>
+                    {% endfor %}
+                </div>
+
+                {# Infos moyennne #}
+                <div class="balade-rating__info">
+                    <span class="balade-rating__average" id="js-rating-average">
+                        {{ ratingAverage > 0 ? ratingAverage : '—' }}
+                    </span>
+                    <span class="balade-rating__count" id="js-rating-count">
+                        ({{ ratingCount }} avis)
+                    </span>
+                </div>
+
+                {# Étoiles interactives si connecté #}
+                {% if is_granted('ROLE_USER') %}
+                <div class="balade-rating__user">
+                    <p class="balade-rating__user-label">
+                        {% if userRating %}
+                            Votre note :
+                        {% else %}
+                            Notez cette balade :
+                        {% endif %}
+                    </p>
+                    <div class="balade-rating__interactive" id="js-stars-interactive">
+                        {% for i in 1..5 %}
+                        <button type="button"
+                                class="star star--interactive {% if userRating and i <= userRating %}star--active{% endif %}"
+                                data-value="{{ i }}"
+                                aria-label="{{ i }} étoile{{ i > 1 ? 's' : '' }}">
+                            ★
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
                 <div class="balade-about__stats">
                     <div class="balade-about__stat">
                         <span class="balade-about__stat-value">{{ balade.createdAt|date('d/m/Y') }}</span>
@@ -183,13 +229,17 @@
 {% block javascripts %}
   {{ parent() }}
   <script>
+    // ── Carousel ──────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       const carousel = document.getElementById('balade-carousel');
       if (!carousel) return;
+
       const slides = carousel.querySelectorAll('.balade-carousel__slide');
       const dots   = carousel.querySelectorAll('.balade-carousel__dot');
       if (slides.length <= 1) return;
+
       let current = 0;
+
       function goTo(index) {
         slides[current].classList.remove('active');
         dots[current]?.classList.remove('active');
@@ -197,6 +247,7 @@
         slides[current].classList.add('active');
         dots[current]?.classList.add('active');
       }
+
       carousel.querySelector('.balade-carousel__btn--prev')
         ?.addEventListener('click', () => goTo(current - 1));
       carousel.querySelector('.balade-carousel__btn--next')
@@ -206,6 +257,88 @@
       );
     });
 
+    // ── Notation étoiles ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const ratingEl = document.getElementById('js-rating');
+      if (!ratingEl) return;
+
+      const baladeId     = ratingEl.dataset.baladeId;
+      const stars        = ratingEl.querySelectorAll('.star--interactive');
+      const avgEl        = document.getElementById('js-rating-average');
+      const countEl      = document.getElementById('js-rating-count');
+      const displayStars = document.querySelectorAll('.star--display');
+
+      if (!stars.length) return;
+
+      stars.forEach(star => {
+
+        // Survol — allume les étoiles jusqu'au curseur
+        star.addEventListener('mouseenter', () => {
+            const val = parseInt(star.dataset.value);
+            stars.forEach(s => {
+                s.style.color = ''; // reset inline
+                s.classList.toggle('star--hover', parseInt(s.dataset.value) <= val);
+            });
+        });
+
+        star.addEventListener('mouseleave', () => {
+            stars.forEach(s => {
+                s.classList.remove('star--hover');
+                // Réaffiche les étoiles actives après le survol
+                if (s.classList.contains('star--active')) {
+                    s.style.color = '#f39c12';
+                } else {
+                    s.style.color = '';
+                }
+            });
+        });
+
+        // Clic — envoie la note
+        star.addEventListener('click', async () => {
+          const val = parseInt(star.dataset.value);
+
+          // Feedback visuel immédiat
+          stars.forEach(s => {
+            s.classList.toggle('star--active', parseInt(s.dataset.value) <= val);
+          });
+
+          try {
+            const res = await fetch(`/balade/${baladeId}/rate`, {
+              method:  'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body:    JSON.stringify({ rating: val }),
+            });
+
+            const data = await res.json();
+            if (data.error) { console.error(data.error); return; }
+
+            // Met à jour la moyenne
+            avgEl.textContent   = data.average > 0 ? data.average : '—';
+            countEl.textContent = `(${data.count} avis)`;
+
+            // Met à jour les étoiles d'affichage
+            displayStars.forEach((s, i) => {
+              const pos = i + 1;
+              s.classList.remove('star--filled', 'star--half');
+              if (pos <= data.average) {
+                s.classList.add('star--filled');
+              } else if (pos - 0.5 <= data.average) {
+                s.classList.add('star--half');
+              }
+            });
+
+            // Met à jour le label
+            const label = ratingEl.querySelector('.balade-rating__user-label');
+            if (label) label.textContent = 'Votre note :';
+
+          } catch (e) {
+            console.error('Erreur notation:', e);
+          }
+        });
+      });
+    });
+
+    // ── Carte lecture seule ───────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       const mapEl = document.getElementById('map-show');
       if (!mapEl) return;

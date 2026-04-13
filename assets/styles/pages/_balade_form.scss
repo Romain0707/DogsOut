@@ -414,6 +414,205 @@ $_radius: 10px;
       }
     }
 
+    // ── Section Tags ──────────────────────────────────────────────────────
+    .bm-tags-section {
+      margin-bottom: 22px;
+      padding: 20px;
+      background: v.$bg-color;
+      border-radius: 12px;
+      border: 1.5px solid v.$secondary-bg-color;
+
+      &__title {
+        font-family: v.$font-text;
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: v.$text-meta-color;
+        margin-bottom: 14px;
+      }
+
+      // Checkboxes stylisées en pilules
+      .tags-form__presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .tags-form__preset-item {
+        position: relative;
+
+        input[type='checkbox'] {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+
+          &:checked + label {
+            background: v.$primary-color;
+            color: #fff;
+            border-color: v.$primary-color;
+          }
+
+          &:focus-visible + label {
+            outline: 2px solid v.$primary-color;
+            outline-offset: 2px;
+          }
+        }
+
+        label {
+          display: inline-flex;
+          align-items: center;
+          font-family: v.$font-text;
+          font-size: .82rem;
+          font-weight: 600;
+          padding: .3rem .85rem;
+          border-radius: 100px;
+          border: 1.5px solid v.$secondary-bg-color;
+          background: #fff;
+          color: v.$text-p-color;
+          cursor: pointer;
+          transition: background .2s, color .2s, border-color .2s;
+          text-transform: none;
+          letter-spacing: 0;
+          margin-bottom: 0;
+          user-select: none;
+
+          &:hover {
+            border-color: v.$primary-color;
+            color: v.$primary-color;
+          }
+        }
+      }
+
+      // Champ tag personnalisé
+      .tags-form__custom {
+        display: flex;
+        gap: .75rem;
+        align-items: center;
+
+        input[type='text'] {
+          flex: 1;
+          font-family: v.$font-text;
+          font-size: .9rem;
+          color: v.$text-p-color;
+          background: #fff;
+          border: 1.5px solid v.$secondary-bg-color;
+          border-radius: 100px;
+          padding: .4rem 1rem;
+          outline: none;
+          transition: border-color .2s, box-shadow .2s;
+          width: auto;
+
+          &::placeholder { color: v.$text-meta-color; }
+
+          &:focus {
+            border-color: v.$primary-color;
+            box-shadow: 0 0 0 3px rgba(v.$primary-color, .1);
+          }
+        }
+      }
+
+      // Dans .bm-tags-section
+      .tags-form__custom {
+          display: flex;
+          gap: .75rem;
+          align-items: center;
+          margin-top: 1rem;
+      }
+
+      .tags-form__add-btn {
+          font-family: v.$font-text;
+          font-size: .82rem;
+          font-weight: 700;
+          background: v.$primary-color;
+          color: #fff;
+          border: none;
+          border-radius: 100px;
+          padding: .4rem 1rem;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: background .2s;
+          flex-shrink: 0;
+
+          &:hover {
+              background: v.$btn-hover-color;
+          }
+      }
+
+      .tag--removable {
+          gap: .4rem;
+          padding-right: .5rem;
+      }
+
+      .tag__remove {
+          background: none;
+          border: none;
+          color: inherit;
+          cursor: pointer;
+          font-size: .9rem;
+          line-height: 1;
+          padding: 0;
+          opacity: .7;
+
+          &:hover {
+              opacity: 1;
+          }
+      }
+    }
+
+    // ── Tags actuels (modification) ───────────────────────────────────────
+    .bm-tags-current {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid v.$secondary-bg-color;
+
+      &__label {
+        font-family: v.$font-text;
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: v.$text-meta-color;
+        margin-bottom: .5rem;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        font-family: v.$font-text;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: .25rem .75rem;
+        border-radius: 100px;
+
+        &--preset {
+          background: rgba(46, 94, 62, .1);
+          color: v.$primary-color;
+          border: 1px solid rgba(46, 94, 62, .2);
+        }
+
+        &--custom {
+          background: v.$secondary-bg-color;
+          color: v.$text-p-color;
+          border: 1px solid transparent;
+
+          &::before {
+            content: '#';
+            opacity: .5;
+            margin-right: 1px;
+          }
+        }
+      }
+    }
+
     // ── Actions bas de page ───────────────────────────────────────────────
     .balade-actions {
       @include m.flex-center-vert;
@@ -488,5 +687,9 @@ $_radius: 10px;
     .bm-float--stats { display: none; }
 
     form { padding: 14px; }
+
+    .bm-tags-section {
+      padding: 14px;
+    }
   }
 }

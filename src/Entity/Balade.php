@@ -73,11 +73,25 @@ class Balade
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $images;
 
+    /**
+     * @var Collection<int, BaladeTag>
+     */
+    #[ORM\ManyToMany(targetEntity: BaladeTag::class, inversedBy: 'balades')]
+    private Collection $baladeTags;
+
+    /**
+     * @var Collection<int, BaladeRating>
+     */
+    #[ORM\OneToMany(targetEntity: BaladeRating::class, mappedBy: 'balade')]
+    private Collection $baladeRatings;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->groupEvents = new ArrayCollection();
         $this->images      = new ArrayCollection();
+        $this->baladeTags = new ArrayCollection();
+        $this->baladeRatings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -286,6 +300,60 @@ class Balade
                 $image->setBalade(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BaladeTag>
+     */
+    public function getBaladeTags(): Collection
+    {
+        return $this->baladeTags;
+    }
+
+    public function addBaladeTag(BaladeTag $baladeTag): static
+    {
+        if (!$this->baladeTags->contains($baladeTag)) {
+            $this->baladeTags->add($baladeTag);
+        }
+
+        return $this;
+    }
+
+    public function removeBaladeTag(BaladeTag $baladeTag): static
+    {
+        $this->baladeTags->removeElement($baladeTag);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BaladeRating>
+     */
+    public function getBaladeRatings(): Collection
+    {
+        return $this->baladeRatings;
+    }
+
+    public function addBaladeRating(BaladeRating $baladeRating): static
+    {
+        if (!$this->baladeRatings->contains($baladeRating)) {
+            $this->baladeRatings->add($baladeRating);
+            $baladeRating->setBalade($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBaladeRating(BaladeRating $baladeRating): static
+    {
+        if ($this->baladeRatings->removeElement($baladeRating)) {
+            // set the owning side to null (unless already changed)
+            if ($baladeRating->getBalade() === $this) {
+                $baladeRating->setBalade(null);
+            }
+        }
+
         return $this;
     }
 }
