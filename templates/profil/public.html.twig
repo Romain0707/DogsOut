@@ -108,3 +108,18 @@
     </div>
 </section>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.balade-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('a, button, form')) return;
+
+                    const link = card.querySelector('a[href]');
+                    if (link) window.location.href = link.href;
+                });
+            });
+        });
+    </script>
+{% endblock %}

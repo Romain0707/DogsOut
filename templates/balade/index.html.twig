@@ -24,7 +24,6 @@
                 e.stopPropagation();
                 e.preventDefault();
 
-                // Ferme tous les autres
                 document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
                     if (menu !== btn.nextElementSibling) {
                         menu.classList.remove('open');
@@ -35,10 +34,20 @@
             });
         });
 
-        // Ferme au clic ailleurs
         document.addEventListener('click', () => {
             document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
                 menu.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.balade-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('a, button, form')) return;
+
+                    const link = card.querySelector('a[href]');
+                    if (link) window.location.href = link.href;
+                });
             });
         });
     </script>

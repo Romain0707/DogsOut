@@ -3,13 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{{ asset('favicon-96x96.png') }}" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}" />
+        <meta name="apple-mobile-web-app-title" content="DogsOut" />
+        <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
         <title>{% block title %}Accueil{% endblock %}</title>
         {{ encore_entry_link_tags('app') }}
     </head>
     <body>
         <header class="site-header">
             <nav class="nav">
-                <a class="logo" href="{{ path('home') }}">LOGO</a>
+                <a class="logo" href="{{ path('home') }}"><img src="{{ asset('uploads/images/logodogsout.png') }}" alt="Logo Dogs-out"></a>
 
                 <button class="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
                     <span></span>

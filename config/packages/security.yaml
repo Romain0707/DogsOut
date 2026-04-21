@@ -46,6 +46,7 @@ security:
         - { path: ^/profil, roles: ROLE_USER }
         - { path: ^/balade/form, roles: ROLE_USER }
         - { path: ^/balade/delete, roles: ROLE_USER }
+        - { path: ^/groupes, roles: ROLE_USER }
 
 when@test:
     security:

@@ -15,13 +15,13 @@ $btn-hover-color : rgba(36, 74, 49, 1);
 
 $btn-scd-bg-color: rgba(255, 255, 255, 0);
 $btn-scd-border-color : rgba(46, 94, 62, 1);
-$btn-scd-text-color : rgba(46, 94, 62, 1);
+$btn-scd-text-color : rgb(46, 94, 74);
 $btn-scd-hover-color : rgba(46, 94, 62, 0.08);
 
 
-$primary-color : rgba(46, 94, 62, 1);
+$primary-color : #2e5e3e;
 $hover-color : rgba(92, 140, 102, 1);
-$bg-color : rgba(245, 242, 235, 1);
+$bg-color : #f5f2eb;
 $secondary-bg-color : rgba(232, 224, 209, 1);
 
 $nav-text-color: rgba(232, 224, 209, 1);
@@ -32,7 +32,9 @@ $text-meta-color : rgba(120, 130, 125, 1);
 $font-title : "cormorant", sans-serif;
 $font-text : "lato regular", sans-serif;
 
-$font-title-size-h1 : 2.5rem;
+$font-title-size-h1 : 3rem;
 $font-title-size-h2 : 2rem;
+$font-title-size-h3 : 1.5rem;
+$font-title-size-h4 : 1.25rem;
 $font-nav-size : 1.3rem;
 $font-text-size : 1rem;

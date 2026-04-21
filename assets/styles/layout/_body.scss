@@ -1,7 +1,14 @@
-
+@use '../abstracts/mixins' as m;
 @use '../abstracts/variables' as v;
 
 
 body {
     background-color: v.$bg-color;
+    min-block-size: 100svh;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+
+    @include m.tablet {
+        padding-top: 60px;
+    }
 }

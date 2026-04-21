@@ -2,36 +2,201 @@
 @use '../abstracts/variables' as v;
 
 #hero {
-    height: 50vh;
-    background: white url(../../img/hero-bg.png) no-repeat center center;
+    position: relative;
+    height: 700px;
+    background: white url(../../img/hero-bg.png) no-repeat top 25% center;
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
 
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to top, v.$bg-color, transparent);
+            z-index: 1;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 0;
+        }
+
+
     .container {
+        position: relative;
         height: 100%;
         @include m.container;
-        @include m.flex-column;
-        @include m.flex-center-horiz;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1;
+
+        .hero--buttons {
+            display: flex;
+            gap: 1rem;
+
+            @include m.phone {
+                flex-direction: column;
+            }
+        }
+
+        .hero--image {
+            display: flex;
+            position: relative;
+            gap: 1rem;
+            background-color: v.$bg-color;
+            padding: 10px;
+            width: 450px;
+            height: 450px;
+            border-radius: 5px;
+
+            @include m.tablet {
+                display: none;
+            }
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 5px;
+            }
+
+            .hero--image-link {
+                position: absolute;
+                bottom: 20px;
+                left: 20px;
+                background-color: rgba(73, 73, 73, 0.3);
+                border-radius: 10px;
+                width: calc(90% - 20px);
+                padding: 1rem 1.5rem;
+                backdrop-filter: blur(5px);
+                text-decoration: none;
+                color: white;
+                font-family: v.$font-title;
+                font-size: v.$font-title-size-h2;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background-color: rgba(73, 73, 73, 0.5);
+                }
+            }
+        }
         
         h1 {
-            max-width: 520px;
+            max-width: 560px;
             font-family: v.$font-title;
             font-size: v.$font-title-size-h1;
-            color: v.$text-title-color;
+            color: #fffffc;
         }
 
         p {
+            max-width: 450px;
             margin-block: 1rem;
             font-family: v.$font-text;
-            font-size: v.$font-text-size;
-            color: v.$text-p-color;
+            font-size: v.$font-title-size-h4;
+            color: #fffffc;
         }
 
         a {
             text-decoration: none;
             align-self: baseline;
+        }
+    }
+}
+
+#features {
+    @include m.container;
+    background: v.$bg-color;
+    padding-block: 4rem;
+
+    .features-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        position: relative;
+        border: 1.5px solid #e8e2d8;
+        border-radius: 5px;
+        padding: 30px;
+        background: white;
+        @include m.flex-center-column;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border-radius: 5px;
+            border: 1.5px solid #e8e2d8;
+        }
+
+        &.vague1 {
+            &::after {
+                background-image: url("data:image/svg+xml,%3Csvg%20width%3D%22100%25%22%20height%3D%22160%22%20viewBox%3D%220%200%20800%20160%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20d%3D%22M0%2C65%20C50%2C60%20110%2C35%20220%2C55%20C420%2C95%20620%2C35%20800%2C65%20L800%2C85%20C620%2C65%20420%2C115%20220%2C80%20C110%2C75%20050%2C90%20000%2C85%20Z%22%20fill%3D%22%23E8E2D8%22/%3E%3C/svg%3E");
+            }
+        }
+
+        &.vague2 {
+            &::after {
+                background-image: url("data:image/svg+xml,%3Csvg%20width%3D%22100%25%22%20height%3D%22160%22%20viewBox%3D%220%200%20800%20160%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20d%3D%22M0%2C80%20C100%2C95%20200%2C55%20400%2C75%20C600%2C95%20700%2C55%20800%2C70%20L800%2C88%20C700%2C73%20600%2C113%20400%2C93%20C200%2C73%20100%2C113%20000%2C98%20Z%22%20fill%3D%22%23E8E2D8%22/%3E%3C/svg%3E");
+            }
+        }
+
+        &.vague3 {
+            &::after {
+                background-image: url("data:image/svg+xml,%3Csvg%20width%3D%22100%25%22%20height%3D%22160%22%20viewBox%3D%220%200%20800%20160%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20d%3D%22M0%2C65%20C180%2C35%20380%2C95%20580%2C55%20C690%2C35%20750%2C60%20800%2C65%20L800%2C85%20C750%2C90%20690%2C75%20580%2C80%20C380%2C115%20180%2C65%20000%2C85%20Z%22%20fill%3D%22%23E8E2D8%22/%3E%3C/svg%3E");
+            }
+        }
+
+        h3 {
+            text-align: center;
+            font-family: v.$font-title;
+            font-size: v.$font-title-size-h2;
+            color: v.$text-title-color;
+            margin-bottom: .75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        p {
+            font-family: v.$font-text;
+            text-align: center;
+            color: v.$text-p-color;
+            max-width: 30ch;
+            margin-inline: auto;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-link {
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-icons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            height: 50px;
+            position: relative;
+            z-index: 1;
         }
     }
 }

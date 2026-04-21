@@ -2,17 +2,72 @@
 
 .btn {
     display: inline-block;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    background: v.$btn-bg-color;
-    border: 1px solid v.$btn-border-color;
+    position: relative;
+    background: v.$primary-color;
     color: v.$btn-text-color;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.15),
+        0 4px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    font-family: v.$font-text;
     text-decoration: none;
+    cursor: pointer;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        opacity: 0.07;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+    }
 
     &:hover {
-        background: v.$btn-hover-color;
+        background: v.$hover-color;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.15),
+            0 6px 20px rgba(0, 0, 0, 0.25);
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(1px);
+        box-shadow:
+            inset 0 2px 6px rgba(0, 0, 0, 0.25),
+            0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.btn--secondary {
+    display: inline-block;
+    background: v.$bg-color;
+    color: v.$btn-scd-text-color;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-family: v.$font-text;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 2px 8px rgba(46, 94, 62, 0.1);
+
+    &::before {
+        opacity: 0.03;
+        mix-blend-mode: multiply;
+    }
+
+    &:hover {
+        background: white;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            0 4px 12px rgba(46, 94, 62, 0.15);
+        transform: translateY(-1px);
     }
 }

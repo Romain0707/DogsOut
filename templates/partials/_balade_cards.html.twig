@@ -1,5 +1,6 @@
 {% for balade in balades %}
 <div class="balade-card">
+    <a href="{{ path('app_balade_show', {'id': balade.id}) }}"></a>
     <div class="balade-card-img">
         {% set firstImage = balade.images.first %}
         {% if firstImage and firstImage.filename %}
@@ -166,7 +167,6 @@
             </li>
         </ul>
     </div>
-
 </div>
 {% else %}
 <div class="balade-card">

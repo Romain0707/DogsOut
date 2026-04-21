@@ -3,11 +3,12 @@
 
 .site-header {
     background-color: v.$primary-color;
-    min-height: 5vh;
+    height: 60px;
     display: flex;
     align-items: center;
     position: relative;
     z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
 
     .nav {
         @include m.container;
@@ -23,6 +24,12 @@
         text-decoration: none;
         font-family: v.$font-title;
         font-size: v.$font-nav-size;
+        height: 54px;
+        
+        img {
+            height: 100%;
+            width: auto;
+        }
     }
 
     .nav-list {
@@ -39,9 +46,27 @@
             font-family: v.$font-title;
             font-size: v.$font-nav-size;
             transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 3px;
+            
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: v.$nav-text-color;
+                border-radius: 2px;
+                transition: width 0.25s ease, left 0.25s ease;
+            }
 
             &:hover {
-                text-decoration: underline;
+                text-decoration: none;
+                &::after {
+                    width: 100%;
+                    left: 0;
+                }
             }
 
             .nav-messages {
@@ -95,6 +120,7 @@
 
     @include m.tablet {
         position: fixed;
+        top: 0;
         width: 100%;
 
         .burger {
