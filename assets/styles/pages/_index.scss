@@ -96,6 +96,10 @@
             font-family: v.$font-title;
             font-size: v.$font-title-size-h1;
             color: #fffffc;
+
+            @include m.phone {
+                font-size: v.$font-title-size-h2;
+            }
         }
 
         p {
@@ -104,6 +108,10 @@
             font-family: v.$font-text;
             font-size: v.$font-title-size-h4;
             color: #fffffc;
+
+            @include m.phone {
+                font-size: v.$font-title-size-h5;
+            }
         }
 
         a {
@@ -172,6 +180,10 @@
             margin-bottom: .75rem;
             position: relative;
             z-index: 1;
+
+            @include m.phone {
+                font-size: v.$font-title-size-h3;
+            }
         }
 
         p {

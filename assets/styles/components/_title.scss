@@ -27,6 +27,7 @@
             height: 4px;
             background: #CDBCA8;
             border-radius: 4px;
+
         }
 
         &::before {
@@ -39,6 +40,34 @@
             height: 4px;
             background: #CDBCA8;
             border-radius: 4px;
+
+        }
+
+        @include m.phone {
+            &::after {
+                left: -30px;
+                width: 20px;
+                height: 2px;
+            }
+
+            &::before {
+                right: -30px;
+                width: 20px;
+                height: 2px;
+            }
+        }
+
+        @include m.xs-phone {
+
+            &::after {
+                left: -20px;
+                width: 0px;
+            }
+
+            &::before {
+                right: -20px;
+                width: 0px;
+            }
         }
     }
 }
