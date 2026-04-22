@@ -124,6 +124,10 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1.5rem;
+
+        @include m.tablet {
+            grid-template-columns: 1fr;
+        }
     }
 
     .feature-card {
@@ -182,7 +186,6 @@
         }
         
         .card-link {
-            margin-top: auto;
             position: relative;
             z-index: 1;
         }
@@ -197,6 +200,11 @@
             height: 50px;
             position: relative;
             z-index: 1;
+            margin-top: auto;
+        }
+
+        .subscribe { 
+            background-color: #B47339;
         }
     }
 }
