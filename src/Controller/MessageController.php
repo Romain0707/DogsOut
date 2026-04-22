@@ -236,7 +236,7 @@ final class MessageController extends AbstractController
             'authorId'     => $m->getAuthor()->getId(),
             'authorAvatar' => $m->getAuthor()->getImageName()
                 ? '/uploads/images/' . $m->getAuthor()->getImageName()
-                : '/profil/default-avatar.png',
+                : '/uploads/images/default-avatar.png',
             'createdAt'    => $m->getCreatedAt()->format('H:i'),
         ], $messages);
 

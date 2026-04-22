@@ -191,7 +191,6 @@
                     box-shadow: 0 4px 20px rgba(46, 94, 62, 0.1);
                 }
 
-                // Badge sexe
                 &__sexe {
                     display: inline-flex;
                     align-items: center;
@@ -267,7 +266,6 @@
                     line-height: 1.5;
                 }
 
-                // Boutons d'action
                 &__actions {
                     display: flex;
                     gap: 0.5rem;
@@ -307,7 +305,6 @@
                     }
                 }
 
-                // Carte "Ajouter un chien"
                 &--add {
                     @include m.flex-center-column;
                     gap: 0.5rem;

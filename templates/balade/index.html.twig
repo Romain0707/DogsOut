@@ -6,9 +6,15 @@
   <section id="balade">
     <div class="container">
 
-        <h1>Balades</h1>
-
-        <a href="{{path ('app_balade_form')}}" class="btn">Créer une balade</a>
+        <div class="title-container">
+            <h1 class="title">Balades</h1>
+        </div>
+        {% if is_granted('ROLE_USER') %}
+            <a href="{{path ('app_balade_form')}}" class="create-balade create-balade--add">
+                <span class="create-balade__add-icon">+</span>
+                <span class="create-balade__add-label">Créer une balade</span>
+            </a>
+        {% endif %}
 
         <div class="balade-container">
             {{ include('partials/_balade_cards.html.twig') }}

@@ -10,6 +10,45 @@
             margin-bottom: 1rem;
         }
 
+        .create-balade {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background-color: v.$primary-color;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+
+            &--add {
+                @include m.flex-center-column;
+                gap: 0.5rem;
+                border: 2px dashed v.$primary-color;
+                background: transparent;
+                color: v.$primary-color;
+                text-decoration: none;
+                cursor: pointer;
+                min-height: 140px;
+                transition: background 0.2s, box-shadow 0.2s;
+
+                &:hover {
+                    background: rgba(46, 94, 62, 0.05);
+                    box-shadow: 0 4px 20px rgba(46, 94, 62, 0.08);
+                }
+            }
+
+            &__add-icon {
+                font-size: 3rem;
+                line-height: 1;
+                font-weight: 700;
+            }
+
+            &__add-label {
+                font-family: v.$font-text;
+                font-weight: 600;
+            }
+        }
+
         @include m.xs-phone {
             padding-inline: 0px;
         }

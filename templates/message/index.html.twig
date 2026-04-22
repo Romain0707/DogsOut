@@ -27,9 +27,9 @@
                    class="conv-item {% if unread %}conv-item--unread{% endif %}">
                     <div class="conv-item__avatar">
                         {% if other and other.imageName %}
-                            <img src="{{ other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ other.username }}">
+                            <img src="{{ other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('uploads/images/default-avatar.png') }}" alt="{{ other.username }}">
                         {% else %}
-                            <img src="{{ asset('profil/default-avatar.png') }}" alt="avatar">
+                            <img src="{{ asset('uploads/images/default-avatar.png') }}" alt="avatar">
                         {% endif %}
                     </div>
                     <div class="conv-item__body">

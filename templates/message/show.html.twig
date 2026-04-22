@@ -31,7 +31,7 @@
                 <a href="{{ path('app_message_show', {'id': conv.id}) }}"
                    class="conv-item {% if unread %}conv-item--unread{% endif %} {% if conv.id == conversation.id %}conv-item--active{% endif %}">
                     <div class="conv-item__avatar">
-                        <img src="{{ otherConv and otherConv.imageName ? vich_uploader_asset(otherConv, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ otherConv ? otherConv.username : 'avatar' }}">
+                        <img src="{{ otherConv and otherConv.imageName ? vich_uploader_asset(otherConv, 'imageFile') : asset('uploads/images/default-avatar.png') }}" alt="{{ otherConv ? otherConv.username : 'avatar' }}">
                     </div>
                     <div class="conv-item__body">
                         <div class="conv-item__top">
@@ -67,7 +67,7 @@
 
         <div class="chat__header">
             <div class="chat__header-avatar">
-                <img src="{{ other and other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ other ? other.username : 'avatar' }}">
+                <img src="{{ other and other.imageName ? vich_uploader_asset(other, 'imageFile') : asset('uploads/images/default-avatar.png') }}" alt="{{ other ? other.username : 'avatar' }}">
             </div>
             <div class="chat__header-info">
                 <span class="chat__header-name">
@@ -83,7 +83,7 @@
                      data-message-id="{{ message.id }}">
                     {% if not isMine %}
                     <div class="chat__bubble-avatar">
-                        <img src="{{ message.author.imageName ? vich_uploader_asset(message.author, 'imageFile') : asset('profil/default-avatar.png') }}" alt="{{ message.author.username }}">
+                        <img src="{{ message.author.imageName ? vich_uploader_asset(message.author, 'imageFile') : asset('uploads/images/default-avatar.png') }}" alt="{{ message.author.username }}">
                     </div>
                     {% endif %}
                     <div class="chat__bubble">
