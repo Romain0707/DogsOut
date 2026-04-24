@@ -1,3 +1,5 @@
+import * as LCG from 'leaflet-control-geocoder';
+
 export function initBaladeMap() {
 
   const cfg = window.BALADE_MAP_CONFIG || {};
@@ -10,6 +12,21 @@ export function initBaladeMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors', maxZoom: 19,
   }).addTo(map);
+
+  // ── Recherche géocodage ────────────────────────────────────────────────
+  LCG.geocoder({
+    geocoder: LCG.geocoders.nominatim(),
+    defaultMarkGeocode: false,
+    placeholder: 'Rechercher un lieu…',
+    errorMessage: 'Aucun résultat.',
+    showResultIcons: false,
+    collapsed: true,
+  })
+  .on('markgeocode', (e) => {
+    const { center, bbox } = e.geocode;
+    map.fitBounds(bbox ?? L.latLngBounds([center, center]).pad(0.05));
+  })
+  .addTo(map);
 
   const wpInput    = document.getElementById('balade_waypointsJson');
   const routeInput = document.getElementById('balade_routeGeoJson');
@@ -29,15 +46,15 @@ export function initBaladeMap() {
   const durationEl    = document.getElementById('route-duration');
   const segListEl     = document.getElementById('seg-list');
 
-  let orsProfile  = cfg.orsProfile ?? 'foot-walking';
-  let freeMode    = false;
-  let cursor      = null;   
-  let segments    = [];     
-  let startMarker = null;
-  let cursorMk    = null;
-  let previewLine = null;
+  let orsProfile      = cfg.orsProfile ?? 'foot-walking';
+  let freeMode        = false;
+  let cursor          = null;
+  let segments        = [];
+  let startMarker     = null;
+  let cursorMk        = null;
+  let previewLine     = null;
   let orsSeq          = 0;
-  let restorationLayer = null;  
+  let restorationLayer = null;
 
   // ── Icônes ─────────────────────────────────────────────────────────────
   function makePin(bg, emoji) {
@@ -230,9 +247,7 @@ export function initBaladeMap() {
     freeMode = !freeMode;
     btnFreeToggle?.classList.toggle('on', freeMode);
     pillEl?.classList.toggle('on', freeMode);
-    if (freeDescEl) freeDescEl.textContent = freeMode
-      ? 'Libre'
-      : 'Libre';
+    if (freeDescEl) freeDescEl.textContent = 'Libre';
     map.getContainer().style.cursor = freeMode ? 'crosshair' : '';
     if (cursor) setStatus(freeMode ? 'free' : 'ors');
     updateHint();
@@ -245,9 +260,7 @@ export function initBaladeMap() {
     );
   }
 
-
   function persist() {
-
     const wps = [];
     if (cursor || segments.length) {
       if (segments.length) {

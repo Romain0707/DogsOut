@@ -663,6 +663,46 @@
         &:hover { color: rgba(192, 57, 43, 1); }
       }
     }
+
+    // ── Geocoder search ───────────────────────────────────────────────────
+    .leaflet-control-geocoder {
+      border-radius: 8px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,.12) !important;
+      border: none !important;
+
+      &-icon {
+        border-radius: 8px !important;
+        background-color: #fff !important;
+        width: 34px !important;
+        height: 34px !important;
+      }
+
+      &-form {
+        input {
+          font-family: v.$font-text;
+          font-size: .82rem;
+          padding: 6px 10px;
+          border: none;
+          outline: none;
+          border-radius: 0 8px 8px 0;
+          width: 220px;
+        }
+      }
+
+      &-alternatives {
+        border-radius: 0 0 8px 8px !important;
+        overflow: hidden;
+
+        li a {
+          font-family: v.$font-text;
+          font-size: .78rem;
+          padding: 7px 12px;
+
+          &:hover { background: rgba(v.$primary-color, .08); color: v.$primary-color; }
+        }
+      }
+    }
+
   }
 }
 

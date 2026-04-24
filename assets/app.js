@@ -14,6 +14,8 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl: markerIcon,

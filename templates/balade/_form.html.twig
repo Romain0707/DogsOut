@@ -249,7 +249,7 @@
             {{ balade.id ? 'Mettre à jour' : 'Créer la balade' }}
         </button>
 
-        {{ form_end(form) }}
+        {{ form_end(form, { render_rest: false }) }}
 
         {# Actions bas (retour + supprimer) — uniquement en édition #}
         {% if balade.id %}
@@ -448,10 +448,8 @@
 		}
 
 		const initialDiff = diffInput ? diffInput.value.trim() : '';
-console.log('initialDiff:', initialDiff); // doit afficher "Moyen"
-if (initialDiff) setDifficulty(initialDiff);
-console.log('diffBtns:', diffBtns);
-setDifficulty('Moyen');
+		if (initialDiff) setDifficulty(initialDiff);
+		setDifficulty('Facile');
 
 		diffBtns.forEach(btn => {
 			btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
