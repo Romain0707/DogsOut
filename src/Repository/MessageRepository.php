@@ -14,9 +14,6 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
-    /**
-     * Messages d'une conversation avec l'auteur en eager loading
-     */
     public function findByConversation(Conversation $conversation): array
     {
         return $this->createQueryBuilder('m')

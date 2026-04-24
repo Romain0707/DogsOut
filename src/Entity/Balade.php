@@ -180,7 +180,6 @@ class Balade
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getBalade() === $this) {
                 $comment->setBalade(null);
             }
@@ -258,7 +257,6 @@ class Balade
     public function removeGroupEvent(GroupEvent $groupEvent): static
     {
         if ($this->groupEvents->removeElement($groupEvent)) {
-            // set the owning side to null (unless already changed)
             if ($groupEvent->getBalade() === $this) {
                 $groupEvent->setBalade(null);
             }
@@ -348,7 +346,6 @@ class Balade
     public function removeBaladeRating(BaladeRating $baladeRating): static
     {
         if ($this->baladeRatings->removeElement($baladeRating)) {
-            // set the owning side to null (unless already changed)
             if ($baladeRating->getBalade() === $this) {
                 $baladeRating->setBalade(null);
             }

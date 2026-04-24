@@ -18,20 +18,17 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/groupes/{groupId}/evenements')]
 final class GroupEventController extends AbstractController
 {
-    public function __construct(
+    public function __construct
+    (
         private Security $security,
         private EntityManagerInterface $em,
-    ) {}
+    ) 
+    {
 
-    /**
-     * Proposer un événement dans le groupe
-     */
+    }
     #[Route('/new', name: 'app_group_event_new', methods: ['GET', 'POST'])]
-    public function new(
-        int $groupId,
-        Request $request,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function new(int $groupId, Request $request, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -68,16 +65,9 @@ final class GroupEventController extends AbstractController
         ]);
     }
 
-    /**
-     * Répondre à un événement (disponible / pas dispo / peut-être)
-     */
     #[Route('/{eventId}/respond', name: 'app_group_event_respond', methods: ['POST'])]
-    public function respond(
-        int $groupId,
-        int $eventId,
-        Request $request,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function respond(int $groupId, int $eventId, Request $request, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -100,7 +90,6 @@ final class GroupEventController extends AbstractController
             return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
         }
 
-        // Cherche une réponse existante
         $existing = $this->em->getRepository(GroupEventResponse::class)->findOneBy([
             'groupEvent' => $event,
             'user'       => $currentUser,
@@ -125,16 +114,9 @@ final class GroupEventController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
     }
 
-    /**
-     * Supprimer un événement (admin/modo ou créateur de l'événement)
-     */
     #[Route('/{eventId}/delete', name: 'app_group_event_delete', methods: ['POST'])]
-    public function delete(
-        int $groupId,
-        int $eventId,
-        Request $request,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function delete(int $groupId, int $eventId, Request $request, GroupMemberRepository $memberRepository): Response
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */

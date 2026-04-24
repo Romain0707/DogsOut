@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Chien;
 use App\Form\ChienType;
-use App\Repository\ChienRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;

@@ -46,7 +46,6 @@ class BaladeImage
     public function setImageFile(?File $imageFile): static
     {
         $this->imageFile = $imageFile;
-        // Requis par VichUploader pour déclencher la mise à jour
         if ($imageFile !== null) {
             $this->updatedAt = new \DateTimeImmutable();
         }

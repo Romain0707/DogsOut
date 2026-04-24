@@ -141,7 +141,6 @@ class UserGroup
     public function removeGroupMember(GroupMember $groupMember): static
     {
         if ($this->groupMembers->removeElement($groupMember)) {
-            // set the owning side to null (unless already changed)
             if ($groupMember->getUsergroup() === $this) {
                 $groupMember->setUsergroup(null);
             }
@@ -171,7 +170,6 @@ class UserGroup
     public function removeGroupEvent(GroupEvent $groupEvent): static
     {
         if ($this->groupEvents->removeElement($groupEvent)) {
-            // set the owning side to null (unless already changed)
             if ($groupEvent->getUsergroup() === $this) {
                 $groupEvent->setUsergroup(null);
             }

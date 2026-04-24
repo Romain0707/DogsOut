@@ -14,9 +14,6 @@ class UserGroupRepository extends ServiceEntityRepository
         parent::__construct($registry, UserGroup::class);
     }
 
-    /**
-     * Tous les groupes publics, triés par date de création
-     */
     public function findPublic(): array
     {
         return $this->createQueryBuilder('g')
@@ -26,9 +23,6 @@ class UserGroupRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Groupes dont l'user est membre actif
-     */
     public function findByMember(User $user): array
     {
         return $this->createQueryBuilder('g')
@@ -42,9 +36,6 @@ class UserGroupRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Recherche par nom ou description
-     */
     public function search(string $query): array
     {
         return $this->createQueryBuilder('g')

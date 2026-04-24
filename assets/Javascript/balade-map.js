@@ -1,23 +1,3 @@
-/**
- * balade-map.js
- *
- * Carte de création/édition de balade chien — Symfony
- *
- * Utilise uniquement les deux champs existants :
- *   #balade_waypointsJson  → [[lat, lng, "ors"|"free"], …]
- *   #balade_routeGeoJson   → FeatureCollection LineString fusionnée
- *   #balade_distanceMeters → mètres
- *   #balade_durationSeconds→ secondes
- *
- * Éléments UI :
- *   #map, #btn-undo, #btn-close, #btn-clear
- *   #btn-free-toggle, #free-toggle-pill, #free-toggle-desc
- *   #map-hint, #map-status
- *   #route-stats, #route-distance, #route-duration
- *   #seg-list
- *   [data-ors-profile] → boutons profil
- */
-
 export function initBaladeMap() {
 
   const cfg = window.BALADE_MAP_CONFIG || {};
@@ -31,13 +11,11 @@ export function initBaladeMap() {
     attribution: '&copy; OpenStreetMap contributors', maxZoom: 19,
   }).addTo(map);
 
-  // ── Champs Symfony ─────────────────────────────────────────────────────
   const wpInput    = document.getElementById('balade_waypointsJson');
   const routeInput = document.getElementById('balade_routeGeoJson');
   const distInput  = document.getElementById('balade_distanceMeters');
   const durInput   = document.getElementById('balade_durationSeconds');
 
-  // ── UI ─────────────────────────────────────────────────────────────────
   const btnUndo       = document.getElementById('btn-undo');
   const btnClose      = document.getElementById('btn-close');
   const btnClear      = document.getElementById('btn-clear');
@@ -51,16 +29,15 @@ export function initBaladeMap() {
   const durationEl    = document.getElementById('route-duration');
   const segListEl     = document.getElementById('seg-list');
 
-  // ── État ───────────────────────────────────────────────────────────────
   let orsProfile  = cfg.orsProfile ?? 'foot-walking';
   let freeMode    = false;
-  let cursor      = null;   // L.LatLng — dernier point confirmé
-  let segments    = [];     // [{ type, from, to, points, layers, distanceMeters, durationSeconds }]
+  let cursor      = null;   
+  let segments    = [];     
   let startMarker = null;
   let cursorMk    = null;
   let previewLine = null;
   let orsSeq          = 0;
-  let restorationLayer = null;  // layer GeoJSON affiché au chargement (mode édition)
+  let restorationLayer = null;  
 
   // ── Icônes ─────────────────────────────────────────────────────────────
   function makePin(bg, emoji) {
@@ -75,7 +52,6 @@ export function initBaladeMap() {
 
   const IC = { start: makePin('#4a7c59', '🏠'), cursor: makePin('#e87040', '🐾') };
 
-  // ── Événements carte ───────────────────────────────────────────────────
   map.on('click', (e) => {
     if (!cursor) {
       cursor = e.latlng;
@@ -99,7 +75,6 @@ export function initBaladeMap() {
     }).addTo(map);
   });
 
-  // ── Segment libre ──────────────────────────────────────────────────────
   function addFreeSeg(from, to) {
     if (restorationLayer) { restorationLayer.clearLayers(); restorationLayer.remove(); restorationLayer = null; }
     const pts    = [from, to];
@@ -113,7 +88,6 @@ export function initBaladeMap() {
     persist();
   }
 
-  // ── Segment ORS ────────────────────────────────────────────────────────
   async function addORSSeg(from, to) {
     if (restorationLayer) { restorationLayer.clearLayers(); restorationLayer.remove(); restorationLayer = null; }
     const seq = ++orsSeq;
@@ -140,7 +114,6 @@ export function initBaladeMap() {
         return;
       }
 
-      // Le contrôleur retourne data.geojson = un Feature (pas FeatureCollection)
       const coords = data.geojson?.geometry?.coordinates ?? [];
       if (!coords.length) {
         setStatus(freeMode ? 'free' : 'ors');
@@ -149,7 +122,7 @@ export function initBaladeMap() {
       }
 
       const pts   = coords.map(c => L.latLng(c[1], c[0]));
-      const distM = data.distance ?? from.distanceTo(to); // déjà en mètres (contrôleur fait km→m)
+      const distM = data.distance ?? from.distanceTo(to);
       const durS  = data.duration ?? (distM / 1000 / 4) * 3600;
 
       segments.push({ type: 'ors', from, to,
@@ -171,7 +144,6 @@ export function initBaladeMap() {
     }
   }
 
-  // ── Dessin polyline ────────────────────────────────────────────────────
   function drawPoly(pts, type) {
     const color  = type === 'ors' ? '#4a7c59' : '#7b5ea7';
     const shadow = L.polyline(pts, { color: '#3d2b1f', weight: 9, opacity: .07 }).addTo(map);
@@ -190,7 +162,6 @@ export function initBaladeMap() {
     cursorMk = L.marker(ll, { icon: IC.cursor }).addTo(map);
   }
 
-  // ── Fermer la boucle ───────────────────────────────────────────────────
   function closeLoop() {
     if (!cursor || !segments.length) return;
     const first = segments[0].from;
@@ -201,7 +172,6 @@ export function initBaladeMap() {
     else          addORSSeg(cursor, first);
   }
 
-  // ── Annuler dernier ────────────────────────────────────────────────────
   function undoLast() {
     if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
 
@@ -229,10 +199,9 @@ export function initBaladeMap() {
     persist();
   }
 
-  // ── Tout effacer ───────────────────────────────────────────────────────
   function clearAll() {
     orsSeq++;
-    // Supprimer le layer de restauration (L.GeoJSON = LayerGroup)
+
     if (restorationLayer) {
       restorationLayer.eachLayer(l => map.removeLayer(l));
       restorationLayer.clearLayers();
@@ -245,8 +214,6 @@ export function initBaladeMap() {
     if (cursorMk)    { map.removeLayer(cursorMk);    cursorMk    = null; }
     if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
     cursor = null;
-    // Forcer la suppression de toutes les polylines/paths restants sur la carte
-    // (filet de sécurité au cas où un layer aurait échappé au tracking)
     map.eachLayer(l => {
       if (l instanceof L.Polyline || l instanceof L.GeoJSON) {
         map.removeLayer(l);
@@ -259,20 +226,18 @@ export function initBaladeMap() {
     persist();
   }
 
-  // ── Toggle mode libre ──────────────────────────────────────────────────
   function toggleFree() {
     freeMode = !freeMode;
     btnFreeToggle?.classList.toggle('on', freeMode);
     pillEl?.classList.toggle('on', freeMode);
     if (freeDescEl) freeDescEl.textContent = freeMode
-      ? '✓ Actif — tracé libre en cours'
-      : 'Tracé libre pour les chemins hors carte';
+      ? 'Libre'
+      : 'Libre';
     map.getContainer().style.cursor = freeMode ? 'crosshair' : '';
     if (cursor) setStatus(freeMode ? 'free' : 'ors');
     updateHint();
   }
 
-  // ── Profil ORS ─────────────────────────────────────────────────────────
   function setProfile(p) {
     orsProfile = p;
     document.querySelectorAll('[data-ors-profile]').forEach(el =>
@@ -280,28 +245,20 @@ export function initBaladeMap() {
     );
   }
 
-  // ── Persistance ────────────────────────────────────────────────────────
-  //
-  // waypointsJson = [[lat, lng, "ors"|"free"], …]
-  //   • Le type du segment N est celui qui relie le point N → N+1
-  //   • Le dernier élément n'a pas de segment sortant, on met le type courant
-  //
-  // routeGeoJson  = FeatureCollection avec une LineString fusionnée
-  //
+
   function persist() {
-    // 1. Waypoints avec type de segment
+
     const wps = [];
     if (cursor || segments.length) {
       if (segments.length) {
         segments.forEach(s => wps.push([s.from.lat, s.from.lng, s.type]));
-        wps.push([cursor.lat, cursor.lng, freeMode ? 'free' : 'ors']); // dernier point
+        wps.push([cursor.lat, cursor.lng, freeMode ? 'free' : 'ors']);
       } else if (cursor) {
         wps.push([cursor.lat, cursor.lng, freeMode ? 'free' : 'ors']);
       }
     }
     if (wpInput) wpInput.value = JSON.stringify(wps);
 
-    // 2. GeoJSON fusionné — une seule LineString
     if (segments.length) {
       const allCoords = [];
       segments.forEach(s => {
@@ -329,7 +286,6 @@ export function initBaladeMap() {
     }
   }
 
-  // ── Stats UI ───────────────────────────────────────────────────────────
   function updateStats() {
     if (!segments.length) {
       if (statsBox)   statsBox.style.display = 'none';
@@ -344,7 +300,6 @@ export function initBaladeMap() {
     if (durationEl) durationEl.textContent = fmtDur(totalDur);
   }
 
-  // ── Liste segments ─────────────────────────────────────────────────────
   function renderSegList() {
     if (!segListEl) return;
     segListEl.innerHTML = '';
@@ -365,7 +320,6 @@ export function initBaladeMap() {
     });
   }
 
-  // ── Hint & statut ──────────────────────────────────────────────────────
   function updateHint() {
     if (!hintEl) return;
     if (!cursor)       hintEl.textContent = 'Clique sur la carte pour poser le premier point.';
@@ -390,7 +344,6 @@ export function initBaladeMap() {
     statusBarEl.innerHTML = txt[type];
   }
 
-  // ── Formatters ─────────────────────────────────────────────────────────
   function fmtDist(m) {
     if (m == null) return '—';
     return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2).replace('.', ',')} km`;
@@ -407,7 +360,6 @@ export function initBaladeMap() {
     try { return JSON.parse(str); } catch { return null; }
   }
 
-  // ── Bindings ───────────────────────────────────────────────────────────
   btnUndo?.addEventListener('click', undoLast);
   btnClose?.addEventListener('click', closeLoop);
   btnClear?.addEventListener('click', clearAll);
@@ -416,29 +368,17 @@ export function initBaladeMap() {
     el.addEventListener('click', () => setProfile(el.dataset.orsProfile))
   );
 
-  // ── Restauration (mode édition) ────────────────────────────────────────
-  //
-  // On relit waypointsJson = [[lat, lng, "ors"|"free"], …]
-  // Pour chaque paire de points consécutifs, on recrée le segment visuellement.
-  //
-  // Pour les segments ORS : on ne rappelle PAS l'API (trop coûteux au chargement).
-  // On affiche directement le routeGeoJson déjà sauvegardé, et on reconstitue
-  // les waypoints/markers pour permettre l'édition (ajout/annulation).
-  //
   const savedWp  = cfg.initialWaypoints    ?? tryParse(wpInput?.value    ?? '');
   const savedGeo = cfg.initialRouteGeoJson ?? tryParse(routeInput?.value ?? '');
 
   if (Array.isArray(savedWp) && savedWp.length >= 2 && savedGeo) {
-    // Afficher le tracé GeoJSON sauvegardé tel quel (vert plein)
     try {
       restorationLayer = L.geoJSON(savedGeo, {
         style: () => ({ color: '#4a7c59', weight: 5, opacity: .9, lineCap: 'round' }),
       }).addTo(map);
-      // Vider cfg pour éviter toute réutilisation après clearAll
       if (cfg.initialRouteGeoJson) cfg.initialRouteGeoJson = null;
     } catch (e) { console.warn('[balade-map] GeoJSON invalide', e); }
 
-    // Restaurer les marqueurs de waypoints pour permettre l'édition
     savedWp.forEach((p, i) => {
       if (!Array.isArray(p) || p.length < 2) return;
       const ll = L.latLng(p[0], p[1]);
@@ -446,15 +386,13 @@ export function initBaladeMap() {
         cursor = ll;
         startMarker = L.marker(ll, { icon: IC.start }).addTo(map);
       } else {
-        // Recréer un segment "fantôme" sans layer propre
-        // (le layer est déjà affiché via le GeoJSON global)
         const prev = savedWp[i - 1];
         const from = L.latLng(prev[0], prev[1]);
         const type = prev[2] ?? 'ors';
         segments.push({
           type, from, to: ll,
-          points: [from, ll],  // approximatif, suffit pour undo/persist
-          layers: [],           // layers vides car le GeoJSON est déjà affiché
+          points: [from, ll],
+          layers: [],
           distanceMeters:  from.distanceTo(ll),
           durationSeconds: (from.distanceTo(ll) / 1000 / 4) * 3600,
         });
@@ -466,7 +404,6 @@ export function initBaladeMap() {
     setStatus(freeMode ? 'free' : 'ors');
 
   } else if (Array.isArray(savedWp) && savedWp.length === 1) {
-    // Un seul point posé, pas encore de segment
     const ll = L.latLng(savedWp[0][0], savedWp[0][1]);
     cursor = ll;
     startMarker = L.marker(ll, { icon: IC.start }).addTo(map);
@@ -474,7 +411,6 @@ export function initBaladeMap() {
     setStatus(freeMode ? 'free' : 'ors');
   }
 
-  // Restaurer distance/durée affichées
   const existingDist = cfg.initialDistance ?? (distInput?.value  ? parseFloat(distInput.value)  : null);
   const existingDur  = cfg.initialDuration ?? (durInput?.value   ? parseFloat(durInput.value)   : null);
   if (existingDist != null && segments.length) {

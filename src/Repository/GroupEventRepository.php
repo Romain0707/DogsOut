@@ -15,9 +15,6 @@ class GroupEventRepository extends ServiceEntityRepository
         parent::__construct($registry, GroupEvent::class);
     }
 
-    /**
-     * Événements à venir d'un groupe
-     */
     public function findUpcoming(UserGroup $group): array
     {
         return $this->createQueryBuilder('ge')
@@ -32,9 +29,6 @@ class GroupEventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Événements passés d'un groupe
-     */
     public function findPast(UserGroup $group): array
     {
         return $this->createQueryBuilder('ge')
@@ -49,9 +43,6 @@ class GroupEventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Événements à venir pour tous les groupes d'un user
-     */
     public function findUpcomingForUser(User $user): array
     {
         return $this->createQueryBuilder('ge')

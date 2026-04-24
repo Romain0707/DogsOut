@@ -15,9 +15,6 @@ class GroupMemberRepository extends ServiceEntityRepository
         parent::__construct($registry, GroupMember::class);
     }
 
-    /**
-     * Trouve le GroupMember d'un user dans un groupe
-     */
     public function findMembership(UserGroup $group, User $user): ?GroupMember
     {
         return $this->createQueryBuilder('gm')
@@ -30,9 +27,6 @@ class GroupMemberRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    /**
-     * Membres actifs d'un groupe
-     */
     public function findActiveMembers(UserGroup $group): array
     {
         return $this->createQueryBuilder('gm')
@@ -47,9 +41,6 @@ class GroupMemberRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Demandes en attente de validation
-     */
     public function findPendingRequests(UserGroup $group): array
     {
         return $this->createQueryBuilder('gm')
@@ -64,9 +55,6 @@ class GroupMemberRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Vérifie si un user est admin ou modérateur d'un groupe
-     */
     public function isAdminOrModerator(UserGroup $group, User $user): bool
     {
         $result = $this->createQueryBuilder('gm')

@@ -67,7 +67,6 @@ class Race
     public function removeChien(Chien $chien): static
     {
         if ($this->chiens->removeElement($chien)) {
-            // set the owning side to null (unless already changed)
             if ($chien->getRace() === $this) {
                 $chien->setRace(null);
             }

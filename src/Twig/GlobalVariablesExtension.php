@@ -9,10 +9,14 @@ use Twig\Extension\GlobalsInterface;
 
 class GlobalVariablesExtension extends AbstractExtension implements GlobalsInterface
 {
-    public function __construct(
+    public function __construct
+    (
         private Security $security,
         private ConversationRepository $conversationRepository,
-    ) {}
+    ) 
+    {
+        
+    }
 
     public function getGlobals(): array
     {

@@ -70,12 +70,10 @@ class RouteController extends AbstractController
         $feature = $json['features'][0] ?? null;
         $segment = $feature['properties']['segments'][0] ?? null;
 
-        // ORS /geojson retourne distance en MÈTRES et duration en SECONDES
-        // → on ne convertit rien, on passe tel quel
         return $this->json([
             'geojson'  => $feature,
-            'distance' => $segment['distance'] ?? null, // mètres
-            'duration' => $segment['duration'] ?? null, // secondes
+            'distance' => $segment['distance'] ?? null, 
+            'duration' => $segment['duration'] ?? null,
         ]);
     }
 }

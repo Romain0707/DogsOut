@@ -18,15 +18,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/messages')]
 final class MessageController extends AbstractController
 {
-    public function __construct(
+    public function __construct
+    (
         private Security $security,
         private EntityManagerInterface $em,
-    ) {}
+    ) 
+    {
 
-    /**
-     * Liste de toutes les conversations de l'utilisateur connecté
-     */
-    #[Route('', name: 'app_message_index', methods: ['GET'])]
+    }
+
+    #[Route('', name: 'app_message_index')]
     public function index(ConversationRepository $conversationRepository): Response
     {
         $user = $this->security->getUser();
@@ -37,15 +38,9 @@ final class MessageController extends AbstractController
         ]);
     }
 
-    /**
-     * Ouvre (ou crée) une conversation privée avec un autre utilisateur
-     */
     #[Route('/with/{id}', name: 'app_message_with', methods: ['GET'])]
-    public function startWith(
-        int $id,
-        UserRepository $userRepository,
-        ConversationRepository $conversationRepository,
-    ): Response {
+    public function startWith(int $id, UserRepository $userRepository, ConversationRepository $conversationRepository): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
         $otherUser   = $userRepository->find($id);
@@ -54,12 +49,10 @@ final class MessageController extends AbstractController
             throw $this->createNotFoundException('Utilisateur introuvable.');
         }
 
-        // Cherche une conversation privée existante
         $conversation = $conversationRepository->findPrivateConversation($currentUser, $otherUser);
 
-        // Sinon on en crée une nouvelle
         if (!$conversation) {
-            $conversation = new Conversation(); // title null = privée
+            $conversation = new Conversation();
 
             $p1 = (new Participant())->setUser($currentUser)->setRole('admin');
             $p2 = (new Participant())->setUser($otherUser)->setRole('admin');
@@ -76,15 +69,9 @@ final class MessageController extends AbstractController
         return $this->redirectToRoute('app_message_show', ['id' => $conversation->getId()]);
     }
 
-    /**
-     * Affiche une conversation et ses messages
-     */
     #[Route('/{id}', name: 'app_message_show', methods: ['GET'])]
-    public function show(
-        Conversation $conversation,
-        MessageRepository $messageRepository,
-        ConversationRepository $conversationRepository,
-    ): Response {
+    public function show(Conversation $conversation, MessageRepository $messageRepository, ConversationRepository $conversationRepository): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
@@ -108,14 +95,9 @@ final class MessageController extends AbstractController
         ]);
     }
 
-    /**
-     * Envoie un message dans une conversation (POST)
-     */
     #[Route('/{id}/send', name: 'app_message_send', methods: ['POST'])]
-    public function send(
-        Conversation $conversation,
-        Request $request,
-    ): Response {
+    public function send(Conversation $conversation, Request $request): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
@@ -137,7 +119,6 @@ final class MessageController extends AbstractController
         $this->em->persist($message);
         $this->em->flush();
 
-        // Récupère les autres participants pour leurs envoyer la notif
         $topics = ['conversation/' . $conversation->getId()];
         foreach ($conversation->getParticipants() as $participant) {
             if ($participant->getUser() !== $currentUser) {
@@ -203,11 +184,8 @@ final class MessageController extends AbstractController
     }
 
     #[Route('/{id}/poll', name: 'app_message_poll', methods: ['GET'])]
-    public function poll(
-        Conversation $conversation,
-        Request $request,
-        MessageRepository $messageRepository,
-    ): Response {
+    public function poll(Conversation $conversation, Request $request, MessageRepository $messageRepository): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
@@ -217,10 +195,8 @@ final class MessageController extends AbstractController
 
         $since = (int) $request->query->get('since', 0);
 
-        // Récupère uniquement les messages après l'ID donné
         $messages = $messageRepository->findAfter($conversation, $since);
 
-        // Marque comme lu
         foreach ($conversation->getParticipants() as $participant) {
             if ($participant->getUser() === $currentUser) {
                 $participant->setLastReadAt(new \DateTimeImmutable());

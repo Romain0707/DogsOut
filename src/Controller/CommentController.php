@@ -16,12 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CommentController extends AbstractController
 {
     #[Route('/add/{id}', name: 'app_comment_add', methods: ['POST'])]
-    public function add(
-        Balade $balade,
-        Request $request,
-        EntityManagerInterface $em,
-        Security $security,
-    ): Response {
+    public function add(Balade $balade, Request $request, EntityManagerInterface $em, Security $security): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $comment = new Comment();
@@ -43,12 +39,8 @@ final class CommentController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'app_comment_delete', methods: ['POST'])]
-    public function delete(
-        Comment $comment,
-        Request $request,
-        EntityManagerInterface $em,
-        Security $security,
-    ): Response {
+    public function delete(Comment $comment, Request $request, EntityManagerInterface $em, Security $security): Response 
+    {
         $user = $security->getUser();
         $baladeId = $comment->getBalade()->getId();
 

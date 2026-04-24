@@ -20,18 +20,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/groupes')]
 final class UserGroupController extends AbstractController
 {
-    public function __construct(
+    public function __construct
+    (
         private Security $security,
         private EntityManagerInterface $em,
-    ) {}
+    ) 
+    {
 
-    /**
-     * Liste des groupes publics + groupes de l'user
-     */
-    #[Route('', name: 'app_group_index', methods: ['GET'])]
-    public function index(
-        UserGroupRepository $groupRepository,
-    ): Response {
+    }
+
+
+    #[Route('', name: 'app_group_index')]
+    public function index(UserGroupRepository $groupRepository): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
@@ -41,9 +42,6 @@ final class UserGroupController extends AbstractController
         ]);
     }
 
-    /**
-     * Création d'un groupe
-     */
     #[Route('/new', name: 'app_group_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -59,11 +57,9 @@ final class UserGroupController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $group->setCreatedBy($currentUser);
 
-            // Créer la conversation de groupe
             $conversation = new Conversation();
             $conversation->setTitle($group->getName());
 
-            // Ajouter le créateur comme participant à la conversation
             $participant = new Participant();
             $participant->setUser($currentUser);
             $participant->setRole('admin');
@@ -75,7 +71,6 @@ final class UserGroupController extends AbstractController
             $group->setConversation($conversation);
             $this->em->persist($group);
 
-            // Créateur devient admin du groupe
             $member = new GroupMember();
             $member->setUser($currentUser);
             $member->setUsergroup($group);
@@ -95,15 +90,9 @@ final class UserGroupController extends AbstractController
         ]);
     }
 
-    /**
-     * Page d'un groupe
-     */
-    #[Route('/{id}', name: 'app_group_show', methods: ['GET'])]
-    public function show(
-        UserGroup $group,
-        GroupMemberRepository $memberRepository,
-        GroupEventRepository $eventRepository,
-    ): Response {
+    #[Route('/{id}', name: 'app_group_show')]
+    public function show(UserGroup $group, GroupMemberRepository $memberRepository, GroupEventRepository $eventRepository): Response 
+    {
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
@@ -127,9 +116,6 @@ final class UserGroupController extends AbstractController
         ]);
     }
 
-    /**
-     * Rejoindre un groupe (public = actif direct, privé = en attente)
-     */
     #[Route('/{id}/join', name: 'app_group_join', methods: ['POST'])]
     public function join(UserGroup $group, GroupMemberRepository $memberRepository): Response
     {
@@ -138,7 +124,6 @@ final class UserGroupController extends AbstractController
         /** @var \App\Entity\User $currentUser */
         $currentUser = $this->security->getUser();
 
-        // Déjà membre ou demande en attente
         $existing = $memberRepository->findMembership($group, $currentUser);
         if ($existing) {
             $this->addFlash('info', 'Vous êtes déjà membre ou votre demande est en attente.');
@@ -151,7 +136,6 @@ final class UserGroupController extends AbstractController
         $member->setRole('member');
         $member->setStatus($group->isPublic() ? 'active' : 'pending');
 
-        // Si public, ajouter aussi à la conversation du groupe
         if ($group->isPublic() && $group->getConversation()) {
             $participant = new Participant();
             $participant->setUser($currentUser);
@@ -172,9 +156,6 @@ final class UserGroupController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $group->getId()]);
     }
 
-    /**
-     * Quitter un groupe
-     */
     #[Route('/{id}/leave', name: 'app_group_leave', methods: ['POST'])]
     public function leave(UserGroup $group, GroupMemberRepository $memberRepository): Response
     {
@@ -189,7 +170,6 @@ final class UserGroupController extends AbstractController
             return $this->redirectToRoute('app_group_show', ['id' => $group->getId()]);
         }
 
-        // L'admin créateur ne peut pas quitter
         if ($membership->getRole() === 'admin' && $group->getCreatedBy() === $currentUser) {
             $this->addFlash('error', 'Le créateur du groupe ne peut pas le quitter. Supprimez le groupe à la place.');
             return $this->redirectToRoute('app_group_show', ['id' => $group->getId()]);
@@ -203,15 +183,9 @@ final class UserGroupController extends AbstractController
         return $this->redirectToRoute('app_group_index');
     }
 
-    /**
-     * Modifier un groupe (admin seulement)
-     */
     #[Route('/{id}/edit', name: 'app_group_edit', methods: ['GET', 'POST'])]
-    public function edit(
-        UserGroup $group,
-        Request $request,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function edit(UserGroup $group, Request $request, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -225,7 +199,6 @@ final class UserGroupController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Sync le titre de la conversation avec le nom du groupe
             if ($group->getConversation()) {
                 $group->getConversation()->setTitle($group->getName());
             }
@@ -240,9 +213,6 @@ final class UserGroupController extends AbstractController
         ]);
     }
 
-    /**
-     * Supprimer un groupe (admin créateur seulement)
-     */
     #[Route('/{id}/delete', name: 'app_group_delete', methods: ['POST'])]
     public function delete(UserGroup $group, Request $request): Response
     {

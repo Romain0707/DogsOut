@@ -14,9 +14,6 @@ class ConversationRepository extends ServiceEntityRepository
         parent::__construct($registry, Conversation::class);
     }
 
-    /**
-     * Toutes les conversations d'un user, triées par dernier message
-     */
     public function findByUser(User $user): array
     {
         return $this->createQueryBuilder('c')
@@ -29,9 +26,6 @@ class ConversationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Trouve une conversation privée existante entre deux users
-     */
     public function findPrivateConversation(User $userA, User $userB): ?Conversation
     {
         return $this->createQueryBuilder('c')
@@ -39,7 +33,7 @@ class ConversationRepository extends ServiceEntityRepository
             ->innerJoin('c.participants', 'p2')
             ->where('p1.user = :userA')
             ->andWhere('p2.user = :userB')
-            ->andWhere('c.title IS NULL') // privée = pas de titre
+            ->andWhere('c.title IS NULL')
             ->setParameter('userA', $userA)
             ->setParameter('userB', $userB)
             ->setMaxResults(1)

@@ -1,208 +1,482 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-  {{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}
+    {{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}
 {% endblock %}
 
 {% block body %}
 <section id="balade-form">
-  <div class="container">
-    <h1>{{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}</h1>
+    <div class="container">
 
-    <div class="bm-wrapper">
+        {# ── En-tête ───────────────────────────────────────────────────────── #}
+        
 
-      {# ── Carte ── #}
-      <div class="bm-map-container">
+		<div class="title-container">
+        	<h1 class="title">{{ balade.id ? 'Modifier la balade' : 'Créer une balade' }}</h1>
+		</div>
 
-        <div class="bm-float bm-float--profiles">
-          <button type="button" class="bm-profile-card active" data-ors-profile="foot-walking" title="Promenade">
-            <span class="bm-profile-card__icon">🚶</span>
-            <span class="bm-profile-card__name">Promenade</span>
-          </button>
-          <button type="button" class="bm-profile-card" data-ors-profile="foot-hiking" title="Randonnée">
-            <span class="bm-profile-card__icon">⛰️</span>
-            <span class="bm-profile-card__name">Randonnée</span>
-          </button>
-          <button type="button" class="bm-profile-card" data-ors-profile="cycling-regular" title="Vélo + chien">
-            <span class="bm-profile-card__icon">🚲</span>
-            <span class="bm-profile-card__name">Vélo</span>
-          </button>
-          <button type="button" class="bm-profile-card" data-ors-profile="wheelchair" title="Accessible">
-            <span class="bm-profile-card__icon">♿</span>
-            <span class="bm-profile-card__name">Accessible</span>
-          </button>
-        </div>
+		<p class="bf-breadcrumb">
+            <a href="{{ path('app_balade_index') }}">Balades</a>
+            <span>›</span>
+            {{ balade.id ? 'Modifier' : 'Nouvelle balade' }}
+        </p>
 
-        <div class="bm-float bm-float--toggle">
-          <div class="bm-free-toggle" id="btn-free-toggle" title="Mode tracé libre">
-            <span class="bm-free-toggle__icon">✏️</span>
-            <span class="bm-free-toggle__label" id="free-toggle-desc">Libre</span>
-            <div class="bm-free-toggle__pill" id="free-toggle-pill"></div>
-          </div>
-        </div>
+        {# ── Wrapper carte (immersif) ───────────────────────────────────────── #}
+        <div class="bm-wrapper">
 
-        <div class="bm-float bm-float--actions">
-          <button type="button" class="bm-btn bm-btn--close" id="btn-close" title="Fermer la boucle">🔄</button>
-          <button type="button" class="bm-btn bm-btn--undo"  id="btn-undo"  title="Annuler le dernier point">↩️</button>
-          <button type="button" class="bm-btn bm-btn--clear" id="btn-clear" title="Tout effacer">🗑️</button>
-        </div>
+            <div class="bm-map-container">
 
-        <div class="bm-float bm-float--stats">
-          <div class="bm-stats" id="route-stats" style="display:none">
-            <div class="bm-stat">
-              <span class="bm-stat__value" id="route-distance">—</span>
-              <span class="bm-stat__label">Distance</span>
-            </div>
-            <div class="bm-stat">
-              <span class="bm-stat__value" id="route-duration">—</span>
-              <span class="bm-stat__label">Durée</span>
-            </div>
-          </div>
-        </div>
-
-        <p class="bm-hint" id="map-hint">Clique sur la carte pour poser le premier point.</p>
-        <div class="map-status" id="map-status" hidden></div>
-        <div id="map"></div>
-
-      </div>{# /bm-map-container #}
-
-    </div>{# /bm-wrapper #}
-
-    <ul id="seg-list" hidden></ul>
-
-    {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
-
-      <div class="bm-fields">
-
-        {{ form_row(form.title) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.isPublic) }}
-        {{ form_row(form.difficulty) }}
-
-        {# ── Tags ── #}
-        <div class="bm-tags-section">
-            <p class="bm-tags-section__title">Tags</p>
-
-            {# Tags prédéfinis en pilules #}
-            <div class="tags-form__presets">
-                {% for tag in form.baladeTags %}
-                <div class="tags-form__preset-item">
-                    {{ form_widget(tag) }}
-                    {{ form_label(tag) }}
+                {# Profils ORS — haut gauche #}
+                <div class="bm-float bm-float--profiles">
+                    <button type="button" class="bm-profile-card active" data-ors-profile="foot-walking" title="Promenade">
+                        <span class="bm-profile-card__icon">🚶</span>
+                        <span class="bm-profile-card__name">Promenade</span>
+                    </button>
+                    <button type="button" class="bm-profile-card" data-ors-profile="foot-hiking" title="Randonnée">
+                        <span class="bm-profile-card__icon">⛰️</span>
+                        <span class="bm-profile-card__name">Randonnée</span>
+                    </button>
+                    <button type="button" class="bm-profile-card" data-ors-profile="cycling-regular" title="Vélo">
+                        <span class="bm-profile-card__icon">🚲</span>
+                        <span class="bm-profile-card__name">Vélo</span>
+                    </button>
+                    <button type="button" class="bm-profile-card" data-ors-profile="wheelchair" title="Accessible">
+                        <span class="bm-profile-card__icon">♿</span>
+                        <span class="bm-profile-card__name">Accessible</span>
+                    </button>
                 </div>
-                {% endfor %}
-            </div>
 
-            {# Tags custom déjà sur CETTE balade #}
-            {% set customTags = balade.baladeTags|filter(t => not t.isPreset) %}
-            {% if customTags|length > 0 %}
-            <div class="bm-tags-current">
-                <p class="bm-tags-current__label">Tags personnalisés</p>
-                <div class="tags" id="js-custom-tags-display">
-                    {% for tag in customTags %}
-                    <span class="tag tag--custom tag--removable" data-tag-id="{{ tag.id }}">
-                        {{ tag.name }}
-                    </span>
+                {# Toggle mode libre — haut droite #}
+                <div class="bm-float bm-float--toggle">
+                    <div class="bm-free-toggle" id="btn-free-toggle" title="Mode tracé libre">
+                        <span class="bm-free-toggle__icon">✏️</span>
+                        <span class="bm-free-toggle__label" id="free-toggle-desc">Libre</span>
+                        <div class="bm-free-toggle__pill" id="free-toggle-pill"></div>
+                    </div>
+                </div>
+
+                {# Barre de statut — haut centre #}
+                <div class="map-status" id="map-status" hidden></div>
+
+                {# Boutons action — bas gauche #}
+                <div class="bm-float bm-float--actions">
+                    <button type="button" class="bm-btn bm-btn--close" id="btn-close" title="Fermer la boucle">🔄</button>
+                    <button type="button" class="bm-btn bm-btn--undo"  id="btn-undo"  title="Annuler le dernier point">↩️</button>
+                    <button type="button" class="bm-btn bm-btn--clear" id="btn-clear" title="Tout effacer">🗑️</button>
+                </div>
+
+                {# Stats — bas droite #}
+                <div class="bm-float bm-float--stats">
+                    <div class="bm-stats" id="route-stats" style="display:none">
+                        <div class="bm-stat">
+                            <span class="bm-stat__value" id="route-distance">—</span>
+                            <span class="bm-stat__label">Distance</span>
+                        </div>
+                        <div class="bm-stat">
+                            <span class="bm-stat__value" id="route-duration">—</span>
+                            <span class="bm-stat__label">Durée</span>
+                        </div>
+                    </div>
+                </div>
+
+                {# Hint — bas centre #}
+                <p class="bm-hint" id="map-hint">Clique sur la carte pour poser le premier point.</p>
+
+                {# La carte Leaflet #}
+                <div id="map"></div>
+
+            </div>{# /bm-map-container #}
+
+            {# Bande segments — directement sous la carte, dans le wrapper #}
+            <ul id="seg-list" hidden></ul>
+
+        </div>{# /bm-wrapper #}
+
+        {# ── Formulaire ─────────────────────────────────────────────────────── #}
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+        <div class="bm-fields">
+
+            {# ── Section : informations générales ── #}
+            <p class="bf-section-label">Informations générales</p>
+
+            <div class="bf-grid">
+
+                {# Titre #}
+                <div class="bf-full">
+                    {{ form_row(form.title) }}
+                </div>
+
+                {# Description #}
+                <div class="bf-full">
+                    {{ form_row(form.description) }}
+                </div>
+
+                {# Difficulté #}
+                <div class="form-group">
+                    <label>Difficulté</label>
+                    <div class="bf-diff-group">
+                        <button type="button" class="bf-diff-btn bf-diff-btn--facile"    data-diff="Facile">Facile</button>
+                        <button type="button" class="bf-diff-btn bf-diff-btn--moyen"    data-diff="Moyen">Moyen</button>
+                        <button type="button" class="bf-diff-btn bf-diff-btn--difficile" data-diff="Difficile">Difficile</button>
+                    </div>
+                    {# Champ caché Symfony alimenté par JS #}
+                    {{ form_widget(form.difficulty, { attr: { id: 'js-difficulty-input', class: 'visually-hidden' } }) }}
+                </div>
+
+                {# Visibilité #}
+                <div class="form-group">
+                    <label>Visibilité</label>
+                    <div class="bf-visibility">
+                        <div class="bf-visibility__info">
+                            <p id="js-visibility-label">{{ balade.isPublic ? 'Publique' : 'Privée' }}</p>
+                            <span id="js-visibility-desc">
+                                {{ balade.isPublic ? 'Visible par tous les utilisateurs' : 'Visible uniquement par vous' }}
+                            </span>
+                        </div>
+                        {{ form_widget(form.isPublic) }}
+                    </div>
+                </div>
+
+            </div>{# /bf-grid #}
+
+            {# ── Section : Tags ── #}
+            <div class="bm-tags-section">
+                <p class="bm-tags-section__title">Tags</p>
+
+                {# Tags prédéfinis en pilules #}
+                <div class="tags-form__presets">
+                    {% for tag in form.baladeTags %}
+                        <div class="tags-form__preset-item">
+                            {{ form_widget(tag) }}
+                            {{ form_label(tag) }}
+                        </div>
                     {% endfor %}
                 </div>
+
+                {# Tags custom déjà attachés à cette balade (mode édition) #}
+                {% set customTags = balade.baladeTags|filter(t => not t.isPreset) %}
+                {% if customTags|length > 0 %}
+                    <div class="bm-tags-current">
+                        <p class="bm-tags-current__label">Tags personnalisés</p>
+                        <div class="tags" id="js-custom-tags-display">
+                            {% for tag in customTags %}
+                                <span class="tag tag--custom tag--removable" data-tag-id="{{ tag.id }}">
+                                    {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Champ + bouton pour ajouter un tag custom #}
+                <div class="tags-form__custom">
+                    {{ form_widget(form.customTag, { attr: { id: 'js-custom-tag-input', placeholder: 'Ajouter un tag personnalisé…' } }) }}
+                    <button type="button" class="tags-form__add-btn" id="js-add-custom-tag">
+                        + Ajouter
+                    </button>
+                </div>
+
+                {# Aperçu des tags ajoutés avant soumission #}
+                <div id="js-custom-tags-preview" class="tags" style="margin-top: 0.75rem;"></div>
+
+            </div>{# /bm-tags-section #}
+
+            {# ── Champs cachés carte ── #}
+            {{ form_widget(form.routeGeoJson) }}
+            {{ form_widget(form.waypointsJson) }}
+            {{ form_widget(form.distanceMeters) }}
+            {{ form_widget(form.durationSeconds) }}
+
+            {# ── Section : Photos ── #}
+			<p class="bf-section-label">Photos</p>
+
+			<div class="form-group balade-images-wrapper">
+
+				{# Champs Symfony cachés pour les images existantes #}
+				<div
+					class="balade-images-collection"
+					data-index="{{ form.images|length }}"
+					data-prototype="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}"
+					style="display:none"
+				>
+					{% for imageForm in form.images %}
+						<div class="balade-image-item">
+							{{ form_widget(imageForm.imageFile) }}
+						</div>
+					{% endfor %}
+				</div>
+
+				{# ── Images existantes (mode édition) ── #}
+				{% if balade.images is defined and balade.images|length > 0 %}
+				<div id="existing-images-data" style="display:none">
+					{% for image in balade.images %}
+						<div
+							data-id="{{ image.id }}"
+							data-url="{{ vich_uploader_asset(image, 'imageFile') }}"
+							data-name="{{ image.imageName ?? 'image' }}"
+						></div>
+					{% endfor %}
+				</div>
+				{% endif %}
+
+				{# ── Zone de drop / preview ── #}
+				<div class="upload-zone" id="upload-zone">
+					<i class="fas fa-cloud-upload-alt upload-zone__icon"></i>
+					<p class="upload-zone__text">Glisse tes photos ici</p>
+					<label for="upload-input" class="upload-zone__button">
+						<i class="fas fa-images"></i> Choisir des photos
+					</label>
+					<input
+						type="file"
+						id="upload-input"
+						accept="image/png, image/jpeg, image/webp"
+						multiple
+						style="display:none"
+					>
+					<p class="upload-zone__hint">JPG, PNG, WEBP — max 5 Mo par image</p>
+				</div>
+
+				{# ── Grille de prévisualisation ── #}
+				<div class="upload-preview-grid" id="upload-preview-grid"></div>
+
+			</div>
+
+
+        </div>{# /bm-fields #}
+
+        <button type="submit" class="btn btn-primary mt-3">
+            {{ balade.id ? 'Mettre à jour' : 'Créer la balade' }}
+        </button>
+
+        {{ form_end(form) }}
+
+        {# Actions bas (retour + supprimer) — uniquement en édition #}
+        {% if balade.id %}
+            <div class="balade-actions mt-3">
+                <a href="{{ path('app_balade_index') }}">← Retour aux balades</a>
+                {{ include('balade/_delete_form.html.twig') }}
             </div>
-            {% endif %}
+        {% endif %}
 
-            {# Champ + bouton pour ajouter un tag custom #}
-            <div class="tags-form__custom">
-                {{ form_widget(form.customTag, { attr: { id: 'js-custom-tag-input' } }) }}
-                <button type="button" class="tags-form__add-btn" id="js-add-custom-tag">
-                    + Ajouter
-                </button>
-            </div>
-
-            {# Aperçu des tags custom qu'on vient d'ajouter (avant soumission) #}
-            <div id="js-custom-tags-preview" class="tags" style="margin-top: 0.5rem;"></div>
-        </div>
-
-        {# ── Hidden map fields ── #}
-        {{ form_widget(form.routeGeoJson) }}
-        {{ form_widget(form.waypointsJson) }}
-        {{ form_widget(form.distanceMeters) }}
-        {{ form_widget(form.durationSeconds) }}
-
-        {# ── Photos ── #}
-        <div class="form-group balade-images-wrapper">
-          <label class="form-label">📷 Photos</label>
-          <div class="balade-images-collection"
-               data-index="{{ form.images|length }}"
-               data-prototype="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}">
-            {% for imageForm in form.images %}
-              <div class="balade-image-item">
-                {{ form_widget(imageForm.imageFile) }}
-                <button type="button" class="btn btn-sm btn-danger remove-image mt-1">🗑️ Supprimer</button>
-              </div>
-            {% endfor %}
-          </div>
-          <button type="button" id="add-image" class="btn btn-secondary mt-2">
-            📷 Ajouter une photo
-          </button>
-        </div>
-
-      </div>{# /bm-fields #}
-
-      <button type="submit" class="btn btn-primary mt-3">
-        {{ balade.id ? 'Mettre à jour' : 'Créer' }}
-      </button>
-
-    {{ form_end(form) }}
-
-    {% if balade.id %}
-      <div class="balade-actions mt-3">
-        <a href="{{ path('app_balade_index') }}">⬅ Retour</a>
-        {{ include('balade/_delete_form.html.twig') }}
-      </div>
-    {% endif %}
-
-  </div>
+    </div>{# /container #}
 </section>
 {% endblock %}
 
 {% block javascripts %}
-  {{ parent() }}
+    {{ parent() }}
 
-  <script>
+    <script>
     window.BALADE_MAP_CONFIG = {
-      {% if balade.id %}
-      initialRouteGeoJson: {{ balade.routeGeoJson  is not empty ? balade.routeGeoJson  | json_encode | raw : 'null' }},
-      initialWaypoints:    {{ balade.waypointsJson is not empty ? balade.waypointsJson | json_encode | raw : 'null' }},
-      initialDistance:     {{ balade.distanceMeters  is not null ? balade.distanceMeters  : 'null' }},
-      initialDuration:     {{ balade.durationSeconds is not null ? balade.durationSeconds : 'null' }},
-      {% endif %}
-      orsProfile:  'foot-walking',
-      defaultView: [44.8378, -0.5792, 13]
+        {% if balade.id %}
+        initialRouteGeoJson: {{ balade.routeGeoJson  is not empty ? balade.routeGeoJson  | json_encode | raw : 'null' }},
+        initialWaypoints:    {{ balade.waypointsJson is not empty ? balade.waypointsJson | json_encode | raw : 'null' }},
+        initialDistance:     {{ balade.distanceMeters  is not null ? balade.distanceMeters  : 'null' }},
+        initialDuration:     {{ balade.durationSeconds is not null ? balade.durationSeconds : 'null' }},
+        {% endif %}
+        orsProfile:  'foot-walking',
+        defaultView: [44.8378, -0.5792, 13]
     };
 
     document.addEventListener('DOMContentLoaded', () => {
 
-        // ── Images ──────────────────────────────────────────────────────
-        const wrapper = document.querySelector('.balade-images-collection');
+        // ── Photos — Upload Preview ──────────────────────────────────────────────
+        (function () {
+            const uploadInput   = document.getElementById('upload-input');
+            const uploadZone    = document.getElementById('upload-zone');
+            const previewGrid   = document.getElementById('upload-preview-grid');
+            const hiddenWrapper = document.querySelector('.balade-images-collection');
 
-        if (wrapper) {
-            document.getElementById('add-image')?.addEventListener('click', () => {
-                const index    = parseInt(wrapper.dataset.index, 10);
-                const template = wrapper.dataset.prototype.replace(/__name__/g, index);
-                const div      = document.createElement('div');
-                div.className  = 'balade-image-item mt-2';
-                div.innerHTML  = template
-                    + '<button type="button" class="btn btn-sm btn-danger remove-image mt-1">🗑️ Supprimer</button>';
-                wrapper.appendChild(div);
-                wrapper.dataset.index = index + 1;
+            if (!uploadInput || !hiddenWrapper) return;
+
+            // ── Chargement des images existantes (mode édition) ────────────────
+            function loadExistingImages() {
+                const existingWrapper = document.getElementById('existing-images-data');
+                if (!existingWrapper) return;
+
+                existingWrapper.querySelectorAll('[data-id]').forEach(el => {
+                    const id   = el.dataset.id;
+                    const url  = el.dataset.url;
+                    const name = el.dataset.name;
+
+                    const card = document.createElement('div');
+                    card.className = 'upload-card upload-card--existing';
+                    card.dataset.imageId = id;
+                    card.innerHTML = `
+                        <div class="upload-card__img-wrap">
+                            <img src="${url}" alt="${name}" class="upload-card__img">
+                            <button type="button" class="upload-card__remove" title="Supprimer">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p class="upload-card__name">${truncateName(name)}</p>
+                        <p class="upload-card__size">Existante</p>
+                    `;
+
+                    card.querySelector('.upload-card__remove').addEventListener('click', async () => {
+                        if (!confirm('Supprimer cette photo ?')) return;
+
+                        try {
+                            const baladeId = {{ balade.id ?? 'null' }};
+                            const res = await fetch(`/balade/${baladeId}/image/${id}/delete`, {
+                                method: 'POST',
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+
+                            if (res.ok) {
+                                card.remove();
+                            } else {
+                                alert('Erreur lors de la suppression.');
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            alert('Erreur réseau.');
+                        }
+                    });
+
+                    previewGrid.appendChild(card);
+                });
+            }
+
+            loadExistingImages();
+
+            // ── Drag & Drop sur la zone ────────────────────────────────────────
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('upload-zone--drag');
             });
 
-            wrapper.addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-image')) {
-                    e.target.closest('.balade-image-item').remove();
-                }
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('upload-zone--drag');
             });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('upload-zone--drag');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // ── Clic sur le bouton ─────────────────────────────────────────────
+            uploadInput.addEventListener('change', () => {
+                handleFiles(uploadInput.files);
+                uploadInput.value = '';
+            });
+
+            // ── Traitement des fichiers ────────────────────────────────────────
+            function handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert(`"${file.name}" dépasse 5 Mo et a été ignoré.`);
+                        return;
+                    }
+
+                    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                        alert(`"${file.name}" n'est pas un format accepté.`);
+                        return;
+                    }
+
+                    addPreviewCard(file);
+                });
+            }
+
+            // ── Création d'une carte de prévisualisation ───────────────────────
+            function addPreviewCard(file) {
+                const index    = parseInt(hiddenWrapper.dataset.index, 10);
+                const template = hiddenWrapper.dataset.prototype.replace(/__name__/g, index);
+                hiddenWrapper.dataset.index = index + 1;
+
+                const hiddenItem = document.createElement('div');
+                hiddenItem.className = 'balade-image-item';
+                hiddenItem.innerHTML = template;
+                hiddenWrapper.appendChild(hiddenItem);
+
+                const vichInput = hiddenItem.querySelector('input[type="file"]');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                vichInput.files = dt.files;
+
+                const card = document.createElement('div');
+                card.className = 'upload-card';
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    card.innerHTML = `
+                        <div class="upload-card__img-wrap">
+                            <img src="${e.target.result}" alt="${file.name}" class="upload-card__img">
+                            <button type="button" class="upload-card__remove" title="Supprimer">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <p class="upload-card__name">${truncateName(file.name)}</p>
+                        <p class="upload-card__size">${formatSize(file.size)}</p>
+                    `;
+
+                    card.querySelector('.upload-card__remove').addEventListener('click', () => {
+                        card.remove();
+                        hiddenItem.remove();
+                    });
+
+                    previewGrid.appendChild(card);
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            // ── Helpers ────────────────────────────────────────────────────────
+            function truncateName(name) {
+                return name.length > 22 ? name.substring(0, 19) + '…' : name;
+            }
+
+            function formatSize(bytes) {
+                return bytes < 1024 * 1024
+                    ? (bytes / 1024).toFixed(0) + ' Ko'
+                    : (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+            }
+
+        })();
+
+        // ── Difficulté ──────────────────────────────────────────────────────────
+		const diffInput = document.querySelector('input[name="balade[difficulty]"]');
+		const diffBtns  = document.querySelectorAll('.bf-diff-btn');
+
+		function setDifficulty(val) {
+			if (!diffInput) return;
+			diffInput.value = val;
+			diffBtns.forEach(btn => {
+				btn.classList.toggle('bf-diff-btn--active', btn.dataset.diff === val);
+			});
+		}
+
+		const initialDiff = diffInput ? diffInput.value.trim() : '';
+console.log('initialDiff:', initialDiff); // doit afficher "Moyen"
+if (initialDiff) setDifficulty(initialDiff);
+console.log('diffBtns:', diffBtns);
+setDifficulty('Moyen');
+
+		diffBtns.forEach(btn => {
+			btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
+		});
+
+        // ── Visibilité ──────────────────────────────────────────────────────────
+        const isPublicCheckbox = document.querySelector('#balade_isPublic');
+        const visLabel         = document.getElementById('js-visibility-label');
+        const visDesc          = document.getElementById('js-visibility-desc');
+
+        function updateVisibility() {
+            if (!isPublicCheckbox) return;
+            if (isPublicCheckbox.checked) {
+                if (visLabel) visLabel.textContent = 'Publique';
+                if (visDesc)  visDesc.textContent  = 'Visible par tous les utilisateurs';
+            } else {
+                if (visLabel) visLabel.textContent = 'Privée';
+                if (visDesc)  visDesc.textContent  = 'Visible uniquement par vous';
+            }
         }
 
-        // ── Tags custom ──────────────────────────────────────────────────
+        isPublicCheckbox?.addEventListener('change', updateVisibility);
+        updateVisibility();
+
+        // ── Tags custom ──────────────────────────────────────────────────────────
         const tagInput = document.querySelector('input[name="balade[customTag]"]');
         const addBtn   = document.getElementById('js-add-custom-tag');
         const preview  = document.getElementById('js-custom-tags-preview');
@@ -210,19 +484,14 @@
         const isNew    = {{ isNew ? 'true' : 'false' }};
 
         const URL_ADD_EXISTING    = baladeId ? `/balade/${baladeId}/tag/add` : null;
-        const URL_REMOVE_EXISTING = (tagId)  => `/balade/${baladeId}/tag/${tagId}/remove`;
+        const URL_REMOVE_EXISTING = (tagId) => `/balade/${baladeId}/tag/${tagId}/remove`;
         const URL_ADD_PENDING     = `/balade/tag/pending/add`;
         const URL_REMOVE_PENDING  = `/balade/tag/pending/remove`;
 
         if (addBtn && tagInput && preview) {
-
             addBtn.addEventListener('click', () => addCustomTag());
-
             tagInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addCustomTag();
-                }
+                if (e.key === 'Enter') { e.preventDefault(); addCustomTag(); }
             });
         }
 
@@ -242,11 +511,7 @@
                 });
 
                 const tagData = await res.json();
-
-                if (tagData.error) {
-                    alert(tagData.error);
-                    return;
-                }
+                if (tagData.error) { alert(tagData.error); return; }
 
                 showTagPill(tagData, val);
                 tagInput.value = '';
@@ -289,20 +554,21 @@
             preview.appendChild(pill);
         }
 
-        // Rendre les tags custom existants removable
+        // Rendre removable les tags custom existants (mode édition)
         document.querySelectorAll('.bm-tags-current .tag--custom').forEach(el => {
-            const tagId = el.dataset.tagId;
-            const name  = el.textContent.trim();
-            const btn   = document.createElement('button');
-            btn.type        = 'button';
-            btn.className   = 'tag__remove';
-            btn.title       = 'Retirer';
+            const tagId   = el.dataset.tagId;
+            const name    = el.textContent.trim();
+            const btn     = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'tag__remove';
+            btn.title     = 'Retirer';
             btn.textContent = '×';
             btn.addEventListener('click', () => removeCustomTag(el, tagId, name));
             el.appendChild(btn);
         });
 
     }); // fin DOMContentLoaded
-</script>
+    </script>
 
 {% endblock %}
+

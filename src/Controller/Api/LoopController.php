@@ -15,7 +15,6 @@ class LoopController extends AbstractController
     {
         $data = json_decode($request->getContent(), true) ?? [];
 
-        // start = [lat, lng]
         $start = $data['start'] ?? null;
         $km = (float)($data['km'] ?? 6);
         $seed = (int)($data['seed'] ?? 1);
@@ -24,12 +23,9 @@ class LoopController extends AbstractController
             return $this->json(['error' => 'Invalid start'], 400);
         }
 
-        // longueur en mètres (ORS attend "length" en mètres)
-        // ORS round_trip: length max = 100000m (100 km)
         $km = max(1.0, min($km, 100.0));
         $lengthMeters = (int) round($km * 1000);
 
-        // sécurité ultime
         $lengthMeters = max(1000, min($lengthMeters, 100000));
 
         $apiKey = $_ENV['ORS_API_KEY'] ?? null;
@@ -37,7 +33,6 @@ class LoopController extends AbstractController
             return $this->json(['error' => 'Missing ORS_API_KEY'], 500);
         }
 
-        // ORS round_trip: 1 seule coordonnée [lng, lat] + options.round_trip
         $body = [
             'coordinates' => [
                 [(float)$start[1], (float)$start[0]]
@@ -45,7 +40,7 @@ class LoopController extends AbstractController
             'options' => [
                 'round_trip' => [
                     'length' => $lengthMeters,
-                    'points' => 4,   // nb de points intermédiaires (4–8 c’est bien)
+                    'points' => 4,
                     'seed'   => $seed
                 ]
             ]

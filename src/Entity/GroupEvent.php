@@ -147,7 +147,6 @@ class GroupEvent
     public function removeGroupEventResponse(GroupEventResponse $groupEventResponse): static
     {
         if ($this->groupEventResponses->removeElement($groupEventResponse)) {
-            // set the owning side to null (unless already changed)
             if ($groupEventResponse->getGroupEvent() === $this) {
                 $groupEventResponse->setGroupEvent(null);
             }

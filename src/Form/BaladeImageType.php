@@ -16,7 +16,7 @@ class BaladeImageType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'label'         => false,
                 'required'      => false,
-                'allow_delete'  => false, // on gère la suppression via le CollectionType
+                'allow_delete'  => false,
                 'download_uri'  => false,
                 'image_uri'     => false,
                 'attr'          => ['accept' => 'image/*'],

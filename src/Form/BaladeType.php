@@ -35,21 +35,10 @@ class BaladeType extends AbstractType
                 'required' => false,
             ])
 
-            // ── Difficulté ─────────────────────────────────────────────
-            ->add('difficulty', ChoiceType::class, [
-                'label'       => 'Difficulté',
-                'required'    => false,
-                'placeholder' => 'Non renseignée',
-                'choices'     => [
-                    'Facile'    => 'Facile',
-                    'Modérée'   => 'Moyen',
-                    'Difficile' => 'Difficile',
-                    'Expert'    => 'Expert',
-                ],
-                'attr' => ['class' => 'form-select'],
+            ->add('difficulty', HiddenType::class, [
+                'required' => false,
             ])
 
-            // ── Tags prédéfinis uniquement ─────────────────────────────
             ->add('baladeTags', EntityType::class, [
                 'class'         => BaladeTag::class,
                 'choice_label'  => 'name',
@@ -64,7 +53,6 @@ class BaladeType extends AbstractType
                     ->orderBy('t.name', 'ASC'),
             ])
 
-            // ── Tag personnalisé (non mappé) ───────────────────────────
             ->add('customTag', TextType::class, [
                 'label'    => 'Ajouter un tag personnalisé',
                 'required' => false,
@@ -74,7 +62,6 @@ class BaladeType extends AbstractType
                 ],
             ])
 
-            // ── Images ─────────────────────────────────────────────────
             ->add('images', CollectionType::class, [
                 'label'        => 'Photos',
                 'entry_type'   => BaladeImageType::class,
@@ -85,14 +72,11 @@ class BaladeType extends AbstractType
                 'attr'         => ['class' => 'balade-images-collection'],
             ])
 
-            // ── Champs carte (hidden) ──────────────────────────────────
             ->add('routeGeoJson', HiddenType::class, ['required' => false])
             ->add('waypointsJson', HiddenType::class, ['required' => false])
             ->add('distanceMeters', HiddenType::class, ['required' => false])
             ->add('durationSeconds', HiddenType::class, ['required' => false])
         ;
-
-        // ── Transformers ───────────────────────────────────────────────
 
         $builder->get('routeGeoJson')->addModelTransformer(new CallbackTransformer(
             fn(array $v): string => empty($v) ? '' : json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),

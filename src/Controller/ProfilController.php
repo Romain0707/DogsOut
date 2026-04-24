@@ -24,11 +24,8 @@ final class ProfilController extends AbstractController
     }
 
     #[Route('/profil/edit', name: 'profil_edit', methods: ['GET', 'POST'])]
-    public function edit(
-        Request $request,
-        Security $security,
-        EntityManagerInterface $em,
-    ): Response {
+    public function edit(Request $request, Security $security, EntityManagerInterface $em): Response 
+    {
         /** @var \App\Entity\User $user */
         $user = $security->getUser();
 

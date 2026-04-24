@@ -15,20 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/groupes/{groupId}/membres')]
 final class GroupMemberController extends AbstractController
 {
-    public function __construct(
+    public function __construct
+    (
         private Security $security,
         private EntityManagerInterface $em,
-    ) {}
+    ) 
+    {
 
-    /**
-     * Valider une demande d'adhésion
-     */
+    }
+
     #[Route('/{memberId}/approve', name: 'app_group_member_approve', methods: ['POST'])]
-    public function approve(
-        int $groupId,
-        int $memberId,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function approve(int $groupId, int $memberId, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -47,7 +45,6 @@ final class GroupMemberController extends AbstractController
 
         $member->setStatus('active');
 
-        // Ajouter à la conversation du groupe
         if ($group->getConversation()) {
             $participant = new Participant();
             $participant->setUser($member->getUser());
@@ -63,15 +60,9 @@ final class GroupMemberController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
     }
 
-    /**
-     * Refuser une demande d'adhésion
-     */
     #[Route('/{memberId}/reject', name: 'app_group_member_reject', methods: ['POST'])]
-    public function reject(
-        int $groupId,
-        int $memberId,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function reject( int $groupId, int $memberId, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -94,15 +85,9 @@ final class GroupMemberController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
     }
 
-    /**
-     * Promouvoir un membre (member → moderator, moderator → admin)
-     */
     #[Route('/{memberId}/promote', name: 'app_group_member_promote', methods: ['POST'])]
-    public function promote(
-        int $groupId,
-        int $memberId,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function promote(int $groupId, int $memberId, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -115,7 +100,6 @@ final class GroupMemberController extends AbstractController
 
         $group = $member->getUsergroup();
 
-        // Seul un admin peut promouvoir
         $myMembership = $memberRepository->findMembership($group, $currentUser);
         if (!$myMembership || $myMembership->getRole() !== 'admin') {
             throw $this->createAccessDeniedException();
@@ -135,15 +119,9 @@ final class GroupMemberController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
     }
 
-    /**
-     * Rétrograder un membre
-     */
     #[Route('/{memberId}/demote', name: 'app_group_member_demote', methods: ['POST'])]
-    public function demote(
-        int $groupId,
-        int $memberId,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function demote(int $groupId, int $memberId, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -161,7 +139,6 @@ final class GroupMemberController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // Impossible de rétrograder le créateur
         if ($member->getUser() === $group->getCreatedBy()) {
             $this->addFlash('error', 'Impossible de rétrograder le créateur du groupe.');
             return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
@@ -181,15 +158,9 @@ final class GroupMemberController extends AbstractController
         return $this->redirectToRoute('app_group_show', ['id' => $groupId]);
     }
 
-    /**
-     * Expulser un membre
-     */
     #[Route('/{memberId}/kick', name: 'app_group_member_kick', methods: ['POST'])]
-    public function kick(
-        int $groupId,
-        int $memberId,
-        GroupMemberRepository $memberRepository,
-    ): Response {
+    public function kick(int $groupId, int $memberId, GroupMemberRepository $memberRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         /** @var \App\Entity\User $currentUser */
@@ -206,7 +177,6 @@ final class GroupMemberController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // Impossible d'expulser le créateur
         if ($member->getUser() === $group->getCreatedBy()) {
             $this->addFlash('error', 'Impossible d\'expulser le créateur du groupe.');
             return $this->redirectToRoute('app_group_show', ['id' => $groupId]);

@@ -15,9 +15,6 @@ class BaladeRatingRepository extends ServiceEntityRepository
         parent::__construct($registry, BaladeRating::class);
     }
 
-    /**
-     * Trouve la note d'un user pour une balade
-     */
     public function findUserRating(Balade $balade, User $user): ?BaladeRating
     {
         return $this->findOneBy([
@@ -26,9 +23,6 @@ class BaladeRatingRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * Calcule la moyenne des notes d'une balade
-     */
     public function getAverage(Balade $balade): float
     {
         $result = $this->createQueryBuilder('r')
@@ -39,13 +33,9 @@ class BaladeRatingRepository extends ServiceEntityRepository
             ->getSingleResult();
 
         $avg = (float) ($result['avg'] ?? 0);
-        // floor sur 1 décimale : 2.57 → 2.5, pas 2.6
         return floor($avg * 10) / 10;
     }
 
-    /**
-     * Nombre de votes pour une balade
-     */
     public function getCount(Balade $balade): int
     {
         return $this->count(['balade' => $balade]);

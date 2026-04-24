@@ -198,7 +198,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -229,9 +228,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         return [
@@ -387,7 +383,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeBalade(Balade $balade): static
     {
         if ($this->balades->removeElement($balade)) {
-            // set the owning side to null (unless already changed)
             if ($balade->getUser() === $this) {
                 $balade->setUser(null);
             }
@@ -417,7 +412,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getUser() === $this) {
                 $comment->setUser(null);
             }
@@ -426,7 +420,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-        public function isResetTokenValid(): bool
+    public function isResetTokenValid(): bool
     {
         return $this->resetTokenExpiresAt && $this->resetTokenExpiresAt > new \DateTime();
     }
@@ -476,7 +470,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeChien(Chien $chien): static
     {
         if ($this->chiens->removeElement($chien)) {
-            // set the owning side to null (unless already changed)
             if ($chien->getUser() === $this) {
                 $chien->setUser(null);
             }
@@ -506,7 +499,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeParticipant(Participant $participant): static
     {
         if ($this->participants->removeElement($participant)) {
-            // set the owning side to null (unless already changed)
             if ($participant->getUser() === $this) {
                 $participant->setUser(null);
             }
@@ -536,7 +528,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeMessage(Message $message): static
     {
         if ($this->messages->removeElement($message)) {
-            // set the owning side to null (unless already changed)
             if ($message->getAuthor() === $this) {
                 $message->setAuthor(null);
             }
@@ -566,7 +557,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeUserGroup(UserGroup $userGroup): static
     {
         if ($this->userGroups->removeElement($userGroup)) {
-            // set the owning side to null (unless already changed)
             if ($userGroup->getCreatedBy() === $this) {
                 $userGroup->setCreatedBy(null);
             }
@@ -626,7 +616,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeGroupEvent(GroupEvent $groupEvent): static
     {
         if ($this->groupEvents->removeElement($groupEvent)) {
-            // set the owning side to null (unless already changed)
             if ($groupEvent->getProposedBy() === $this) {
                 $groupEvent->setProposedBy(null);
             }
@@ -656,7 +645,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeGroupEventResponse(GroupEventResponse $groupEventResponse): static
     {
         if ($this->groupEventResponses->removeElement($groupEventResponse)) {
-            // set the owning side to null (unless already changed)
             if ($groupEventResponse->getUser() === $this) {
                 $groupEventResponse->setUser(null);
             }
@@ -686,7 +674,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeBaladeRating(BaladeRating $baladeRating): static
     {
         if ($this->baladeRatings->removeElement($baladeRating)) {
-            // set the owning side to null (unless already changed)
             if ($baladeRating->getUser() === $this) {
                 $baladeRating->setUser(null);
             }

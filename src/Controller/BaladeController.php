@@ -21,13 +21,17 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/balade')]
 final class BaladeController extends AbstractController
 {
-    public function __construct(
-        private EntityManagerInterface $em,
-        private SluggerService $slugger,
-        private BaladeTagRepository $baladeTagRepository,
-    ) {}
+    public function __construct
+    (
+        private EntityManagerInterface $em, 
+        private SluggerService $slugger, 
+        private BaladeTagRepository $baladeTagRepository
+    ) 
+    {
 
-    #[Route(name: 'app_balade_index', methods: ['GET'])]
+    }
+
+    #[Route(name: 'app_balade_index')]
     public function index(BaladeRepository $baladeRepository): Response
     {
         return $this->render('balade/index.html.twig', [
@@ -36,7 +40,7 @@ final class BaladeController extends AbstractController
     }
 
     #[Route('/admin/new', name: 'admin_balade_new')]
-    #[Route('/form/{id}', name: 'app_balade_form', methods: ['GET', 'POST'], defaults: ['id' => null])]
+    #[Route('/form/{id}', name: 'app_balade_form', defaults: ['id' => null])]
     public function form(Request $request, ?Balade $balade = null): Response
     {
         $isNew = !$balade;
@@ -155,8 +159,6 @@ final class BaladeController extends AbstractController
         return $this->json(['ok' => true]);
     }
 
-    // ── Tags AJAX (balade existante) ──────────────────────────────────────
-
     #[Route('/{id}/tag/add', name: 'app_balade_tag_add', methods: ['POST'])]
     public function addTag(Balade $balade, Request $request): Response
     {
@@ -216,9 +218,7 @@ final class BaladeController extends AbstractController
         return $this->json(['ok' => true]);
     }
 
-    // ── Show ──────────────────────────────────────────────────────────────
-
-    #[Route('/article/{id}', name: 'app_balade_show', methods: ['GET'])]
+    #[Route('/article/{id}', name: 'app_balade_show')]
     public function show(Balade $balade, BaladeRatingRepository $ratingRepository): Response
     {
         $currentUser = $this->getUser();
@@ -232,8 +232,6 @@ final class BaladeController extends AbstractController
             'userRating'    => $currentUser ? $ratingRepository->findUserRating($balade, $currentUser)?->getRating() : null,
         ]);
     }
-
-    // ── Delete ────────────────────────────────────────────────────────────
 
     #[Route('/delete/{id}', name: 'app_balade_delete', methods: ['POST'])]
     public function delete(Request $request, Balade $balade): Response
@@ -251,11 +249,8 @@ final class BaladeController extends AbstractController
     }
 
     #[Route('/{id}/rate', name: 'app_balade_rate', methods: ['POST'])]
-    public function rate(
-        Balade $balade,
-        Request $request,
-        BaladeRatingRepository $ratingRepository,
-    ): Response {
+    public function rate(Balade $balade, Request $request, BaladeRatingRepository $ratingRepository): Response 
+    {
         $this->denyAccessUnlessGranted('ROLE_USER');
     
         /** @var \App\Entity\User $currentUser */
@@ -268,14 +263,11 @@ final class BaladeController extends AbstractController
             return $this->json(['error' => 'Note invalide (1-5)'], 400);
         }
     
-        // Cherche une note existante pour cet user
         $existing = $ratingRepository->findUserRating($balade, $currentUser);
     
         if ($existing) {
-            // Met à jour la note existante
             $existing->setRating($rating);
         } else {
-            // Crée une nouvelle note
             $newRating = new BaladeRating();
             $newRating->setBalade($balade);
             $newRating->setUser($currentUser);
@@ -290,5 +282,23 @@ final class BaladeController extends AbstractController
             'count'     => $ratingRepository->getCount($balade),
             'userRating' => $rating,
         ]);
+    }
+
+    #[Route('/{id}/image/{imageId}/delete', name: 'app_balade_image_delete', methods: ['POST'])]
+    public function deleteImage(Balade $balade, int $imageId, EntityManagerInterface $em): Response
+    {
+        if ($balade->getUser() !== $this->getUser()) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
+        $image = $em->getRepository(\App\Entity\BaladeImage::class)->find($imageId);
+
+        if ($image && $image->getBalade() === $balade) {
+            $em->remove($image);
+            $em->flush();
+            return $this->json(['ok' => true]);
+        }
+
+        return $this->json(['error' => 'Image introuvable'], 404);
     }
 }
