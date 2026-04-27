@@ -63,7 +63,7 @@ class BaladeType extends AbstractType
             ])
 
             ->add('images', CollectionType::class, [
-                'label'        => 'Photos',
+                'label'        => '',
                 'entry_type'   => BaladeImageType::class,
                 'allow_add'    => true,
                 'allow_delete' => true,

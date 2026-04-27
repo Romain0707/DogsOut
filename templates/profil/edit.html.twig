@@ -9,11 +9,11 @@
 
         <div class="chien-form-page__card">
 
-            <div class="profile-edit-avatar">
+            <div class="profile-edit-avatar" id="avatar-trigger">
                 <img src="{{ user.imageName ? vich_uploader_asset(user, 'imageFile') : asset('profil/default-avatar.png') }}"
                     alt="Avatar actuel"
                     class="profile-edit-avatar__img"
-                    id="js-avatar-preview">
+                    id="avatar-preview">
                 <span class="profile-edit-avatar__label">Photo actuelle</span>
             </div>
 
@@ -64,19 +64,32 @@
             {{ form_end(form) }}
         </div>
     </div>
+{% endblock %}
 
-    <script>
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const trigger = document.getElementById('avatar-trigger');
+        const preview = document.getElementById('avatar-preview');
+        
         const input = document.querySelector('input[type="file"]');
-        const preview = document.getElementById('js-avatar-preview');
 
-        if (input && preview) {
-            input.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+        if (!trigger || !input) return;
+
+        trigger.addEventListener('click', function () {
+            input.click();
+        });
+
+        input.addEventListener('change', function () {
+            const file = input.files[0];
+            if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (ev) => preview.src = ev.target.result;
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
                 reader.readAsDataURL(file);
-            });
-        }
-    </script>
+            }
+        });
+    });
+</script>
 {% endblock %}

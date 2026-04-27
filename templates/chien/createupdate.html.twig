@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if chien.id %}
+        Modifier · {{ chien.name }}
+    {% else %}
+        Créer le profil de mon chien
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="chien-form-page">
+    <h1 class="chien-form-page__title">
+        {{ chien.id ? chien.name : 'Mon compagnon' }}
+    </h1>
+    <p class="chien-form-page__subtitle">
+        {{ chien.id ? 'Modifiez le profil de votre compagnon.' : 'Créez le profil de votre chien pour commencer.' }}
+    </p>
+
+    <div class="chien-form-page__card">
+        {{ include('chien/_form.html.twig', {
+            'button_label': chien.id ? 'Enregistrer les modifications' : 'Créer le profil'
+        }) }}
+    </div>
+    {% if chien.id %}
+        <a href="{{ path('profil') }}" class="chien-form-page__back-link">← Retour au profil</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const trigger = document.getElementById('avatar-trigger');
+        const preview = document.getElementById('avatar-preview');
+        
+        const input = document.querySelector('input[type="file"]');
+
+        if (!trigger || !input) return;
+
+        trigger.addEventListener('click', function () {
+            input.click();
+        });
+
+        input.addEventListener('change', function () {
+            const file = input.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

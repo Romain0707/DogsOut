@@ -5,10 +5,9 @@
 // Page wrapper — création / édition du chien
 // ─────────────────────────────────────────────
 .chien-form-page {
-  min-height: 100vh;
   background-color: v.$bg-color;
   @include m.flex-center-column;
-  padding-block: 3rem;
+  margin-block: 3rem;
 
   // ── Titre de page ──
   &__title {
@@ -27,7 +26,6 @@
     text-align: center;
   }
 
-  // ── Carte formulaire ──
   &__card {
     background: #fff;
     border-radius: 16px;
@@ -40,7 +38,6 @@
       padding: 1.5rem 1rem;
     }
   }
-  // ─── À ajouter dans .chien-form-page { ... } ───
 
     &__back-link {
     margin-top: 1.25rem;
@@ -109,6 +106,10 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: v.$text-title-color;
+    }
+
+    input[type="file"] {
+      display: none;
     }
 
     // Inputs & textarea & select
@@ -288,6 +289,7 @@
         object-fit: cover;
         border: 3px solid v.$secondary-bg-color;
         transition: border-color 0.2s;
+        cursor: pointer;
  
         &:hover {
             border-color: v.$primary-color;
@@ -301,7 +303,6 @@
     }
 }
  
-// Ligne prénom / nom côte à côte
 .chien-form__row {
     display: grid;
     grid-template-columns: 1fr 1fr;

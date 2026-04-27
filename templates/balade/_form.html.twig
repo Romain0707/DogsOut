@@ -249,7 +249,7 @@
             {{ balade.id ? 'Mettre à jour' : 'Créer la balade' }}
         </button>
 
-        {{ form_end(form, { render_rest: false }) }}
+        {{ form_end(form) }}
 
         {# Actions bas (retour + supprimer) — uniquement en édition #}
         {% if balade.id %}

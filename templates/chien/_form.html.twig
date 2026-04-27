@@ -43,13 +43,13 @@
     </div>
 
     <div class="chien-form__group">
-        <div class="profile-edit-avatar">
+        <div class="profile-edit-avatar" id="avatar-trigger">
             {% if form.vars.data.imageName %}
-                <img class="profile-edit-avatar__img"
+                <img class="profile-edit-avatar__img" id="avatar-preview"
                     src="{{ vich_uploader_asset(form.vars.data, 'imageFile') }}"
                     alt="Photo de {{ form.vars.data.name }}">
             {% else %}
-                <img class="profile-edit-avatar__img"
+                <img class="profile-edit-avatar__img" id="avatar-preview"
                     src="{{ asset('uploads/images/default-dog.png') }}"
                     alt="Photo par défaut">
             {% endif %}
