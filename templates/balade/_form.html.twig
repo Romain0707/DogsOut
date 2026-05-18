@@ -242,15 +242,15 @@
 
 			</div>
 
+            {{ form_widget(form.images) }}
 
-        </div>{# /bm-fields #}
-
-        <button type="submit" class="btn btn-primary mt-3">
+            <button type="submit" class="btn btn-primary mt-3">
             {{ balade.id ? 'Mettre à jour' : 'Créer la balade' }}
         </button>
 
         {{ form_end(form) }}
-
+        </div>{# /bm-fields #}
+        
         {# Actions bas (retour + supprimer) — uniquement en édition #}
         {% if balade.id %}
             <div class="balade-actions mt-3">
