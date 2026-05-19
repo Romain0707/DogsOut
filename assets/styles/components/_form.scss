@@ -2,14 +2,15 @@
 @use '../abstracts/variables' as v;
 
 .form-login {
-    margin-top: 3rem;
     @include m.flex-column;
     @include m.container(350);
+    margin-block: 3rem;
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid lightgray;
     padding: 20px; 
+    gap: 1rem;
 
     label {
         margin-bottom: 10px;
@@ -38,13 +39,14 @@
 
     a {
         align-self: center;
+        margin-bottom: 1rem;
     }
 }
 
 #register {
-    margin-top: 3rem;
     @include m.flex-column;
     @include m.container(350);
+    margin-top: 3rem;
     background-color: white;
     border-radius: 8px;
     overflow: hidden;
