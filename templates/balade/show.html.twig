@@ -8,14 +8,20 @@
         <div class="balade-article">
 
             <div class="balade-header">
-                <h3 class="balade-title">{{ balade.title }}</h3>
-                <div class="balade-option">
-                    <a href="{{ path('app_balade_index') }}" class="btn">Retour</a>
-                    {% if app.user and app.user == balade.user %}
-                        <a href="{{ path('app_balade_form', {'id': balade.id}) }}" class="btn">Modifier</a>
-                        {{ include('balade/_delete_form.html.twig') }}
-                    {% endif %}
+              <h3 class="balade-title">{{ balade.title }}</h3>
+              {% if app.user and balade.user and app.user == balade.user %}
+                <div class="card-dropdown">
+                    <button class="card-dropdown-btn" type="button">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-width="3" d="M6 12h.01m6 0h.01m5.99 0h.01"/>
+                        </svg>
+                    </button>
+                    <ul class="card-dropdown-menu">
+                        <li><a href="{{ path('app_balade_form', {'id': balade.id}) }}">Modifier</a></li>
+                        <li>{{ include('balade/_delete_form.html.twig') }}</li>
+                    </ul>
                 </div>
+              {% endif %}
             </div>
 
             <div class="balade-top">
@@ -43,6 +49,13 @@
                       </div>
                     {% endif %}
                   </div>
+                {% endif %}
+
+                {# ── Carte lecture seule ── #}
+                {% if balade.routeGeoJson is not empty %}
+                <div class="balade-map-readonly">
+                    <div id="map-show"></div>
+                </div>
                 {% endif %}
 
                 {# ── Meta ── #}
@@ -81,13 +94,6 @@
                 <p class="balade-desc">{{ balade.description }}</p>
                 {% else %}
                 <p class="balade-desc"><em>Aucune description.</em></p>
-                {% endif %}
-
-                {# ── Carte lecture seule ── #}
-                {% if balade.routeGeoJson is not empty %}
-                <div class="balade-map-readonly">
-                    <div id="map-show"></div>
-                </div>
                 {% endif %}
 
             </div>{# /balade-top #}
@@ -229,6 +235,27 @@
 {% block javascripts %}
   {{ parent() }}
   <script>
+
+    document.querySelectorAll('.card-dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
+                    if (menu !== btn.nextElementSibling) {
+                        menu.classList.remove('open');
+                    }
+                });
+
+                btn.nextElementSibling.classList.toggle('open');
+            });
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.card-dropdown-menu.open').forEach(menu => {
+                menu.classList.remove('open');
+            });
+        });
     // ── Carousel ──────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       const carousel = document.getElementById('balade-carousel');
@@ -376,13 +403,19 @@
 
         const iconStart = L.divIcon({
           className: '',
-          html: `<div class="bm-marker bm-marker--start">🐾</div>`,
-          iconAnchor: [16, 16],
+          html: `<div style="background:#4a7c59;width:32px;height:32px;border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.28);
+        display:flex;align-items:center;justify-content:center">
+        <span style="transform:rotate(45deg);font-size:14px">🐾</span></div>`,
+          iconSize: [32, 32], iconAnchor: [16, 32],
         });
         const iconEnd = L.divIcon({
           className: '',
-          html: `<div class="bm-marker bm-marker--end">🏁</div>`,
-          iconAnchor: [16, 16],
+          html: `<div style="background:#e87040;width:32px;height:32px;border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.28);
+        display:flex;align-items:center;justify-content:center">
+        <span style="transform:rotate(45deg);font-size:14px">🏁</span></div>`,
+          iconSize: [32, 32], iconAnchor: [16, 32],
         });
 
         L.marker([first[0], first[1]], { icon: iconStart })

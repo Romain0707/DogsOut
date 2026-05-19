@@ -183,7 +183,6 @@
 
                 {% if app.user and app.user == group.createdBy %}
                 <div class="group-panel group-panel--danger">
-                    <p class="group-panel__danger-label">Zone de danger</p>
                     <form action="{{ path('app_group_delete', {'id': group.id}) }}" method="POST">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_group_' ~ group.id) }}">
                         <button type="submit" class="group-btn group-btn--danger"

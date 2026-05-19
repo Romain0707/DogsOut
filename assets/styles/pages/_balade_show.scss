@@ -18,6 +18,7 @@
 
       // ── Header : titre + boutons ──
       .balade-header {
+        position: relative;
         @include m.flex-center-vert;
         justify-content: space-between;
         gap: 1rem;
@@ -27,6 +28,77 @@
         @include m.phone {
           padding: 1.25rem;
         }
+
+        .card-dropdown {
+                position: absolute;
+                top: 2rem;
+                right: 2rem;
+                z-index: 10;
+
+                &-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255, 255, 255, 0.85);
+                    border: 1px solid gray;
+                    border-radius: 8px;
+                    padding: 0.35rem;
+                    cursor: pointer;
+                    color: v.$text-p-color;
+                    transition: background 0.2s;
+                    backdrop-filter: blur(4px);
+
+                    &:hover {
+                        background: white;
+                    }
+                }
+
+                &-menu {
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 0.35rem);
+                    right: 0;
+                    background: white;
+                    border: 1px solid rgba(0, 0, 0, 0.08);
+                    border-radius: 10px;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+                    width: 150px;
+                    list-style: none;
+                    padding: 0.4rem;
+                    margin: 0;
+
+                    &.open {
+                        display: block;
+                    }
+
+                    li a, li button {
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+                        padding: 0.5rem 0.75rem;
+                        border-radius: 6px;
+                        font-size: 0.875rem;
+                        color: v.$text-p-color;
+                        text-decoration: none;
+                        transition: background 0.15s;
+                        outline: none;
+                        border: none;
+
+                        &:hover {
+                            background: v.$bg-color;
+                            color: v.$text-title-color;
+                        }
+
+                        &.danger {
+                            color: #c0392b;
+
+                            &:hover {
+                                background: rgba(192, 57, 43, 0.08);
+                            }
+                        }
+                    }
+                }
+            }
       }
 
       .balade-title {

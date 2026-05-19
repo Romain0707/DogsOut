@@ -242,8 +242,6 @@
 
 			</div>
 
-            {{ form_widget(form.images) }}
-
             <button type="submit" class="btn btn-primary mt-3">
             {{ balade.id ? 'Mettre à jour' : 'Créer la balade' }}
         </button>
@@ -255,7 +253,6 @@
         {% if balade.id %}
             <div class="balade-actions mt-3">
                 <a href="{{ path('app_balade_index') }}">← Retour aux balades</a>
-                {{ include('balade/_delete_form.html.twig') }}
             </div>
         {% endif %}
 

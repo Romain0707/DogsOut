@@ -163,7 +163,7 @@ export function initBaladeMap() {
 
   function drawPoly(pts, type) {
     const color  = type === 'ors' ? '#4a7c59' : '#7b5ea7';
-    const shadow = L.polyline(pts, { color: '#3d2b1f', weight: 9, opacity: .07 }).addTo(map);
+    const shadow = L.polyline(pts, { color: '#3d2b1f', weight: 9, opacity: 1 }).addTo(map);
     const line   = L.polyline(pts, {
       color, weight: 5, opacity: .9, lineCap: 'round', lineJoin: 'round',
       ...(type === 'free' ? { dashArray: '8 6' } : {}),
