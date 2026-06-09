@@ -10,7 +10,6 @@
     overflow: hidden;
     border: 1px solid lightgray;
     padding: 20px; 
-    gap: 1rem;
 
     label {
         margin-bottom: 10px;
@@ -35,18 +34,22 @@
 
     input[type="submit"] {
         align-self: center;
+        display: inline-block;
+    }
+
+    .mdp-forget {
+        margin-bottom: 12px;
     }
 
     a {
         align-self: center;
-        margin-bottom: 1rem;
     }
 }
 
-#register {
+#register, #passwordpage, #resetpage {
     @include m.flex-column;
     @include m.container(350);
-    margin-top: 3rem;
+    margin-block: 3rem;
     background-color: white;
     border-radius: 8px;
     overflow: hidden;

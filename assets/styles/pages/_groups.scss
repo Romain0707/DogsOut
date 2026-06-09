@@ -221,7 +221,6 @@
         color: v.$text-p-color;
         font-size: 0.95rem;
         line-height: 1.7;
-        border-left: 3px solid v.$primary-color;
     }
 
     &__body {
@@ -316,9 +315,6 @@
     padding: 1.5rem;
     box-shadow: 0 2px 16px rgba(46, 94, 62, 0.06);
 
-    &--warning {
-        border-left: 3px solid #f39c12;
-    }
 
     &--danger {
         padding: 1.25rem 1.5rem;

@@ -35,7 +35,7 @@ final class BaladeController extends AbstractController
     public function index(BaladeRepository $baladeRepository): Response
     {
         return $this->render('balade/index.html.twig', [
-            'balades' => $baladeRepository->findAll(),
+            'balades' => $baladeRepository->findBy([], ['id' => 'DESC']),
         ]);
     }
 

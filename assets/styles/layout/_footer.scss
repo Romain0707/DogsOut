@@ -3,7 +3,7 @@
 
 footer {
     background-color: v.$primary-color;
-    min-height: 5vh;
+    min-height: 50px;
     @include m.flex-center;
     color: v.$nav-text-color;
     text-align: center;
